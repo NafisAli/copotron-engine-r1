@@ -1,10 +1,13 @@
 ---
 name: vault-admin
-description: Rebuild vault index or migrate schema. Use after editing memories or schema.py.
+description: Synchronize vault memories into the SQLite index (.index.sqlite3). Trigger after creating, editing, or deleting memory files, or updating schema.
 ---
 
-Rebuild the index (run this after any memory creation or modification):
-`uv run --env-file .env python scripts/indexer.py`
+Incrementally sync vault memories into `.index.sqlite3`:
+```bash
+uv run python scripts/indexer.py
+```
 
-Migrate the schema (run this after modifying `scripts/schema.py`):
-`uv run --env-file .env python scripts/migrate.py`
+### Completion Criteria:
+- Command completes with exit code 0.
+- Output confirms indexed memory count and write target (e.g. `Indexed N memories ... to .../.index.sqlite3`).

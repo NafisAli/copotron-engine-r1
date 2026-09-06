@@ -1,32 +1,40 @@
 ---
 name: vault-editor
-description: Write, edit, and validate memory files. Use when creating or modifying vault memories.
+description: Author, edit, and validate vault memory files. Trigger when creating memories, modifying frontmatter, or updating markdown notes.
 ---
 
-Write and modify vault `.md` files directly in the flat vault directory.
+Author and edit `.md` files directly in the flat vault directory.
 
-### Naming Convention:
-Files must be named: `{id}-{slug}.md`
-- `{id}`: 8-character unique identifier (e.g. 8-digit hex prefix from SHA-256 or numeric ID).
+### 1. File Naming
+Files must follow the pattern: `{id}-{slug}.md`
+- `{id}`: 8-character unique identifier (e.g. 8-digit hex prefix or numeric ID).
 - `{slug}`: lowercase, hyphen-separated title (e.g. `mandalay-build-and-engineering.md`).
 
-### Frontmatter Schema:
-- `id`: required 8-character string.
-- `title`: required string.
-- `date`: required string in `YYYY-MM-DD` format.
-- `summary`: required 1-2 sentence string.
-- `type`: `episodic`, `declarative`, `procedural`, or `prospective`.
-- `status`: `active`, `completed`, `archived`, or `none`.
-- `parents`: optional list of parent 8-character node IDs (defaults to `[]`).
-- `tags`: optional list of strings (defaults to `[]`).
-- `persona`: optional persona identifier string.
-- *Open Tail:* Custom metadata fields are fully supported and preserved.
+### 2. Frontmatter Schema
+```yaml
+---
+id: "00000001"
+title: "Note Title"
+date: "2026-09-06"
+summary: "Concise 1-2 sentence description."
+type: declarative  # episodic | declarative | procedural | prospective
+status: active     # active | completed | archived | none
+parents:           # list of parent 8-character node IDs
+  - "00000000"
+tags:              # list of semantic tags
+  - "domain"
+persona: null      # optional persona identifier
+---
+```
+*Open Tail:* Arbitrary metadata fields outside core keys are fully supported and preserved in the index.
 
-### Validation:
-Every edit must pass schema validation:
-`uv run python scripts/validate.py <file_path>`
+### 3. Validation & Indexing
+```bash
+uv run python scripts/validate.py <path_to_file>
+uv run python scripts/indexer.py
+```
 
 ### Completion Criteria:
-1. File is saved with the correct `{id}-{slug}.md` naming convention.
-2. `validate.py` passes with no errors (exit code 0).
-3. The graph indexer is run: `uv run python scripts/indexer.py`.
+1. File exists at `VAULT_PATH/{id}-{slug}.md`.
+2. `validate.py` passes with exit code 0.
+3. `indexer.py` runs and successfully commits updates to `.index.sqlite3`.

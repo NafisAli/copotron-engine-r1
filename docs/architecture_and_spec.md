@@ -49,12 +49,12 @@ Personas dictate AI tone, domain instructions, and behavior:
 
 ## 6. Progressive Disclosure Search & Navigation
 To protect LLM context windows and prevent lost-in-the-middle degradation:
-* **`search.py` (Flat Match):** Returns matching nodes and their `inherited_persona` without surrounding tree bloat.
-* **`navigate.py` (Tree Traversal):** Allows the agent to step `up` (to parents) or `down` (to children) on demand when contextual depth is needed.
+* **`search.py` (FTS5 & Metadata Search):** Returns matching nodes, BM25 ranking, and `inherited_persona` via SQLite FTS5 without surrounding tree bloat.
+* **`navigate.py` (Indexed DAG Traversal):** Sub-millisecond indexed edge lookup stepping `up` (to parents) or `down` (to children) on demand when contextual depth is needed.
 
 ## 7. Modular Agent Skills (`.agents/skills/`)
 Agent capabilities are organized into focused skills within the engine:
 * **`vault-query`**: Governs index searching (`search.py`) and hierarchy traversal (`navigate.py`), with directives to adopt inherited personas.
 * **`vault-editor`**: Governs direct markdown authoring and editing in the vault, enforced by validation (`validate.py`).
-* **`vault-admin`**: Governs graph re-indexing (`indexer.py`) and schema migration (`migrate.py`).
+* **`vault-admin`**: Governs graph re-indexing (`indexer.py`).
 * **`vault-setup`**: Handles initialization of new vaults and root node bootstrapping (`setup.py`).

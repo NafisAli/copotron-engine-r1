@@ -8,7 +8,7 @@ The deterministic logic and indexing engine for the AI-driven Second Brain.
 ## Setup & Configuration
 The vault path is governed strictly by the `.env` file with **no fallback default**:
 ```env
-VAULT_PATH='C:\Users\digit\Documents\Programming\copotron-r1\copotron-vault'
+VAULT_PATH='C:\Users\digit\Documents\Programming\copotron-r1\copotron-vault-r1'
 ```
 
 ### Initializing or Linking a Vault
@@ -23,17 +23,17 @@ VAULT_PATH='C:\Users\digit\Documents\Programming\copotron-r1\copotron-vault'
 
 ## Core Scripts
 * **Search Memory Index (`search.py`):**
-  Multi-token flat search with type and status filtering:
+  FTS5 full-text keyword search across titles, summaries, tags, and note bodies with BM25 ranking, plus metadata filtering:
   ```bash
   uv run python scripts/search.py -q "aws failure" --status active
   ```
 * **Tree Navigation (`navigate.py`):**
-  Traverse DAG relationships up (to parents) or down (to children):
+  Instant indexed DAG edge traversal up (to parents) or down (to children) via SQLite:
   ```bash
   uv run python scripts/navigate.py --node "00000001" --direction down
   ```
 * **Rebuild Index (`indexer.py`):**
-  Re-parses all memories, resolves parent-child links, computes persona inheritance, and writes `graph.json`:
+  Incrementally synchronizes memories, DAG links, and inherited personas into the local SQLite index (`.index.sqlite3`):
   ```bash
   uv run python scripts/indexer.py
   ```
@@ -41,11 +41,6 @@ VAULT_PATH='C:\Users\digit\Documents\Programming\copotron-r1\copotron-vault'
   Validates a single file or the entire vault against the Pydantic schema:
   ```bash
   uv run python scripts/validate.py [path_to_file.md]
-  ```
-* **Schema Migration (`migrate.py`):**
-  Safely upgrades frontmatter while preserving open-tail metadata:
-  ```bash
-  uv run python scripts/migrate.py
   ```
 
 ## Running Tests
