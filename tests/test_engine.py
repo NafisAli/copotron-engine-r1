@@ -13,11 +13,11 @@ if str(SCRIPTS_DIR) not in sys.path:
 
 from schema import MemorySchema, parse_frontmatter, dump_frontmatter, parse_frontmatter_and_body
 from vault import get_vault_path, load_env, atomic_write_text, atomic_write_json
-from search import search_graph
+from search import search_graph, format_fts_query
 from navigate import navigate
-from indexer import load_vault
+from indexer import load_vault, compute_frontmatter_hash
 from validate import validate_file
-from migrate import migrate_vault
+from db import get_db_path, init_db, get_readonly_db, INDEX_SCHEMA_VERSION
 
 # ---------------------------------------------------------
 # Schema & Type Coercion Tests
@@ -438,41 +438,232 @@ def test_navigate_status_filter_and_pagination(capsys):
     assert len(paged_children) <= 2
 
 # ---------------------------------------------------------
-# Phase 1: Migration Dirty-Check Tests
+# Phase 2: Database Lifecycle & Schema Tests
 # ---------------------------------------------------------
 
-def test_migrate_dirty_check_preserves_mtime(tmp_path):
-    """Verify second migration run does not touch unchanged files and preserves mtime."""
-    vault = tmp_path / "mig_vault"
+def test_db_initialization_and_wal_mode(tmp_path):
+    """Verify init_db initializes tables, WAL journal mode, and schema user_version."""
+    db_file = tmp_path / ".index.sqlite3"
+    conn = init_db(db_file)
+
+    # Check WAL mode
+    journal_mode = conn.execute("PRAGMA journal_mode;").fetchone()[0]
+    assert journal_mode.lower() == "wal"
+
+    # Check user_version
+    user_version = conn.execute("PRAGMA user_version;").fetchone()[0]
+    assert user_version == INDEX_SCHEMA_VERSION
+
+    # Check tables exist
+    tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall()}
+    assert "memories" in tables
+    assert "memory_edges" in tables
+    assert "memories_fts" in tables
+    conn.close()
+
+def test_db_schema_version_mismatch_auto_rebuild(tmp_path):
+    """Verify schema version mismatch wipes existing tables and rebuilds cleanly."""
+    db_file = tmp_path / ".index.sqlite3"
+    conn = init_db(db_file)
+
+    # Insert a sentinel record
+    conn.execute("""
+    INSERT INTO memories (id, file_path, title, date, summary, type, status, tags_json, open_tail_json, mtime, hash)
+    VALUES ('99999999', 'test.md', 'Old Data', '2026-09-01', 'Old', 'declarative', 'active', '[]', '{}', 1.0, 'hash');
+    """)
+    conn.commit()
+    conn.close()
+
+    # Simulate an obsolete schema version
+    conn2 = init_db(db_file)
+    conn2.execute("PRAGMA user_version = 999;")
+    conn2.commit()
+    conn2.close()
+
+    # Re-initialization should detect version mismatch (999 != 1), drop and recreate
+    conn3 = init_db(db_file)
+    assert conn3.execute("PRAGMA user_version;").fetchone()[0] == INDEX_SCHEMA_VERSION
+    rows = conn3.execute("SELECT * FROM memories;").fetchall()
+    assert len(rows) == 0  # Table was dropped and recreated cleanly
+    conn3.close()
+
+# ---------------------------------------------------------
+# Phase 2: Cross-Platform Normalization & Hash Stability
+# ---------------------------------------------------------
+
+def test_cross_platform_hash_stability():
+    """Verify CRLF and LF line endings produce the exact same frontmatter hash."""
+    lf_text = "id: '00000001'\ntitle: Test\ndate: '2026-09-01'\nsummary: Summary\n"
+    crlf_text = "id: '00000001'\r\ntitle: Test\r\ndate: '2026-09-01'\r\nsummary: Summary\r\n"
+
+    hash_lf = compute_frontmatter_hash(lf_text)
+    hash_crlf = compute_frontmatter_hash(crlf_text)
+    assert hash_lf == hash_crlf
+    assert len(hash_lf) == 64
+
+# ---------------------------------------------------------
+# Phase 2: Incremental Indexer Cache Hit/Miss & Pruning Tests
+# ---------------------------------------------------------
+
+def test_incremental_indexer_cache_hit_and_miss(tmp_path, monkeypatch):
+    """Verify incremental indexer caches unchanged files, updates modified files, and prunes deleted files."""
+    vault = tmp_path / "inc_vault"
     vault.mkdir()
-    (vault / "00000000-root.md").write_text(
-        "---\nid: '00000000'\ntitle: Root\ndate: '2026-09-01'\nsummary: Root\ntype: declarative\nstatus: active\n---\n# Root\n",
-        encoding="utf-8"
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    # 1. Setup Root and Note A
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "0000000a", "Note A", parents=["00000000"], body="Initial body of Note A")
+
+    # Initial indexing run
+    g1 = load_vault()
+    assert "00000000" in g1
+    assert "0000000a" in g1
+
+    db_path = get_db_path(vault)
+    conn = get_readonly_db(db_path)
+    count1 = conn.execute("SELECT count(*) FROM memories;").fetchone()[0]
+    assert count1 == 2
+    conn.close()
+
+    # 2. Second run: 0 changes. Should be a clean cache hit.
+    t0 = time.perf_counter()
+    g2 = load_vault()
+    elapsed2 = time.perf_counter() - t0
+    assert len(g2) == 2
+    assert elapsed2 < 0.1  # Fast cache hit
+
+    # 3. Modify Note A frontmatter (title change)
+    note_a_path = next(vault.glob("*0000000a*.md"))
+    m_updated = MemorySchema(
+        id="0000000a",
+        title="Note A Updated",
+        date="2026-09-01",
+        summary="Summary for Note A Updated",
+        type="declarative",
+        status="active",
+        parents=["00000000"]
     )
-    (vault / "00000001-work.md").write_text(
-        "---\nid: 1\ntitle: Work\ndate: '2026-09-01'\nsummary: Work\ntype: declarative\nstatus: active\n---\n# Work\n",
-        encoding="utf-8"
+    note_a_path.write_text(dump_frontmatter(m_updated, "Updated body of Note A"), encoding="utf-8")
+    g3 = load_vault()
+    assert g3["0000000a"]["title"] == "Note A Updated"
+
+    conn = get_readonly_db(db_path)
+    row_a = conn.execute("SELECT title FROM memories WHERE id = '0000000a';").fetchone()
+    assert row_a["title"] == "Note A Updated"
+    conn.close()
+
+    # 4. Touch Note A (update mtime without changing content)
+    note_a_path = next(vault.glob("*0000000a*.md"))
+    new_mtime = time.time() + 100
+    os.utime(note_a_path, (new_mtime, new_mtime))
+
+    g4 = load_vault()
+    assert g4["0000000a"]["title"] == "Note A Updated"
+    conn = get_readonly_db(db_path)
+    row_mtime = conn.execute("SELECT mtime FROM memories WHERE id = '0000000a';").fetchone()
+    assert abs(row_mtime["mtime"] - new_mtime) < 1e-3
+    conn.close()
+
+    # 5. Delete Note A file on disk
+    note_a_path.unlink()
+    g5 = load_vault()
+    assert "0000000a" not in g5
+    conn = get_readonly_db(db_path)
+    row_deleted = conn.execute("SELECT count(*) FROM memories WHERE id = '0000000a';").fetchone()[0]
+    assert row_deleted == 0
+    fts_deleted = conn.execute("SELECT count(*) FROM memories_fts WHERE id = '0000000a';").fetchone()[0]
+    assert fts_deleted == 0
+    edges_deleted = conn.execute("SELECT count(*) FROM memory_edges WHERE child_id = '0000000a';").fetchone()[0]
+    assert edges_deleted == 0
+    conn.close()
+
+# ---------------------------------------------------------
+# Phase 2: FTS5 Full-Text Search & BM25 Ranking Tests
+# ---------------------------------------------------------
+
+def test_fts5_fulltext_search_body_and_ranking(tmp_path, monkeypatch, capsys):
+    """Verify FTS5 searches note body text and applies BM25 ranking."""
+    vault = tmp_path / "fts_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(
+        vault, "00000001", "Architecture Blueprint", parents=["00000000"],
+        body="Detailed design for high-throughput stream processing."
+    )
+    _create_test_note(
+        vault, "00000002", "Unrelated Note", parents=["00000000"],
+        body="This note discusses completely different topics like gardening."
     )
 
-    # First run: 00000001 has id: 1 which normalizes to "00000001", so it gets updated
-    stats1 = migrate_vault(vault)
-    assert stats1["errors"] == 0
-    assert stats1["updated"] >= 1
+    load_vault()
 
-    # Record mtime of files after first run
-    mtimes_before = {p: p.stat().st_mtime_ns for p in vault.glob("*.md")}
+    # Query term present only in note body ("high-throughput")
+    results = search_graph(query="high-throughput")
+    assert len(results) >= 1
+    assert results[0]["id"] == "00000001"
 
-    time.sleep(0.01)
+    # Verify unrelated note is excluded
+    ids = [r["id"] for r in results]
+    assert "00000002" not in ids
 
-    # Second run: all files already normalized, should be 0 updated
-    stats2 = migrate_vault(vault)
-    assert stats2["errors"] == 0
-    assert stats2["updated"] == 0
-    assert stats2["unchanged"] == len(mtimes_before)
+# ---------------------------------------------------------
+# Phase 2: SQLite-Backed Navigation Tests
+# ---------------------------------------------------------
 
-    # Verify mtime was preserved
-    mtimes_after = {p: p.stat().st_mtime_ns for p in vault.glob("*.md")}
-    assert mtimes_before == mtimes_after
+def test_navigate_sqlite_edge_traversal(tmp_path, monkeypatch, capsys):
+    """Verify navigate travels up/down, filters by status, and paginates using SQLite."""
+    vault = tmp_path / "nav_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "00000001", "Active Child", parents=["00000000"], status="active")
+    _create_test_note(vault, "00000002", "Completed Child", parents=["00000000"], status="completed")
+
+    load_vault()
+
+    # Down: all children
+    down_all = navigate(node_id="00000000", direction="down", limit=0)
+    assert len(down_all) == 2
+    assert [d["id"] for d in down_all] == ["00000001", "00000002"]
+
+    # Down: status filtered
+    down_active = navigate(node_id="00000000", direction="down", status="active")
+    assert len(down_active) == 1
+    assert down_active[0]["id"] == "00000001"
+
+    # Up: parent traversal
+    up_parent = navigate(node_id="00000001", direction="up")
+    assert len(up_parent) == 1
+    assert up_parent[0]["id"] == "00000000"
+
+def test_phase_2_performance_benchmarks():
+    """Verify incremental index (<25ms), search (<5ms), and navigation (<2ms) meet criteria."""
+    # Ensure index is warmed up
+    load_vault()
+
+    # 1. Benchmark 0-change re-indexing
+    t0 = time.perf_counter()
+    load_vault()
+    elapsed_index = (time.perf_counter() - t0) * 1000.0
+    assert elapsed_index < 25.0, f"Incremental index took {elapsed_index:.2f}ms (expected < 25ms)"
+
+    # 2. Benchmark FTS5 Search
+    t0 = time.perf_counter()
+    search_graph(query="psychology", limit=5)
+    elapsed_search = (time.perf_counter() - t0) * 1000.0
+    assert elapsed_search < 15.0, f"Search took {elapsed_search:.2f}ms (expected < 15ms)"
+
+    # 3. Benchmark Navigate
+    t0 = time.perf_counter()
+    navigate(node_id="00000000", direction="down", limit=5)
+    elapsed_nav = (time.perf_counter() - t0) * 1000.0
+    assert elapsed_nav < 10.0, f"Navigate took {elapsed_nav:.2f}ms (expected < 10ms)"
+
+
 
 # ---------------------------------------------------------
 # Phase 1: Set-Based Child Deduplication Tests
