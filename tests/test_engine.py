@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import json
 import pytest
 from pathlib import Path
@@ -10,12 +11,13 @@ SCRIPTS_DIR = Path(__file__).resolve().parent.parent / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from schema import MemorySchema, parse_frontmatter, dump_frontmatter
-from vault import get_vault_path, load_env
+from schema import MemorySchema, parse_frontmatter, dump_frontmatter, parse_frontmatter_and_body
+from vault import get_vault_path, load_env, atomic_write_text, atomic_write_json
 from search import search_graph
 from navigate import navigate
 from indexer import load_vault
 from validate import validate_file
+from migrate import migrate_vault
 
 # ---------------------------------------------------------
 # Schema & Type Coercion Tests
@@ -219,3 +221,276 @@ def test_validate_file_fails_malformed(tmp_path):
     bad_file = tmp_path / "bad.md"
     bad_file.write_text("No frontmatter at all", encoding="utf-8")
     assert validate_file(bad_file) is False
+
+# ---------------------------------------------------------
+# Phase 1: Linear Topological Persona Inheritance Tests
+# ---------------------------------------------------------
+
+def _create_test_note(vault: Path, node_id: str, title: str, parents: list, persona: str | None = None, status: str = "active", body: str = "Test body"):
+    m = MemorySchema(
+        id=node_id,
+        title=title,
+        date="2026-09-01",
+        summary=f"Summary for {title}",
+        type="declarative",
+        status=status,
+        parents=parents,
+        persona=persona
+    )
+    content = dump_frontmatter(m, body)
+    (vault / f"{node_id}-{title.lower().replace(' ', '-')}.md").write_text(content, encoding="utf-8")
+
+def test_topological_persona_diamond_dag(tmp_path, monkeypatch):
+    """Verify diamond DAG (A -> B, C -> D) propagates persona from A down to D."""
+    vault = tmp_path / "diamond_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    # Root / A: has persona "work"
+    _create_test_note(vault, "00000000", "Root", parents=[], persona="work")
+    # B and C inherit from A
+    _create_test_note(vault, "0000000b", "Node B", parents=["00000000"])
+    _create_test_note(vault, "0000000c", "Node C", parents=["00000000"])
+    # D has parents B and C
+    _create_test_note(vault, "0000000d", "Node D", parents=["0000000b", "0000000c"])
+
+    graph = load_vault()
+    assert graph["00000000"]["inherited_persona"] == "work"
+    assert graph["0000000b"]["inherited_persona"] == "work"
+    assert graph["0000000c"]["inherited_persona"] == "work"
+    assert graph["0000000d"]["inherited_persona"] == "work"
+
+def test_topological_persona_multi_parent_conflict_resolution(tmp_path, monkeypatch):
+    """Verify multi-parent conflict resolution prioritizes the first parent in declared order."""
+    vault = tmp_path / "conflict_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "0000000a", "Parent Work", parents=["00000000"], persona="work")
+    _create_test_note(vault, "0000000b", "Parent Gaming", parents=["00000000"], persona="gaming")
+    # Child C prioritizes A
+    _create_test_note(vault, "0000000c", "Child C", parents=["0000000a", "0000000b"])
+    # Child D prioritizes B
+    _create_test_note(vault, "0000000d", "Child D", parents=["0000000b", "0000000a"])
+
+    graph = load_vault()
+    assert graph["0000000c"]["inherited_persona"] == "work"
+    assert graph["0000000d"]["inherited_persona"] == "gaming"
+
+def test_topological_cycle_detection(tmp_path, monkeypatch, capsys):
+    """Verify cyclical dependencies log a warning and complete safely without RecursionError."""
+    vault = tmp_path / "cycle_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    # Cycle between 0000000a and 0000000b
+    _create_test_note(vault, "0000000a", "Cycle Node A", parents=["0000000b"], persona="work")
+    _create_test_note(vault, "0000000b", "Cycle Node B", parents=["0000000a"])
+
+    graph = load_vault()
+    captured = capsys.readouterr()
+    assert "Warning: Cycle detected involving nodes:" in captured.err
+    assert "0000000a" in captured.err and "0000000b" in captured.err
+    assert "0000000a" in graph
+    assert "0000000b" in graph
+
+# ---------------------------------------------------------
+# Phase 1: Streaming Frontmatter & Parser Tests
+# ---------------------------------------------------------
+
+def test_streaming_frontmatter_large_file(tmp_path):
+    """Verify parse_frontmatter only reads frontmatter and executes fast on large body files."""
+    test_file = tmp_path / "large_note.md"
+    frontmatter = (
+        "---\n"
+        "id: '00000099'\n"
+        "title: Large Body Note\n"
+        "date: '2026-09-01'\n"
+        "summary: Testing streaming frontmatter parser\n"
+        "type: declarative\n"
+        "status: active\n"
+        "---\n\n"
+    )
+    # Generate a large body with 50,000 lines (~1.5 MB)
+    large_body = "\n".join(f"Line {i}: Some detailed note content here." for i in range(50000))
+    test_file.write_text(frontmatter + large_body, encoding="utf-8")
+
+    start_time = time.perf_counter()
+    memory = parse_frontmatter(test_file)
+    elapsed = time.perf_counter() - start_time
+
+    assert memory.id == "00000099"
+    assert memory.title == "Large Body Note"
+    # Streaming frontmatter should easily parse in under 50ms
+    assert elapsed < 0.05
+
+def test_streaming_frontmatter_embedded_hyphens_in_multiline(tmp_path):
+    """Verify indented triple hyphens in multiline YAML strings do not break frontmatter parsing."""
+    content = (
+        "---\n"
+        "id: '00000088'\n"
+        "title: Embedded Hyphens\n"
+        "date: '2026-09-01'\n"
+        "summary: |\n"
+        "  First line of summary\n"
+        "  ---\n"
+        "  Second line of summary\n"
+        "type: declarative\n"
+        "status: active\n"
+        "---\n\n"
+        "# Body Header\n"
+        "Body content here."
+    )
+    test_file = tmp_path / "embedded_hyphens.md"
+    test_file.write_text(content, encoding="utf-8")
+
+    memory = parse_frontmatter(test_file)
+    assert memory.id == "00000088"
+    assert "First line of summary\n---\nSecond line of summary" in memory.summary
+
+    # Also test parse_frontmatter_and_body
+    parsed_mem, body = parse_frontmatter_and_body(test_file)
+    assert parsed_mem.id == "00000088"
+    assert body.startswith("# Body Header")
+
+# ---------------------------------------------------------
+# Phase 1: Atomic File Persistence Tests
+# ---------------------------------------------------------
+
+def test_atomic_write_text_success_and_no_tmp_leftover(tmp_path):
+    """Verify atomic_write_text writes file atomically without leaving temp files."""
+    target_file = tmp_path / "atomic_note.md"
+    content = "Hello Atomic World"
+    atomic_write_text(target_file, content)
+
+    assert target_file.is_file()
+    assert target_file.read_text(encoding="utf-8") == content
+
+    # Sibling temp files should be cleaned up
+    tmp_files = list(tmp_path.glob("*.tmp.*"))
+    assert len(tmp_files) == 0
+
+def test_atomic_write_json_success(tmp_path):
+    """Verify atomic_write_json writes valid JSON atomically."""
+    target_file = tmp_path / "graph.json"
+    data = {"00000000": {"title": "Root", "children": ["00000001"]}}
+    atomic_write_json(target_file, data)
+
+    assert target_file.is_file()
+    loaded = json.loads(target_file.read_text(encoding="utf-8"))
+    assert loaded == data
+    assert len(list(tmp_path.glob("*.tmp.*"))) == 0
+
+def test_atomic_write_failure_cleanup(tmp_path, monkeypatch):
+    """Verify on write failure, target is untouched and temp file is cleaned up."""
+    target_file = tmp_path / "untainted.txt"
+    target_file.write_text("original content", encoding="utf-8")
+
+    # Simulate an error during fsync
+    def mock_fsync(fd):
+        raise OSError("Simulated disk error")
+
+    monkeypatch.setattr(os, "fsync", mock_fsync)
+
+    with pytest.raises(OSError, match="Simulated disk error"):
+        atomic_write_text(target_file, "new corrupted content")
+
+    # Target should remain untouched
+    assert target_file.read_text(encoding="utf-8") == "original content"
+    # Temp file should be removed
+    assert len(list(tmp_path.glob("*.tmp.*"))) == 0
+
+# ---------------------------------------------------------
+# Phase 1: Progressive Disclosure (Pagination & Filtering) Tests
+# ---------------------------------------------------------
+
+def test_search_pagination_limit_and_offset(capsys):
+    """Verify --limit and --offset partition search results correctly."""
+    # Search with limit 5, offset 0
+    res_page1 = search_graph(query="psychology", limit=5, offset=0)
+    res_page2 = search_graph(query="psychology", limit=5, offset=5)
+    
+    assert len(res_page1) <= 5
+    assert len(res_page2) <= 5
+    ids_page1 = {r["id"] for r in res_page1}
+    ids_page2 = {r["id"] for r in res_page2}
+    # Slices should not overlap
+    assert ids_page1.isdisjoint(ids_page2)
+
+def test_search_unlimited(capsys):
+    """Verify limit=0 returns all matching results."""
+    all_results = search_graph(query="psychology", limit=0)
+    paged_results = search_graph(query="psychology", limit=5)
+    assert len(all_results) >= len(paged_results)
+
+def test_navigate_status_filter_and_pagination(capsys):
+    """Verify navigate filters by status and applies pagination."""
+    all_children = navigate(node_id="00000000", direction="down", limit=0)
+    active_children = navigate(node_id="00000000", direction="down", status="active", limit=0)
+    
+    for child in active_children:
+        assert child["status"] == "active"
+    
+    # Test pagination on navigate
+    paged_children = navigate(node_id="00000000", direction="down", limit=2, offset=0)
+    assert len(paged_children) <= 2
+
+# ---------------------------------------------------------
+# Phase 1: Migration Dirty-Check Tests
+# ---------------------------------------------------------
+
+def test_migrate_dirty_check_preserves_mtime(tmp_path):
+    """Verify second migration run does not touch unchanged files and preserves mtime."""
+    vault = tmp_path / "mig_vault"
+    vault.mkdir()
+    (vault / "00000000-root.md").write_text(
+        "---\nid: '00000000'\ntitle: Root\ndate: '2026-09-01'\nsummary: Root\ntype: declarative\nstatus: active\n---\n# Root\n",
+        encoding="utf-8"
+    )
+    (vault / "00000001-work.md").write_text(
+        "---\nid: 1\ntitle: Work\ndate: '2026-09-01'\nsummary: Work\ntype: declarative\nstatus: active\n---\n# Work\n",
+        encoding="utf-8"
+    )
+
+    # First run: 00000001 has id: 1 which normalizes to "00000001", so it gets updated
+    stats1 = migrate_vault(vault)
+    assert stats1["errors"] == 0
+    assert stats1["updated"] >= 1
+
+    # Record mtime of files after first run
+    mtimes_before = {p: p.stat().st_mtime_ns for p in vault.glob("*.md")}
+
+    time.sleep(0.01)
+
+    # Second run: all files already normalized, should be 0 updated
+    stats2 = migrate_vault(vault)
+    assert stats2["errors"] == 0
+    assert stats2["updated"] == 0
+    assert stats2["unchanged"] == len(mtimes_before)
+
+    # Verify mtime was preserved
+    mtimes_after = {p: p.stat().st_mtime_ns for p in vault.glob("*.md")}
+    assert mtimes_before == mtimes_after
+
+# ---------------------------------------------------------
+# Phase 1: Set-Based Child Deduplication Tests
+# ---------------------------------------------------------
+
+def test_set_based_child_deduplication(tmp_path, monkeypatch):
+    """Verify child accumulation deduplicates and sorts deterministically."""
+    vault = tmp_path / "dedup_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    # Node 2 references Root multiple times in its parents list
+    _create_test_note(vault, "00000002", "Node Two", parents=["00000000", "00000000"])
+    # Node 1 references Root
+    _create_test_note(vault, "00000001", "Node One", parents=["00000000"])
+
+    graph = load_vault()
+    # Root children must be deduplicated and sorted deterministically: ["00000001", "00000002"]
+    assert graph["00000000"]["children"] == ["00000001", "00000002"]
+
