@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 from schema import MemorySchema, dump_frontmatter
-from vault import load_env, find_env_file
+from vault import load_env, find_env_file, atomic_write_text
 
 def update_env_file(vault_path: Path):
     """Write or update VAULT_PATH in copotron-engine/.env."""
@@ -28,8 +28,7 @@ def update_env_file(vault_path: Path):
     if not found:
         lines.append(f"VAULT_PATH='{abs_path}'\n")
 
-    with open(env_file, "w", encoding="utf-8") as f:
-        f.writelines(lines)
+    atomic_write_text(env_file, "".join(lines))
     print(f"Updated {env_file} with VAULT_PATH='{abs_path}'")
 
 def create_root_memory(vault_dir: Path):
@@ -52,8 +51,7 @@ def create_root_memory(vault_dir: Path):
     root_body = "# Root\n\nWelcome to the Second Brain Vault. This is the starting point of the memory tree."
     content = dump_frontmatter(root_memory, root_body)
 
-    with open(root_path, "w", encoding="utf-8") as f:
-        f.write(content)
+    atomic_write_text(root_path, content)
     print(f"Created root node: {root_filename}")
 
 def setup_vault(init_path: str | None = None, link_path: str | None = None):

@@ -1,6 +1,38 @@
 import os
 import sys
+import json
+from typing import Any
 from pathlib import Path
+
+def atomic_write_text(target_path: Path | str, content: str, encoding: str = "utf-8"):
+    """
+    Atomically write content to target_path using a temporary sibling file and os.replace.
+    Flushes buffers and forces fsync before replacing. Cleans up temp file on failure.
+    """
+    target = Path(target_path).resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = target.with_suffix(f".tmp.{os.getpid()}")
+    try:
+        with open(tmp_path, "w", encoding=encoding) as f:
+            f.write(content)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, target)
+    except Exception:
+        if tmp_path.exists():
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
+        raise
+
+def atomic_write_json(target_path: Path | str, data: Any, indent: int = 2):
+    """
+    Atomically serialize data to JSON and write to target_path.
+    """
+    content = json.dumps(data, indent=indent) + "\n"
+    atomic_write_text(target_path, content, encoding="utf-8")
+
 
 def find_env_file() -> Path | None:
     """Locate .env in copotron-engine directory or current working directory."""
