@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from vault import get_vault_path
 
-def navigate(node_id: str, direction: str):
+def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, status: str | None = None):
     vault_dir = get_vault_path(require_root=True)
     graph_path = vault_dir / "graph.json"
     if not graph_path.exists():
@@ -33,31 +33,35 @@ def navigate(node_id: str, direction: str):
             "inherited_persona": n_data.get("inherited_persona")
         }
 
-    if direction == "up":
-        for parent_id in node.get("parents", []):
-            if parent_id in graph:
-                results.append(format_node(parent_id, graph[parent_id]))
-            else:
+    target_ids = node.get("parents", []) if direction == "up" else node.get("children", [])
+
+    for target_id in target_ids:
+        if target_id in graph:
+            target_data = graph[target_id]
+            if status and target_data.get("status", "").lower() != status.lower():
+                continue
+            results.append(format_node(target_id, target_data))
+        else:
+            if not status:
+                rel_type = "Parent" if direction == "up" else "Child"
                 results.append({
-                    "id": parent_id,
-                    "error": f"Parent node '{parent_id}' referenced but not found in graph."
-                })
-    elif direction == "down":
-        for child_id in node.get("children", []):
-            if child_id in graph:
-                results.append(format_node(child_id, graph[child_id]))
-            else:
-                results.append({
-                    "id": child_id,
-                    "error": f"Child node '{child_id}' referenced but not found in graph."
+                    "id": target_id,
+                    "error": f"{rel_type} node '{target_id}' referenced but not found in graph."
                 })
 
-    print(json.dumps(results, indent=2))
+    # Apply pagination (limit=0 means unlimited)
+    limit_slice = (offset + limit) if limit > 0 else None
+    paginated = results[offset:limit_slice]
+    print(json.dumps(paginated, indent=2))
+    return paginated
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Navigate the Memory Tree")
     parser.add_argument("--node", required=True, type=str, help="The 8-character Node ID to navigate from")
     parser.add_argument("--direction", required=True, choices=["up", "down"], help="Direction to travel (up to parents, down to children)")
+    parser.add_argument("--status", "-s", type=str, help="Filter results by status (active, completed, archived, none)")
+    parser.add_argument("--limit", "-l", type=int, default=20, help="Max results to return (default: 20; 0 for unlimited)")
+    parser.add_argument("--offset", type=int, default=0, help="Number of results to skip (default: 0)")
     
     args = parser.parse_args()
-    navigate(args.node, args.direction)
+    navigate(args.node, args.direction, limit=args.limit, offset=args.offset, status=args.status)

@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from vault import get_vault_path
 
-def search_graph(query=None, tag=None, memory_type=None, status=None):
+def search_graph(query=None, tag=None, memory_type=None, status=None, limit=20, offset=0):
     vault_dir = get_vault_path(require_root=True)
     graph_path = vault_dir / "graph.json"
     if not graph_path.exists():
@@ -52,7 +52,11 @@ def search_graph(query=None, tag=None, memory_type=None, status=None):
             }
             results.append(flat_node)
 
-    print(json.dumps(results, indent=2))
+    # Apply pagination (limit=0 means unlimited)
+    limit_slice = (offset + limit) if limit > 0 else None
+    paginated = results[offset:limit_slice]
+    print(json.dumps(paginated, indent=2))
+    return paginated
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Search the Memory Graph (Flat Match)")
@@ -60,6 +64,8 @@ if __name__ == "__main__":
     parser.add_argument("--tag", "-t", type=str, help="Filter by tag")
     parser.add_argument("--type", type=str, help="Filter by memory type (episodic, declarative, procedural, prospective)")
     parser.add_argument("--status", "-s", type=str, help="Filter by status (active, completed, archived, none)")
+    parser.add_argument("--limit", "-l", type=int, default=20, help="Max results to return (default: 20; 0 for unlimited)")
+    parser.add_argument("--offset", type=int, default=0, help="Number of results to skip (default: 0)")
     
     args = parser.parse_args()
-    search_graph(args.query, args.tag, args.type, args.status)
+    search_graph(args.query, args.tag, args.type, args.status, args.limit, args.offset)
