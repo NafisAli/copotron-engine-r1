@@ -69,24 +69,59 @@ class MemorySchema(BaseModel):
         s = str(v).strip()
         return s if s else None
 
-def parse_frontmatter(file_path: str | Path) -> MemorySchema:
-    # Use utf-8-sig to automatically strip UTF-8 BOM if present
-    with open(file_path, "r", encoding="utf-8-sig") as f:
-        content = f.read().lstrip()
+def _read_frontmatter_stream(f, file_path: str | Path) -> list[str]:
+    found_start = False
+    for line in f:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped == "---":
+            found_start = True
+            break
+        else:
+            raise ValueError(f"File {file_path} does not have valid YAML frontmatter (missing starting '---').")
 
-    if not content.startswith("---"):
+    if not found_start:
         raise ValueError(f"File {file_path} does not have valid YAML frontmatter (missing starting '---').")
 
-    parts = content.split("---", 2)
-    if len(parts) < 3:
+    yaml_lines = []
+    found_end = False
+    for line in f:
+        if line.rstrip(" \t\r\n") == "---" and not line.startswith((" ", "\t")):
+            found_end = True
+            break
+        yaml_lines.append(line)
+
+    if not found_end:
         raise ValueError(f"File {file_path} frontmatter is malformed (missing closing '---').")
 
-    yaml_content = parts[1]
+    return yaml_lines
+
+def parse_frontmatter(file_path: str | Path) -> MemorySchema:
+    # Use utf-8-sig to automatically strip UTF-8 BOM if present.
+    # Streams lines and terminates immediately upon reading the closing '---'.
+    with open(file_path, "r", encoding="utf-8-sig") as f:
+        yaml_lines = _read_frontmatter_stream(f, file_path)
+
+    yaml_content = "".join(yaml_lines)
     data = yaml.safe_load(yaml_content) or {}
     if not isinstance(data, dict):
         raise ValueError(f"File {file_path} frontmatter must be a YAML mapping/dictionary.")
 
     return MemorySchema(**data)
+
+def parse_frontmatter_and_body(file_path: str | Path) -> tuple[MemorySchema, str]:
+    """Parse frontmatter and return both MemorySchema and remaining body text."""
+    with open(file_path, "r", encoding="utf-8-sig") as f:
+        yaml_lines = _read_frontmatter_stream(f, file_path)
+        body = f.read().lstrip("\r\n")
+
+    yaml_content = "".join(yaml_lines)
+    data = yaml.safe_load(yaml_content) or {}
+    if not isinstance(data, dict):
+        raise ValueError(f"File {file_path} frontmatter must be a YAML mapping/dictionary.")
+
+    return MemorySchema(**data), body
 
 def dump_frontmatter(memory: MemorySchema, body: str) -> str:
     yaml_content = yaml.dump(memory.model_dump(exclude_none=True), sort_keys=False)
