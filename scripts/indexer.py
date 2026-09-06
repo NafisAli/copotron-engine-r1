@@ -1,7 +1,8 @@
-import json
+import sys
+import heapq
 from pathlib import Path
 from schema import parse_frontmatter
-from vault import get_vault_path
+from vault import get_vault_path, atomic_write_json
 
 def load_vault():
     vault_dir = get_vault_path(require_root=True)
@@ -34,49 +35,70 @@ def load_vault():
             except Exception as e:
                 print(f"Skipping {file_path.name}: {e}")
 
-    # Pass 2: Calculate Children (deduplicated)
+    # Pass 2: Calculate Children (constant-time set accumulation, deterministically sorted)
+    children_sets = {node_id: set() for node_id in graph}
     for node_id, node_data in graph.items():
         for parent_id in node_data["parents"]:
             if parent_id in graph:
-                if node_id not in graph[parent_id]["children"]:
-                    graph[parent_id]["children"].append(node_id)
+                children_sets[parent_id].add(node_id)
             else:
                 print(f"Warning: Parent '{parent_id}' not found for node '{node_id}' ({node_data['title']})")
 
-    # Pass 3: Calculate Persona Inheritance (DFS with cycle guard)
-    roots = [node_id for node_id, data in graph.items() if not data["parents"]]
+    for node_id in graph:
+        graph[node_id]["children"] = sorted(children_sets[node_id])
 
-    def dfs_persona(node_id: str, current_persona: str | None, visiting: set):
-        if node_id in visiting:
-            # Cycle detected; break recursion
-            return
-        visiting.add(node_id)
+    # Pass 3: Calculate Persona Inheritance (Topological Sort - Kahn's Algorithm)
+    in_degree = {
+        node_id: sum(1 for p in node_data.get("parents", []) if p in graph)
+        for node_id, node_data in graph.items()
+    }
 
-        node = graph[node_id]
-        # Explicit persona on node always overrides
-        if node["persona"]:
-            active_persona = node["persona"]
-        elif current_persona:
-            active_persona = current_persona
+    queue = [node_id for node_id, deg in in_degree.items() if deg == 0]
+    heapq.heapify(queue)
+    processed_count = 0
+
+    while queue:
+        u = heapq.heappop(queue)
+        processed_count += 1
+        node = graph[u]
+
+        if node.get("persona"):
+            node["inherited_persona"] = node["persona"]
         else:
-            active_persona = node.get("inherited_persona")
+            inherited = None
+            for parent_id in node.get("parents", []):
+                if parent_id in graph and graph[parent_id].get("inherited_persona"):
+                    inherited = graph[parent_id]["inherited_persona"]
+                    break
+            node["inherited_persona"] = inherited
 
-        node["inherited_persona"] = active_persona
+        for child_id in node.get("children", []):
+            if child_id in in_degree:
+                in_degree[child_id] -= 1
+                if in_degree[child_id] == 0:
+                    heapq.heappush(queue, child_id)
 
-        for child_id in node["children"]:
-            if child_id in graph:
-                dfs_persona(child_id, active_persona, visiting)
+    # Cycle Detection
+    if processed_count < len(graph):
+        cyclic_nodes = sorted([node_id for node_id, deg in in_degree.items() if deg > 0])
+        print(f"Warning: Cycle detected involving nodes: {cyclic_nodes}", file=sys.stderr)
+        for node_id in cyclic_nodes:
+            node = graph[node_id]
+            if node.get("persona"):
+                node["inherited_persona"] = node["persona"]
+            else:
+                inherited = None
+                for parent_id in node.get("parents", []):
+                    if parent_id in graph and graph[parent_id].get("inherited_persona"):
+                        inherited = graph[parent_id]["inherited_persona"]
+                        break
+                node["inherited_persona"] = inherited
 
-        visiting.remove(node_id)
-
-    for root_id in roots:
-        dfs_persona(root_id, None, set())
-
-    # Save Graph
+    # Pass 4: Save Graph Atomically
     graph_path = vault_dir / "graph.json"
-    with open(graph_path, "w", encoding="utf-8") as f:
-        json.dump(graph, f, indent=2)
+    atomic_write_json(graph_path, graph, indent=2)
     print(f"Indexed {len(graph)} memories to {graph_path}")
+    return graph
 
 if __name__ == "__main__":
     load_vault()
