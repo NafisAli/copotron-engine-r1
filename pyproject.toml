@@ -1,13 +1,20 @@
 [project]
-name = "second-brain-engine"
+name = "copotron"
 version = "0.1.0"
-description = "Add your description here"
+description = "Second brain cognitive memory engine"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.13.5",
     "pyyaml>=6.0.3",
 ]
+
+[project.scripts]
+copotron = "copotron.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [

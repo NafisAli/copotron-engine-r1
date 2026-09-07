@@ -5,9 +5,9 @@ import time
 import heapq
 import hashlib
 from pathlib import Path
-from schema import parse_frontmatter_and_body, _read_frontmatter_stream
-from vault import get_vault_path
-from db import get_db_path, init_db
+from copotron.schema import parse_frontmatter_and_body, _read_frontmatter_stream
+from copotron.vault import get_vault_path
+from copotron.db import get_db_path, init_db
 
 def compute_frontmatter_hash(frontmatter_text: str) -> str:
     """Normalize line endings to LF and return SHA-256 hex digest."""
@@ -46,7 +46,7 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
     _scan(vault_dir)
     return files
 
-def load_vault(vault_dir: Path | None = None) -> dict:
+def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     """
     Incrementally synchronize Markdown vault memories into SQLite local index (.index.sqlite3).
     Returns in-memory graph dict for backwards compatibility.
@@ -326,8 +326,9 @@ def load_vault(vault_dir: Path | None = None) -> dict:
 
     conn.close()
 
-    elapsed_ms = (time.perf_counter() - start_time) * 1000.0
-    print(f"Indexed {len(graph)} memories ({len(dirty_nodes)} updated/added, {len(deleted_ids)} deleted) in {elapsed_ms:.1f}ms to {db_path}")
+    if not silent:
+        elapsed_ms = (time.perf_counter() - start_time) * 1000.0
+        print(f"Indexed {len(graph)} memories ({len(dirty_nodes)} updated/added, {len(deleted_ids)} deleted) in {elapsed_ms:.1f}ms to {db_path}")
     return graph
 
 if __name__ == "__main__":

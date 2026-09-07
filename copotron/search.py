@@ -3,8 +3,8 @@ import re
 import json
 import argparse
 from pathlib import Path
-from vault import get_vault_path
-from db import get_db_path, get_readonly_db
+from copotron.vault import get_vault_path
+from copotron.db import get_db_path, get_readonly_db
 
 def format_fts_query(raw_query: str, op: str = "AND") -> str:
     """Extract alphanumeric tokens and wrap each in prefix matching syntax for FTS5."""

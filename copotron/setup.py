@@ -3,8 +3,8 @@ import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
-from schema import MemorySchema, dump_frontmatter
-from vault import load_env, find_env_file, atomic_write_text
+from copotron.schema import MemorySchema, dump_frontmatter
+from copotron.vault import load_env, find_env_file, atomic_write_text
 
 def update_env_file(vault_path: Path):
     """Write or update VAULT_PATH in copotron-engine/.env."""
@@ -96,9 +96,9 @@ def setup_vault(init_path: str | None = None, link_path: str | None = None):
         print(
             "Error: VAULT_PATH is not configured in .env, and no path argument was provided.\n\n"
             "To initialize a new vault:\n"
-            "  uv run python scripts/setup.py --init <path_to_directory>\n\n"
+            "  uv run copotron setup --init <path_to_directory>\n\n"
             "To link an existing vault:\n"
-            "  uv run python scripts/setup.py --link <path_to_existing_vault>",
+            "  uv run copotron setup --link <path_to_existing_vault>",
             file=sys.stderr
         )
         sys.exit(1)
@@ -111,7 +111,7 @@ def setup_vault(init_path: str | None = None, link_path: str | None = None):
 
     target_dir.mkdir(parents=True, exist_ok=True)
     create_root_memory(target_dir)
-    from indexer import load_vault
+    from copotron.indexer import load_vault
     load_vault()
     print(f"Successfully initialized vault at {target_dir}")
 

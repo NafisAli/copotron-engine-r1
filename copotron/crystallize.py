@@ -8,15 +8,11 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-# Ensure scripts directory is on sys.path
-SCRIPTS_DIR = Path(__file__).resolve().parent
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
-
-from schema import MemorySchema, dump_frontmatter, parse_frontmatter
-from vault import get_vault_path, atomic_write_text
-from indexer import load_vault
-from search import search_graph
+from copotron.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
+from copotron.vault import get_vault_path, atomic_write_text
+from copotron.indexer import load_vault
+from copotron.search import search_graph
+from copotron.domains import get_domain_hubs, resolve_auto_parent
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -209,8 +205,6 @@ def update_memory_node(
     Preserves existing metadata and open-tail fields when not explicitly overridden.
     Renames file if title/slug changes.
     """
-    from schema import parse_frontmatter_and_body
-
     existing_schema, existing_body = parse_frontmatter_and_body(existing_file)
 
     final_title = title.strip() if title and title.strip() else existing_schema.title

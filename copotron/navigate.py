@@ -2,14 +2,14 @@ import sys
 import json
 import argparse
 from pathlib import Path
-from vault import get_vault_path
-from db import get_db_path, get_readonly_db
+from copotron.vault import get_vault_path
+from copotron.db import get_db_path, get_readonly_db
 
-def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, status: str | None = None):
+def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, status: str | None = None, print_output: bool = True):
     vault_dir = get_vault_path(require_root=True)
     db_path = get_db_path(vault_dir)
     if not db_path.exists():
-        print(f"Error: {db_path} not found. Run indexer.py first.", file=sys.stderr)
+        print(f"Error: {db_path} not found. Run 'copotron index' first.", file=sys.stderr)
         sys.exit(1)
 
     conn = get_readonly_db(db_path)
@@ -65,7 +65,8 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
         })
 
     conn.close()
-    print(json.dumps(results, indent=2))
+    if print_output:
+        print(json.dumps(results, indent=2))
     return results
 
 if __name__ == "__main__":

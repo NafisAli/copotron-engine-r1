@@ -90,7 +90,7 @@ def get_readonly_db(db_path: Path) -> sqlite3.Connection:
     """
     db_path = Path(db_path)
     if not db_path.is_file():
-        raise FileNotFoundError(f"Database not found at {db_path}. Run indexer.py first.")
+        raise FileNotFoundError(f"Database not found at {db_path}. Run 'copotron index' first.")
 
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row

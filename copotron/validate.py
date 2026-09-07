@@ -1,39 +1,45 @@
 import sys
 import argparse
 from pathlib import Path
-from schema import parse_frontmatter
+from copotron.schema import parse_frontmatter
 from pydantic import ValidationError
-from vault import get_vault_path
+from copotron.vault import get_vault_path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
-def validate_file(file_path: str | Path) -> bool:
+def validate_file(file_path: str | Path, silent: bool = False) -> bool:
     path = Path(file_path)
     if not path.exists():
-        print(f"❌ Error: File {file_path} does not exist.", file=sys.stderr)
+        if not silent:
+            print(f"❌ Error: File {file_path} does not exist.", file=sys.stderr)
         return False
         
     try:
         memory = parse_frontmatter(path)
-        print(f"✅ {path.name} is valid. (ID: {memory.id})")
+        if not silent:
+            print(f"✅ {path.name} is valid. (ID: {memory.id})")
         return True
     except ValidationError as e:
-        print(f"❌ {path.name} validation failed:\n{e}", file=sys.stderr)
+        if not silent:
+            print(f"❌ {path.name} validation failed:\n{e}", file=sys.stderr)
         return False
     except ValueError as e:
-        print(f"❌ {path.name} parsing failed:\n{e}", file=sys.stderr)
+        if not silent:
+            print(f"❌ {path.name} parsing failed:\n{e}", file=sys.stderr)
         return False
     except Exception as e:
-        print(f"❌ {path.name} unexpected error:\n{e}", file=sys.stderr)
+        if not silent:
+            print(f"❌ {path.name} unexpected error:\n{e}", file=sys.stderr)
         return False
 
-def validate_vault() -> int:
+def validate_vault(silent: bool = False) -> int:
     vault_dir = get_vault_path(require_root=True)
 
-    print(f"Validating all markdown files in {vault_dir}...")
+    if not silent:
+        print(f"Validating all markdown files in {vault_dir}...")
     valid_count = 0
     error_count = 0
     
@@ -47,12 +53,13 @@ def validate_vault() -> int:
             continue
 
         if file_path.is_file():
-            if validate_file(file_path):
+            if validate_file(file_path, silent=silent):
                 valid_count += 1
             else:
                 error_count += 1
                 
-    print(f"\nValidation complete: {valid_count} valid, {error_count} failed.")
+    if not silent:
+        print(f"\nValidation complete: {valid_count} valid, {error_count} failed.")
     return error_count
 
 if __name__ == "__main__":

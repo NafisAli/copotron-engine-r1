@@ -36,11 +36,9 @@ def atomic_write_json(target_path: Path | str, data: Any, indent: int = 2):
 
 def find_env_file() -> Path | None:
     """Locate .env in copotron-engine directory or current working directory."""
-    # Check parent of scripts/ (i.e. copotron-engine)
     engine_env = Path(__file__).resolve().parent.parent / ".env"
     if engine_env.is_file():
         return engine_env
-    # Check current working directory
     cwd_env = Path.cwd() / ".env"
     if cwd_env.is_file():
         return cwd_env
@@ -76,10 +74,10 @@ def get_vault_path(require_root: bool = True) -> Path:
             "Error: No vault configured. VAULT_PATH is not set in environment or .env file.\n\n"
             "To configure a vault:\n"
             "  • Setup a new vault:\n"
-            "      uv run python scripts/setup.py --init <path_to_directory>\n"
+            "      uv run copotron setup --init <path_to_directory>\n"
             "  • Link an existing vault:\n"
             "      Set VAULT_PATH='<path_to_vault>' in .env\n"
-            "      Then run: uv run python scripts/indexer.py",
+            "      Then run: uv run copotron index",
             file=sys.stderr
         )
         sys.exit(1)
@@ -90,7 +88,7 @@ def get_vault_path(require_root: bool = True) -> Path:
         print(
             f"Error: Configured VAULT_PATH does not exist or is not a directory: {vault_dir}\n\n"
             "To initialize this directory as a new vault:\n"
-            f"  uv run python scripts/setup.py --init \"{vault_dir}\"\n"
+            f"  uv run copotron setup --init \"{vault_dir}\"\n"
             "Or update VAULT_PATH in .env to link your existing vault.",
             file=sys.stderr
         )
@@ -103,7 +101,7 @@ def get_vault_path(require_root: bool = True) -> Path:
                 f"Error: Directory at VAULT_PATH is not a valid Copotron vault (missing '00000000-root.md'):\n"
                 f"  {vault_dir}\n\n"
                 "To initialize this directory as a vault:\n"
-                "  uv run python scripts/setup.py\n"
+                "  uv run copotron setup --init <path_to_directory>\n"
                 "Or update VAULT_PATH in .env to link your existing vault.",
                 file=sys.stderr
             )
