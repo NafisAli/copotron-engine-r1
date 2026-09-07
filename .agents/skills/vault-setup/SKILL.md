@@ -15,6 +15,6 @@ uv run copotron setup --link "<path_to_existing_vault>"
 ```
 
 ### Completion Criteria:
-- `.env` file contains `VAULT_PATH='<path>'`.
-- `00000000-root.md` exists in the target directory.
-- `.index.sqlite3` is initialized and indexed.
+1. `.env` contains `VAULT_PATH='<path>'`.
+2. `00000000-root.md` exists in target directory.
+3. `.index.sqlite3` is initialized and indexed.

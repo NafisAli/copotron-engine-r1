@@ -1,6 +1,6 @@
 ---
 name: vault-query
-description: Search memories via FTS5 full-text or traverse DAG parent/child relationships. Trigger when finding relevant notes, exploring parent projects, or discovering tasks.
+description: Search and navigate vault memory graph. Trigger when locating notes, exploring DAG parent/children, or discovering domain hubs.
 ---
 
 ### 1. Dynamic Domain Hubs
@@ -10,26 +10,19 @@ uv run copotron domains
 ```
 
 ### 2. Full-Text & Metadata Search
-Search the index with keyword queries and relational filters:
+Search the index by keywords, tags, status, or direct 8-character hex IDs:
 ```bash
-uv run copotron search "<keywords>" --type "prospective" --status "active" --limit 20 --offset 0
+uv run copotron search "<query>" [--type declarative|procedural|prospective|episodic] [--status active|completed|archived] [--tag <tag>] [--limit 20]
 ```
-- **`<query>` / `-q, --query`**: Full-text keyword matching across title, summary, tags, and note body with Porter stemming and BM25 relevance ranking. Also accepts direct 8-character hex IDs.
-- **`--type`**: Filter by memory type (`episodic`, `declarative`, `procedural`, `prospective`).
-- **`--status, -s`**: Filter by lifecycle status (`active`, `completed`, `archived`, `none`).
-- **`--tag, -t`**: Filter by exact tag membership.
-- **`--limit, -l`**: Result cap (default: `20`; use `0` for unlimited).
-- **`--offset`**: Skip initial results for pagination.
+Uses SQLite FTS5 BM25 relevance ranking across titles, summaries, tags, and bodies. Probe additional options with `uv run copotron search --help`.
 
 ### 3. DAG Edge Traversal
-Traverse indexed parent/child relationships:
+Traverse parent/child relationships:
 ```bash
-uv run copotron navigate "<node_id>" --direction "down" --status "active" --limit 20 --offset 0
+uv run copotron navigate "<node_id>" --direction <down|up> [--status active|completed|archived] [--limit 20]
 ```
-- **`<node_id>` / `-n, --node`**: 8-character origin node ID.
-- **`--direction, -d`**: `down` to list children (default), `up` to list parents.
-- **`--status, -s`**: Filter returned nodes by status.
-- **`--limit, -l` & `--offset`**: Paginate traversal results.
+- `--direction down`: Lists children (default).
+- `--direction up`: Lists parents.
 
 ### 4. Persona Adoption
-When search or navigation returns a non-null `inherited_persona`, read that persona's memory Markdown file (`{id}-{persona}.md`) and adopt its instructions, tone, and constraints for all subsequent actions in that context.
+When search or navigation returns a non-null `inherited_persona`, read that persona's Markdown note (`{id}-{slug}.md`) and adopt its instructions, tone, and constraints for subsequent actions in that context.

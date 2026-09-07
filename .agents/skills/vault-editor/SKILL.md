@@ -1,16 +1,13 @@
 ---
 name: vault-editor
-description: Author, edit, and validate vault memory files. Trigger when creating memories, modifying frontmatter, or updating markdown notes.
+description: Author, edit, and validate vault markdown files directly. Trigger when modifying frontmatter, editing notes in place, or updating schema.
 ---
 
 Author and edit `.md` files directly in the flat vault directory.
 
-### 1. File Naming
-Files must follow the pattern: `{id}-{slug}.md`
-- `{id}`: 8-character unique identifier (e.g. 8-digit hex prefix or numeric ID).
-- `{slug}`: lowercase, hyphen-separated title (e.g. `mandalay-build-and-engineering.md`).
+### 1. File Naming & Schema
+Format: `VAULT_PATH/{id}-{slug}.md` (`{id}`: 8-character hex/numeric ID; `{slug}`: lowercase hyphenated title).
 
-### 2. Frontmatter Schema
 ```yaml
 ---
 id: "00000001"
@@ -26,15 +23,15 @@ tags:              # list of semantic tags
 persona: null      # optional persona identifier
 ---
 ```
-*Open Tail:* Arbitrary metadata fields outside core keys are fully supported and preserved in the index.
+*Open Tail:* Arbitrary metadata fields outside core keys are preserved in the index.
 
-### 3. Validation & Indexing
+### 2. Validation & Indexing
 ```bash
 uv run copotron validate <path_to_file>
 uv run copotron index
 ```
 
 ### Completion Criteria:
-1. File exists at `VAULT_PATH/{id}-{slug}.md`.
-2. `copotron validate <path>` passes with exit code 0.
-3. `copotron index` runs and successfully commits updates to `.index.sqlite3`.
+1. File saved at `VAULT_PATH/{id}-{slug}.md`.
+2. `uv run copotron validate <path>` exits 0.
+3. `uv run copotron index` exits 0.
