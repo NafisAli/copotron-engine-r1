@@ -2,18 +2,25 @@
 
 Vault data lives at `VAULT_PATH` in `.env`. Run all commands via `uv` in `copotron-engine-r1/`.
 
+## Black-Box CLI Discipline
+
+Treat the engine strictly as a black-box CLI tool (`copotron`).
+- **CLI Commands**: Execute all operations via `uv run copotron <subcommand>`. Probe options and flags using `uv run copotron --help` and `uv run copotron <subcommand> --help`.
+- **Hard Boundary**: Never read, inspect, or edit engine Python source code (`copotron/*.py`) or `.env` during normal memory operations. The CLI exposes all necessary query, navigation, domain discovery, indexing, and crystallization capabilities.
+
 ## Retrieval
 
-Query context through engine CLI scripts before opening files:
-- **Search**: `uv run python scripts/search.py -q "<query>"` (BM25 FTS5 ranking across titles, summaries, tags, bodies).
-- **Navigate**: `uv run python scripts/navigate.py --node "<id>" --direction <up|down>` (DAG edge traversal).
+Query context through the CLI before opening files:
+- **Domains**: `uv run copotron domains` (dynamically list active domain hubs under root).
+- **Search**: `uv run copotron search "<query>"` (BM25 FTS5 ranking across titles, summaries, tags, bodies).
+- **Navigate**: `uv run copotron navigate "<id>" --direction <up|down>` (DAG edge traversal).
 - **Inspect**: Read target Markdown files directly only after resolving IDs.
 - **Persona**: Adopt instructions from any returned `inherited_persona`.
 
 ## Authoring & Editing
 
-- **Direct edit**: Author `{id}-{slug}.md` in vault, validate with `uv run python scripts/validate.py <path>`, and index with `uv run python scripts/indexer.py`.
-- **Crystallize**: Run `uv run python scripts/crystallize.py` for atomic creation or in-place node updates.
+- **Direct edit**: Author `{id}-{slug}.md` in vault, validate with `uv run copotron validate <path>`, and index with `uv run copotron index`.
+- **Crystallize**: Run `uv run copotron crystallize --manifest <path>` for atomic creation or in-place node updates.
 
 ## Progressive Memory Formation
 

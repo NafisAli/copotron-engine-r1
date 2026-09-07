@@ -1,13 +1,20 @@
 ---
 name: vault-admin
-description: Synchronize vault memories into the SQLite index (.index.sqlite3). Trigger after creating, editing, or deleting memory files, or updating schema.
+description: Synchronize vault memories into the SQLite index (.index.sqlite3) and validate frontmatter integrity. Trigger after creating, editing, or deleting memory files, or updating schema.
 ---
 
+### 1. Index Synchronization
 Incrementally sync vault memories into `.index.sqlite3`:
 ```bash
-uv run python scripts/indexer.py
+uv run copotron index
+```
+
+### 2. Vault-Wide Schema Validation
+Validate all markdown notes in the vault (skipping documentation files like README.md):
+```bash
+uv run copotron validate
 ```
 
 ### Completion Criteria:
-- Command completes with exit code 0.
-- Output confirms indexed memory count and write target (e.g. `Indexed N memories ... to .../.index.sqlite3`).
+- `copotron index` completes with exit code 0 and reports indexed count.
+- `copotron validate` completes with exit code 0 (0 failed).

@@ -6,12 +6,12 @@ disable-model-invocation: true
 
 Initialize a new vault:
 ```bash
-uv run python scripts/setup.py --init "<path_to_empty_directory>"
+uv run copotron setup --init "<path_to_empty_directory>"
 ```
 
 Link an existing vault:
 ```bash
-uv run python scripts/setup.py --link "<path_to_existing_vault>"
+uv run copotron setup --link "<path_to_existing_vault>"
 ```
 
 ### Completion Criteria:

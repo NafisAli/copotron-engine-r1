@@ -30,11 +30,11 @@ persona: null      # optional persona identifier
 
 ### 3. Validation & Indexing
 ```bash
-uv run python scripts/validate.py <path_to_file>
-uv run python scripts/indexer.py
+uv run copotron validate <path_to_file>
+uv run copotron index
 ```
 
 ### Completion Criteria:
 1. File exists at `VAULT_PATH/{id}-{slug}.md`.
-2. `validate.py` passes with exit code 0.
-3. `indexer.py` runs and successfully commits updates to `.index.sqlite3`.
+2. `copotron validate <path>` passes with exit code 0.
+3. `copotron index` runs and successfully commits updates to `.index.sqlite3`.

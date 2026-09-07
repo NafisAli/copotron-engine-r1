@@ -16,13 +16,17 @@ Partition content into Copotron memory types:
 ### 2. Execution Sequence
 
 #### Step 1: Resolution & Search-Before-Create
+- **Domain Discovery**: List active domain hubs dynamically:
+  ```bash
+  uv run copotron domains
+  ```
 - **Explicit IDs provided**: When node IDs are known or passed in the task, pass them directly to `--id <hex_id>` or the manifest. Do not search for known IDs.
 - **New or unknown topics**: Query the vault to locate parent hubs or identify existing nodes to update:
   ```bash
-  uv run python scripts/search.py -q "<topic keywords>" --limit 5
+  uv run copotron search "<topic keywords>" --limit 5
   ```
 - **Revisiting a phase**: If a node for this topic already exists, update it in place using its ID.
-- **New topic**: Use the matched domain hub as parent. Fall back to `00000000` (Root) if no hub matches.
+- **New topic**: Use the matched domain hub as parent (or use `--auto-parent`). Fall back to `00000000` (Root) if no hub matches.
 
 #### Step 2: Manifest Creation via `write_to_file`
 When batching multiple nodes or long bodies, write the manifest to a scratch JSON file using `write_to_file`:
@@ -45,10 +49,14 @@ When batching multiple nodes or long bodies, write the manifest to a scratch JSO
 ]
 ```
 
-#### Step 3: Commit via `scripts/crystallize.py`
+#### Step 3: Commit via `copotron crystallize`
 Run the manifest:
 ```bash
-uv run python scripts/crystallize.py --manifest <path_to_manifest.json>
+uv run copotron crystallize --manifest <path_to_manifest.json>
+```
+Or for a single quick node:
+```bash
+uv run copotron crystallize --title "..." --summary "..." --type declarative --parents "00000004"
 ```
 
 #### Step 4: Ambient Receipt
@@ -68,6 +76,6 @@ If an ongoing conversation rapidly pivots while crystallization is active:
 3. The crystallizer returns a single, consolidated list of all created and updated memories.
 
 ### Completion Criteria:
-1. Every target insight is written or updated in a valid `{id}-{slug}.md` file via `crystallize.py` (exit code 0).
-2. SQLite index is updated in `.index.sqlite3` (guaranteed automatically by `crystallize.py`).
-3. Zero post-verification overhead: when `crystallize.py` exits with 0, proceed directly to receipt emission without re-reading files or running manual indexer/git checks.
+1. Every target insight is written or updated in a valid `{id}-{slug}.md` file via `copotron crystallize` (exit code 0).
+2. SQLite index is updated in `.index.sqlite3` (guaranteed automatically by `copotron crystallize`).
+3. Zero post-verification overhead: when `copotron crystallize` exits with 0, proceed directly to receipt emission without re-reading files or running manual indexer/git checks.
