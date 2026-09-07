@@ -1,17 +1,33 @@
 # Second Brain Engine
 
-Vault data lives at `VAULT_PATH` defined in `.env`.
+Vault data lives at `VAULT_PATH` in `.env`. Run all commands via `uv` in `copotron-engine-r1/`.
 
-## Reading Memories
+## Retrieval
 
-Retrieve context through engine CLI scripts rather than bulk file scans:
-- **Search**: `uv run python scripts/search.py -q "<query>"` for FTS5 full-text and BM25-ranked discovery across titles, summaries, tags, and note bodies.
-- **Navigate**: `uv run python scripts/navigate.py --node "<id>" --direction <up|down>` for indexed parent/child DAG edge traversal.
-- **Inspect**: Open individual Markdown files directly only after resolving target IDs from search or navigation.
-- **Persona**: When results include an `inherited_persona`, read that persona's memory file and adopt its instructions.
+Query context through engine CLI scripts before opening files:
+- **Search**: `uv run python scripts/search.py -q "<query>"` (BM25 FTS5 ranking across titles, summaries, tags, bodies).
+- **Navigate**: `uv run python scripts/navigate.py --node "<id>" --direction <up|down>` (DAG edge traversal).
+- **Inspect**: Read target Markdown files directly only after resolving IDs.
+- **Persona**: Adopt instructions from any returned `inherited_persona`.
 
-## Modifying Memories
+## Authoring & Editing
 
-1. Create or edit Markdown memory files directly in the flat vault directory following `{id}-{slug}.md`.
-2. Validate frontmatter: `uv run python scripts/validate.py <path_to_file>` (exit code 0 required).
-3. Synchronize index: `uv run python scripts/indexer.py` to update the local SQLite index (`.index.sqlite3`).
+- **Direct edit**: Author `{id}-{slug}.md` in vault, validate with `uv run python scripts/validate.py <path>`, and index with `uv run python scripts/indexer.py`.
+- **Crystallize**: Run `uv run python scripts/crystallize.py` for atomic creation or in-place node updates.
+
+## Progressive Memory Formation
+
+Accumulate context across turns within an active discussion phase. Avoid premature turn-by-turn memory creation.
+
+Trigger crystallization on:
+- **Phase transition**: Shifting between exploration, architecture, implementation, or testing—including looping back to revise earlier decisions.
+- **Session close**: User signals a break ("talk later", "ordering parts now"), or 5-minute inactivity timer fires.
+- **Explicit request**: User asks to save or crystallize.
+
+Execution discipline:
+- **Single-flight router (Pattern C + B)**: Check if a `vault-crystallizer` is already active (`running` or `idle`).
+  - If active: Forward new phase context via `send_message(Recipient=conv_id, Message="...")`. Do not launch concurrent crystallizers.
+  - If inactive: Dispatch via `invoke_subagent` (model: `flash`).
+- **Zero blocking**: Respond to the user immediately in the main dialogue.
+- **Zero pre-flight calls**: Dispatch without prior search or file reads; the subagent resolves references independently.
+- **Receipt timing**: Emit the consolidated receipt footnote (`📌 *Memory crystallized: [id-slug]*`) only upon the subagent's completion wakeup.
