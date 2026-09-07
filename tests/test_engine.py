@@ -16,7 +16,7 @@ from vault import get_vault_path, load_env, atomic_write_text, atomic_write_json
 from search import search_graph, format_fts_query
 from navigate import navigate
 from indexer import load_vault, compute_frontmatter_hash
-from validate import validate_file
+from validate import validate_file, validate_vault
 from db import get_db_path, init_db, get_readonly_db, INDEX_SCHEMA_VERSION
 
 # ---------------------------------------------------------
@@ -221,6 +221,22 @@ def test_validate_file_fails_malformed(tmp_path):
     bad_file = tmp_path / "bad.md"
     bad_file.write_text("No frontmatter at all", encoding="utf-8")
     assert validate_file(bad_file) is False
+
+def test_validate_vault_ignores_readme_and_docs(tmp_path, monkeypatch):
+    """Verify validate_vault skips non-memory documentation files like README.md and LICENSE.md."""
+    vault = tmp_path / "doc_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    # Valid memory root
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    # Documentation files that lack frontmatter
+    (vault / "README.md").write_text("# Documentation\n\nThis is a readme.", encoding="utf-8")
+    (vault / "LICENSE.md").write_text("MIT License\n\nCopyright...", encoding="utf-8")
+    (vault / "CONTRIBUTING.md").write_text("# Contributing\n\nGuidelines...", encoding="utf-8")
+
+    errors = validate_vault()
+    assert errors == 0
 
 # ---------------------------------------------------------
 # Phase 1: Linear Topological Persona Inheritance Tests
@@ -684,4 +700,25 @@ def test_set_based_child_deduplication(tmp_path, monkeypatch):
     graph = load_vault()
     # Root children must be deduplicated and sorted deterministically: ["00000001", "00000002"]
     assert graph["00000000"]["children"] == ["00000001", "00000002"]
+
+def test_search_resilient_or_fallback(tmp_path, monkeypatch):
+    """Verify search_graph falls back to OR matching when strict AND query yields 0 results."""
+    vault = tmp_path / "or_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "11111111", "ESP-NOW Gateway Protocol", parents=["00000000"], body="Decoupled wireless telemetry.")
+    _create_test_note(vault, "22222222", "BME280 Sensor Spec", parents=["00000000"], body="Hardware pinout and power rails.")
+
+    load_vault()
+
+    # Query with multiple terms that do not co-occur in any single note
+    # Strict AND would yield 0 results, but resilient OR fallback returns both notes
+    results = search_graph(query="11111111 22222222 nonexistentxyz", print_output=False)
+    assert len(results) >= 2
+    matched_ids = {r["id"] for r in results}
+    assert "11111111" in matched_ids
+    assert "22222222" in matched_ids
+
 

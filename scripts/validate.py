@@ -42,6 +42,10 @@ def validate_vault() -> int:
         if any(part.startswith(".") for part in file_path.relative_to(vault_dir).parts):
             continue
 
+        # Skip documentation files that are not memory notes
+        if file_path.name.lower() in ("readme.md", "license.md", "contributing.md"):
+            continue
+
         if file_path.is_file():
             if validate_file(file_path):
                 valid_count += 1

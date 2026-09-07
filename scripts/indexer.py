@@ -33,6 +33,8 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
                 for entry in it:
                     if entry.name.startswith("."):
                         continue
+                    if entry.name.lower() in ("readme.md", "license.md", "contributing.md"):
+                        continue
                     if entry.is_file() and entry.name.endswith(".md"):
                         rel_posix = Path(entry.path).relative_to(vault_dir).as_posix()
                         files[rel_posix] = (Path(entry.path), entry.stat().st_mtime)
