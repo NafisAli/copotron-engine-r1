@@ -58,3 +58,10 @@ Agent capabilities are organized into focused skills within the engine:
 * **`vault-editor`**: Governs direct markdown authoring and editing in the vault, enforced by validation (`validate.py`).
 * **`vault-admin`**: Governs graph re-indexing (`indexer.py`).
 * **`vault-setup`**: Handles initialization of new vaults and root node bootstrapping (`setup.py`).
+
+## 8. Dual-Process Cognitive Architecture (`copotron.system_one` & `copotron.system_two`)
+The engine is structured into three cognitive tiers mirroring human dual-process theory:
+* **Substrate (`copotron.core`)**: Deterministic Pydantic schemas, atomic disk I/O, and SQLite FTS5 database indexing.
+* **System 1 Fast Decision Layer (`copotron.system_one`)**: Fast, machine-native, non-autoregressive decision models (TypeSafe Jev) providing calibrated probabilistic judgments (`Choice`, `Noul`, `Score`) for domain parent routing, search intent extraction, candidate re-ranking, cognitive type classification, and word-boundary slugging, backed by persistent SQLite caching and local offline heuristics.
+* **System 2 Deliberative Layer (`copotron.system_two`)**: Procedural memory consolidation, atomic manifest crystallization, surgical markdown section splicing, graph health auditing, and agent archivist orchestration.
+
