@@ -11,3 +11,7 @@ wheels/
 
 # ENV file
 .env
+
+# Logs
+logs/*
+!logs/.keep

@@ -26,6 +26,12 @@ from copotron.core.indexer import (
     load_vault,
     compute_frontmatter_hash,
 )
+from copotron.core.logger import (
+    get_log_dir,
+    get_dedicated_logger,
+    format_typesafe_log_entry,
+    log_typesafe_call,
+)
 
 __all__ = [
     "MemorySchema",
@@ -42,4 +48,9 @@ __all__ = [
     "INDEX_SCHEMA_VERSION",
     "load_vault",
     "compute_frontmatter_hash",
+    "get_log_dir",
+    "get_dedicated_logger",
+    "format_typesafe_log_entry",
+    "log_typesafe_call",
 ]
+

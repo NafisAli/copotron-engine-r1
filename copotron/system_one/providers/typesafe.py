@@ -3,6 +3,7 @@ import time
 from typing import Any, Dict, Optional
 
 from copotron.system_one.protocol import SystemOneProvider
+from copotron.core.logger import log_typesafe_call
 from copotron.system_one.types import (
     Question,
     ChoiceQuestion,
@@ -76,53 +77,76 @@ class TypeSafeProvider(SystemOneProvider):
                 raise ValueError(f"Unsupported question type: {type(q)}")
 
         start_time = time.perf_counter()
-        raw_res = client.system_one(state=state, questions=sdk_questions, model=target_model)
-        latency_ms = (time.perf_counter() - start_time) * 1000.0
+        raw_res = None
+        error = None
+        resp = None
 
-        choices = {}
-        nouls = {}
-        scores = {}
+        try:
+            raw_res = client.system_one(state=state, questions=sdk_questions, model=target_model)
+            choices = {}
+            nouls = {}
+            scores = {}
 
-        for q_id, q in questions.items():
-            if isinstance(q, ChoiceQuestion):
-                ans = raw_res.choices.get(q_id) or raw_res.answers.get(q_id)
-                if ans:
-                    choices[q_id] = ChoiceAnswer(
-                        choice=getattr(ans, "choice", str(ans)),
-                        confidence=getattr(ans, "confidence", 1.0),
-                        probabilities=getattr(ans, "probabilities", {}) or {}
-                    )
-            elif isinstance(q, NoulQuestion):
-                ans = raw_res.nouls.get(q_id) or raw_res.answers.get(q_id)
-                if ans:
-                    nouls[q_id] = NoulAnswer(
-                        noul=float(getattr(ans, "noul", ans))
-                    )
-            elif isinstance(q, ScoreQuestion):
-                ans = raw_res.scores.get(q_id) or raw_res.answers.get(q_id)
-                if ans:
-                    scores[q_id] = ScoreAnswer(
-                        score=float(getattr(ans, "score", ans)),
-                        confidence=getattr(ans, "confidence", 1.0),
-                        probabilities=getattr(ans, "probabilities", {}) or {}
-                    )
+            for q_id, q in questions.items():
+                if isinstance(q, ChoiceQuestion):
+                    ans = raw_res.choices.get(q_id) or raw_res.answers.get(q_id)
+                    if ans:
+                        choices[q_id] = ChoiceAnswer(
+                            choice=getattr(ans, "choice", str(ans)),
+                            confidence=getattr(ans, "confidence", 1.0),
+                            probabilities=getattr(ans, "probabilities", {}) or {}
+                        )
+                elif isinstance(q, NoulQuestion):
+                    ans = raw_res.nouls.get(q_id) or raw_res.answers.get(q_id)
+                    if ans:
+                        nouls[q_id] = NoulAnswer(
+                            noul=float(getattr(ans, "noul", ans))
+                        )
+                elif isinstance(q, ScoreQuestion):
+                    ans = raw_res.scores.get(q_id) or raw_res.answers.get(q_id)
+                    if ans:
+                        scores[q_id] = ScoreAnswer(
+                            score=float(getattr(ans, "score", ans)),
+                            confidence=getattr(ans, "confidence", 1.0),
+                            probabilities=getattr(ans, "probabilities", {}) or {}
+                        )
 
-        in_tokens = getattr(raw_res.usage, "input_tokens", 0) if hasattr(raw_res, "usage") else 0
-        out_tokens = getattr(raw_res.usage, "output_tokens", 0) if hasattr(raw_res, "usage") else 0
-        est_cost = (in_tokens / 1_000_000.0) * PRICE_PER_MILLION_INPUT
+            in_tokens = getattr(raw_res.usage, "input_tokens", 0) if hasattr(raw_res, "usage") else 0
+            out_tokens = getattr(raw_res.usage, "output_tokens", 0) if hasattr(raw_res, "usage") else 0
+            est_cost = (in_tokens / 1_000_000.0) * PRICE_PER_MILLION_INPUT
 
-        usage = SystemOneUsage(
-            input_tokens=in_tokens,
-            output_tokens=out_tokens,
-            estimated_cost_usd=est_cost
-        )
+            usage = SystemOneUsage(
+                input_tokens=in_tokens,
+                output_tokens=out_tokens,
+                estimated_cost_usd=est_cost
+            )
 
-        return SystemOneResponse(
-            choices=choices,
-            nouls=nouls,
-            scores=scores,
-            usage=usage,
-            latency_ms=round(latency_ms, 2),
-            provider=self.provider_name,
-            model=target_model
-        )
+            latency_ms = (time.perf_counter() - start_time) * 1000.0
+            resp = SystemOneResponse(
+                choices=choices,
+                nouls=nouls,
+                scores=scores,
+                usage=usage,
+                latency_ms=round(latency_ms, 2),
+                provider=self.provider_name,
+                model=target_model
+            )
+            return resp
+        except Exception as e:
+            error = e
+            raise
+        finally:
+            latency_ms = (time.perf_counter() - start_time) * 1000.0
+            try:
+                log_typesafe_call(
+                    model=target_model,
+                    state=state,
+                    questions=questions,
+                    response=resp,
+                    raw_res=raw_res,
+                    error=error,
+                    latency_ms=latency_ms,
+                )
+            except Exception:
+                pass
+
