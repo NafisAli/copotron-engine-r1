@@ -128,29 +128,31 @@ def test_typesafe_log_entry_format_success():
 
     # Check scannable banner lines
     assert "================================================================================" in entry
-    assert "TYPESAFE JEV API CALL | Model: jev-latest | Status: SUCCESS | Latency: 125.50ms" in entry
-    assert ">>> REQUEST:" in entry
-    assert "<<< RESPONSE:" in entry
+    assert "TYPESAFE JEV DECISION CALL" in entry
+    assert "Model:      jev-latest" in entry
+    assert "Status:     SUCCESS" in entry
+    assert "Latency:    125.50 ms" in entry
+    assert "Usage:      150 input tokens, 25 output tokens (Total: 175) | Est. Cost: $0.000006" in entry
 
-    # Extract JSON blocks
-    parts = entry.split("--------------------------------------------------------------------------------")
-    assert len(parts) == 3
+    # Check State section
+    assert "STATE:" in entry
+    assert "title: Quantum Entanglement" in entry
+    assert "tags: [quantum, physics]" in entry
 
-    req_section = parts[1].replace(">>> REQUEST:", "").strip()
-    req_data = json.loads(req_section)
-    assert req_data["state"]["title"] == "Quantum Entanglement"
-    assert req_data["questions"]["cat"]["type"] == "choice"
-    assert req_data["questions"]["cat"]["criteria"]["p"] == "Physics"
-    assert req_data["questions"]["conf"]["type"] == "noul"
+    # Check unified Evaluations section
+    assert "EVALUATIONS (3 Questions):" in entry
+    assert "[cat] Choice Question" in entry
+    assert '-> RESULT:    "p" (Confidence: 95.0%)' in entry
+    assert "p:  95.0%  (Physics)" in entry
+    assert "c:   5.0%  (Chemistry)" in entry
 
-    resp_section = parts[2].split("================================================================================")[0]
-    resp_section = resp_section.replace("<<< RESPONSE:", "").strip()
-    resp_data = json.loads(resp_section)
-    assert resp_data["usage"]["input_tokens"] == 150
-    assert resp_data["answers"]["cat"]["choice"] == "p"
-    assert resp_data["answers"]["cat"]["confidence"] == 0.95
-    assert resp_data["answers"]["conf"]["noul"] == 0.88
-    assert resp_data["answers"]["rel"]["score"] == 1.0
+    assert "[conf] Noul Question (Probability Scale 0.0 - 1.0)" in entry
+    assert "-> RESULT:    0.88 (88.0% True / Declarative)" in entry
+
+    assert "[rel] Score Question" in entry
+    assert "-> RESULT:    Score 1.00 / 1.00 (Confidence: 90.0%)" in entry
+    assert "[0] low:  10.0%" in entry
+    assert "[1] high:  90.0%" in entry
 
 
 def test_typesafe_log_entry_format_error():
@@ -166,17 +168,15 @@ def test_typesafe_log_entry_format_error():
         latency_ms=45.2,
     )
 
-    assert "Status: ERROR" in entry
-    assert "Latency: 45.20ms" in entry
-    assert ">>> REQUEST:" in entry
-    assert "<<< ERROR:" in entry
-
-    parts = entry.split("--------------------------------------------------------------------------------")
-    err_section = parts[2].split("================================================================================")[0]
-    err_section = err_section.replace("<<< ERROR:", "").strip()
-    err_data = json.loads(err_section)
-    assert err_data["type"] == "ValueError"
-    assert err_data["message"] == "Invalid API payload provided"
+    assert "Status:     ERROR" in entry
+    assert "Latency:    45.20 ms" in entry
+    assert "STATE:" in entry
+    assert "raw state query" in entry
+    assert "QUESTIONS SUBMITTED (1 Questions):" in entry
+    assert "[q1] Noul Question" in entry
+    assert "ERROR DETAILS:" in entry
+    assert "Type:    ValueError" in entry
+    assert "Message: Invalid API payload provided"
 
 
 def test_typesafe_provider_logging_hook(tmp_path, monkeypatch):
@@ -207,10 +207,10 @@ def test_typesafe_provider_logging_hook(tmp_path, monkeypatch):
     assert log_file.exists()
     content = log_file.read_text(encoding="utf-8")
 
-    assert "TYPESAFE JEV API CALL" in content
-    assert "Status: SUCCESS" in content
+    assert "TYPESAFE JEV DECISION CALL" in content
+    assert "Status:     SUCCESS" in content
     assert "sample state" in content
-    assert "opt_a" in content
+    assert '-> RESULT:    "opt_a"' in content
 
 
 def test_typesafe_provider_logging_on_exception(tmp_path, monkeypatch):
@@ -233,8 +233,8 @@ def test_typesafe_provider_logging_on_exception(tmp_path, monkeypatch):
     assert log_file.exists()
     content = log_file.read_text(encoding="utf-8")
 
-    assert "Status: ERROR" in content
-    assert "<<< ERROR:" in content
+    assert "Status:     ERROR" in content
+    assert "ERROR DETAILS:" in content
     assert "Upstream API connection refused" in content
 
 

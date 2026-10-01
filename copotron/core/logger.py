@@ -113,25 +113,34 @@ def get_dedicated_logger(
     return logger
 
 
-def _serialize_question(q: Any) -> Dict[str, Any]:
-    """Serialize a Question dataclass or object into a JSON-friendly dict."""
-    q_type = getattr(q, "question_type", None) or getattr(q, "type", "question")
-    instructions = getattr(q, "instructions", str(q))
-    criteria = getattr(q, "criteria", None)
-    if isinstance(criteria, dict):
-        clean_criteria = criteria
-    elif isinstance(criteria, list):
-        clean_criteria = criteria
-    else:
-        clean_criteria = criteria
-
-    res = {
-        "type": str(q_type),
-        "instructions": instructions,
-    }
-    if clean_criteria is not None:
-        res["criteria"] = clean_criteria
-    return res
+def _format_state_block(state: Any, indent_level: int = 2) -> list[str]:
+    """Format state dictionary or object into clean YAML-like indented lines."""
+    pad = " " * indent_level
+    lines = []
+    if isinstance(state, dict):
+        for k, v in state.items():
+            if isinstance(v, dict):
+                lines.append(f"{pad}{k}:")
+                lines.extend(_format_state_block(v, indent_level + 2))
+            elif isinstance(v, list):
+                if all(not isinstance(x, (dict, list)) for x in v):
+                    items_str = ", ".join(str(x) for x in v)
+                    lines.append(f"{pad}{k}: [{items_str}]")
+                else:
+                    lines.append(f"{pad}{k}:")
+                    for x in v:
+                        lines.append(f"{pad}  - {x}")
+            else:
+                lines.append(f"{pad}{k}: {v}")
+    elif isinstance(state, list):
+        for item in state:
+            lines.append(f"{pad}- {item}")
+    elif state is not None:
+        for sline in str(state).splitlines():
+            lines.append(f"{pad}{sline}")
+    if not lines:
+        lines.append(f"{pad}(none)")
+    return lines
 
 
 def format_typesafe_log_entry(
@@ -145,106 +154,173 @@ def format_typesafe_log_entry(
     timestamp: Optional[datetime] = None,
 ) -> str:
     """
-    Format a TypeSafe Jev API call into a hybrid scannable banner with
-    indented JSON blocks for request and response/error sections.
+    Format a TypeSafe Jev API call into a readable, un-JSONified block that
+    unifies question instructions, criteria, resulting decision, confidence,
+    probabilities, and state.
     """
     ts = timestamp or datetime.now(timezone.utc)
-    iso_ts = ts.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    ts_str = ts.strftime("%Y-%m-%d %H:%M:%S UTC")
     status = "SUCCESS" if error is None else "ERROR"
 
-    # 1. Format Request JSON block
-    serialized_questions = {
-        qid: _serialize_question(q) for qid, q in questions.items()
-    }
-    req_dict = {
-        "state": state,
-        "questions": serialized_questions,
-    }
-    req_json = json.dumps(req_dict, indent=2, default=str)
-
-    # 2. Format Response or Error JSON block
-    if error is not None:
-        err_dict = {
-            "type": error.__class__.__name__,
-            "message": str(error),
-            "details": getattr(error, "details", None),
-        }
-        resp_section_header = "<<< ERROR:"
-        resp_json = json.dumps(err_dict, indent=2, default=str)
-    else:
-        resp_dict: Dict[str, Any] = {}
-        # Extract usage
-        if response and hasattr(response, "usage") and response.usage:
-            resp_dict["usage"] = {
-                "input_tokens": getattr(response.usage, "input_tokens", 0),
-                "output_tokens": getattr(response.usage, "output_tokens", 0),
-                "estimated_cost_usd": getattr(response.usage, "estimated_cost_usd", 0.0),
-            }
-        elif raw_res and hasattr(raw_res, "usage") and raw_res.usage:
-            resp_dict["usage"] = {
-                "input_tokens": getattr(raw_res.usage, "input_tokens", 0),
-                "output_tokens": getattr(raw_res.usage, "output_tokens", 0),
-                "estimated_cost_usd": 0.0,
-            }
-
-        # Extract answers
-        answers_dict: Dict[str, Any] = {}
-        if response:
-            if hasattr(response, "choices") and response.choices:
-                for qid, ans in response.choices.items():
-                    answers_dict[qid] = {
-                        "type": "choice",
-                        "choice": getattr(ans, "choice", str(ans)),
-                        "confidence": getattr(ans, "confidence", 1.0),
-                        "probabilities": getattr(ans, "probabilities", {}),
-                    }
-            if hasattr(response, "nouls") and response.nouls:
-                for qid, ans in response.nouls.items():
-                    noul_val = getattr(ans, "noul", None)
-                    if noul_val is None:
-                        try:
-                            noul_val = float(ans)
-                        except (ValueError, TypeError):
-                            noul_val = str(ans)
-                    answers_dict[qid] = {
-                        "type": "noul",
-                        "noul": noul_val,
-                    }
-            if hasattr(response, "scores") and response.scores:
-                for qid, ans in response.scores.items():
-                    score_val = getattr(ans, "score", None)
-                    if score_val is None:
-                        try:
-                            score_val = float(ans)
-                        except (ValueError, TypeError):
-                            score_val = str(ans)
-                    answers_dict[qid] = {
-                        "type": "score",
-                        "score": score_val,
-                        "confidence": getattr(ans, "confidence", 1.0),
-                        "probabilities": getattr(ans, "probabilities", {}),
-                    }
-        elif raw_res and hasattr(raw_res, "answers"):
-            answers_dict = raw_res.answers
-
-        resp_dict["answers"] = answers_dict
-        resp_section_header = "<<< RESPONSE:"
-        resp_json = json.dumps(resp_dict, indent=2, default=str)
-
-    divider = "-" * 80
     banner = "=" * 80
+    divider = "-" * 80
 
     lines = [
         banner,
-        f"[{iso_ts}] TYPESAFE JEV API CALL | Model: {model} | Status: {status} | Latency: {latency_ms:.2f}ms",
-        divider,
-        ">>> REQUEST:",
-        req_json,
-        divider,
-        resp_section_header,
-        resp_json,
-        banner,
+        "TYPESAFE JEV DECISION CALL",
+        f"Timestamp:  {ts_str}",
+        f"Model:      {model}",
+        f"Status:     {status}",
+        f"Latency:    {latency_ms:.2f} ms",
     ]
+
+    # Usage details
+    usage_obj = None
+    if response and hasattr(response, "usage") and response.usage:
+        usage_obj = response.usage
+    elif raw_res and hasattr(raw_res, "usage") and raw_res.usage:
+        usage_obj = raw_res.usage
+
+    if usage_obj:
+        in_tokens = getattr(usage_obj, "input_tokens", 0)
+        out_tokens = getattr(usage_obj, "output_tokens", 0)
+        total_tokens = in_tokens + out_tokens
+        cost = getattr(usage_obj, "estimated_cost_usd", 0.0)
+        lines.append(
+            f"Usage:      {in_tokens} input tokens, {out_tokens} output tokens (Total: {total_tokens}) | Est. Cost: ${cost:.6f}"
+        )
+
+    lines.append(divider)
+    lines.append("STATE:")
+    lines.extend(_format_state_block(state, indent_level=2))
+    lines.append(divider)
+
+    if error is not None:
+        lines.append(f"QUESTIONS SUBMITTED ({len(questions)} Questions):\n")
+        for idx, (qid, q) in enumerate(questions.items(), start=1):
+            q_type = getattr(q, "question_type", getattr(q, "type", "question")).capitalize()
+            instructions = getattr(q, "instructions", str(q))
+            criteria = getattr(q, "criteria", None)
+
+            lines.append(f"{idx}. [{qid}] {q_type} Question")
+            lines.append(f"   Instructions: {instructions}")
+            if criteria:
+                lines.append("   Criteria:")
+                if isinstance(criteria, dict):
+                    for ck, cv in criteria.items():
+                        lines.append(f"     * {ck}: {cv}")
+                elif isinstance(criteria, list):
+                    for c_idx, cv in enumerate(criteria):
+                        lines.append(f"     * [{c_idx}] {cv}")
+            lines.append("")
+
+        lines.append(divider)
+        lines.append("ERROR DETAILS:")
+        lines.append(f"Type:    {error.__class__.__name__}")
+        lines.append(f"Message: {str(error)}")
+        details = getattr(error, "details", None)
+        if details:
+            lines.append(f"Details: {details}")
+    else:
+        lines.append(f"EVALUATIONS ({len(questions)} Questions):\n")
+        for idx, (qid, q) in enumerate(questions.items(), start=1):
+            q_type = str(getattr(q, "question_type", getattr(q, "type", "question"))).lower()
+            instructions = getattr(q, "instructions", str(q))
+            criteria = getattr(q, "criteria", None)
+
+            if q_type == "choice":
+                lines.append(f"{idx}. [{qid}] Choice Question")
+                lines.append(f"   Instructions: {instructions}")
+
+                ans = None
+                if response and hasattr(response, "choices"):
+                    ans = response.choices.get(qid)
+                elif response and hasattr(response, "answers"):
+                    ans = response.answers.get(qid)
+                elif raw_res and hasattr(raw_res, "choices"):
+                    ans = raw_res.choices.get(qid)
+                elif raw_res and hasattr(raw_res, "answers"):
+                    ans = raw_res.answers.get(qid)
+
+                if ans:
+                    choice = getattr(ans, "choice", str(ans))
+                    conf = getattr(ans, "confidence", 1.0)
+                    lines.append(f'   -> RESULT:    "{choice}" (Confidence: {conf * 100:.1f}%)')
+
+                    probs = getattr(ans, "probabilities", {}) or {}
+                    keys = list(criteria.keys()) if isinstance(criteria, dict) else list(probs.keys())
+                    if keys:
+                        lines.append("   Probabilities:")
+                        for k in keys:
+                            p = probs.get(k, 0.0)
+                            desc = criteria.get(k) if isinstance(criteria, dict) else None
+                            desc_str = f"  ({desc})" if desc else ""
+                            lines.append(f"     * {k}: {p * 100:>5.1f}%{desc_str}")
+
+            elif q_type == "score":
+                lines.append(f"{idx}. [{qid}] Score Question")
+                lines.append(f"   Instructions: {instructions}")
+
+                ans = None
+                if response and hasattr(response, "scores"):
+                    ans = response.scores.get(qid)
+                elif response and hasattr(response, "answers"):
+                    ans = response.answers.get(qid)
+                elif raw_res and hasattr(raw_res, "scores"):
+                    ans = raw_res.scores.get(qid)
+                elif raw_res and hasattr(raw_res, "answers"):
+                    ans = raw_res.answers.get(qid)
+
+                if ans:
+                    score = getattr(ans, "score", 0.0)
+                    conf = getattr(ans, "confidence", 1.0)
+                    max_scale = len(criteria) - 1 if isinstance(criteria, (list, dict)) and len(criteria) > 1 else 1.0
+                    lines.append(f"   -> RESULT:    Score {score:.2f} / {max_scale:.2f} (Confidence: {conf * 100:.1f}%)")
+
+                    probs = getattr(ans, "probabilities", {}) or {}
+                    if criteria or probs:
+                        lines.append("   Scale & Probabilities:")
+                        if isinstance(criteria, list):
+                            for c_idx, desc in enumerate(criteria):
+                                p = probs.get(c_idx, probs.get(str(c_idx), probs.get(desc, 0.0)))
+                                lines.append(f"     * [{c_idx}] {desc}: {p * 100:>5.1f}%")
+                        elif isinstance(criteria, dict):
+                            for ck, desc in criteria.items():
+                                p = probs.get(ck, probs.get(str(ck), probs.get(desc, 0.0)))
+                                lines.append(f"     * [{ck}] {desc}: {p * 100:>5.1f}%")
+                        elif probs:
+                            for pk, pv in probs.items():
+                                lines.append(f"     * [{pk}]: {pv * 100:>5.1f}%")
+
+            elif q_type == "noul":
+                lines.append(f"{idx}. [{qid}] Noul Question (Probability Scale 0.0 - 1.0)")
+                lines.append(f"   Instructions: {instructions}")
+
+                ans = None
+                if response and hasattr(response, "nouls"):
+                    ans = response.nouls.get(qid)
+                elif response and hasattr(response, "answers"):
+                    ans = response.answers.get(qid)
+                elif raw_res and hasattr(raw_res, "nouls"):
+                    ans = raw_res.nouls.get(qid)
+                elif raw_res and hasattr(raw_res, "answers"):
+                    ans = raw_res.answers.get(qid)
+
+                if ans:
+                    noul_val = getattr(ans, "noul", 0.0)
+                    try:
+                        noul_num = float(noul_val)
+                    except (ValueError, TypeError):
+                        noul_num = 0.0
+                    lines.append(f"   -> RESULT:    {noul_num:.2f} ({noul_num * 100:.1f}% True / Declarative)")
+
+            else:
+                lines.append(f"{idx}. [{qid}] {q_type.capitalize()} Question")
+                lines.append(f"   Instructions: {instructions}")
+
+            lines.append("")
+
+    lines.append(banner)
     return "\n".join(lines)
 
 
