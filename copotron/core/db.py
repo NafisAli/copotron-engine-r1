@@ -9,7 +9,7 @@ def get_db_path(vault_dir: Path) -> Path:
     return Path(vault_dir) / DB_FILENAME
 
 def create_tables(conn: sqlite3.Connection):
-    """Create relational schema and FTS5 virtual table if they do not already exist."""
+    """Create relational schema, FTS5 virtual table, and System One cache table if they do not already exist."""
     conn.execute("""
     CREATE TABLE IF NOT EXISTS memories (
         id TEXT PRIMARY KEY,
@@ -51,8 +51,20 @@ def create_tables(conn: sqlite3.Connection):
     );
     """)
 
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS system_one_cache (
+        cache_key TEXT PRIMARY KEY,
+        provider TEXT NOT NULL,
+        model TEXT NOT NULL,
+        response_json TEXT NOT NULL,
+        created_at REAL NOT NULL
+    );
+    """)
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_s1_cache_created ON system_one_cache(created_at);")
+
 def drop_all_tables(conn: sqlite3.Connection):
     """Drop all tables and FTS virtual tables to wipe the local cache."""
+    conn.execute("DROP TABLE IF EXISTS system_one_cache;")
     conn.execute("DROP TABLE IF EXISTS memories_fts;")
     conn.execute("DROP TABLE IF EXISTS memory_edges;")
     conn.execute("DROP TABLE IF EXISTS memories;")

@@ -3,14 +3,14 @@ import sys
 import argparse
 from pathlib import Path
 from datetime import datetime
-from copotron.schema import MemorySchema, dump_frontmatter
-from copotron.vault import load_env, find_env_file, atomic_write_text
+from copotron.core.schema import MemorySchema, dump_frontmatter
+from copotron.core.vault import load_env, find_env_file, atomic_write_text
 
 def update_env_file(vault_path: Path):
     """Write or update VAULT_PATH in copotron-engine/.env."""
     env_file = find_env_file()
     if not env_file:
-        env_file = Path(__file__).resolve().parent.parent / ".env"
+        env_file = Path(__file__).resolve().parent.parent.parent / ".env"
 
     abs_path = str(vault_path.resolve())
     lines = []
@@ -111,7 +111,7 @@ def setup_vault(init_path: str | None = None, link_path: str | None = None):
 
     target_dir.mkdir(parents=True, exist_ok=True)
     create_root_memory(target_dir)
-    from copotron.indexer import load_vault
+    from copotron.core.indexer import load_vault
     load_vault()
     print(f"Successfully initialized vault at {target_dir}")
 

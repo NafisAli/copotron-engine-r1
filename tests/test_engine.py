@@ -6,13 +6,13 @@ import pytest
 from pathlib import Path
 from datetime import date
 
-from copotron.schema import MemorySchema, parse_frontmatter, dump_frontmatter, parse_frontmatter_and_body
-from copotron.vault import get_vault_path, load_env, atomic_write_text, atomic_write_json
-from copotron.search import search_graph, format_fts_query
-from copotron.navigate import navigate
-from copotron.indexer import load_vault, compute_frontmatter_hash
-from copotron.validate import validate_file, validate_vault
-from copotron.db import get_db_path, init_db, get_readonly_db, INDEX_SCHEMA_VERSION
+from copotron.core.schema import MemorySchema, parse_frontmatter, dump_frontmatter, parse_frontmatter_and_body
+from copotron.core.vault import get_vault_path, load_env, atomic_write_text, atomic_write_json
+from copotron.system_two.search import search_graph, format_fts_query
+from copotron.core.navigate import navigate
+from copotron.core.indexer import load_vault, compute_frontmatter_hash
+from copotron.core.validate import validate_file, validate_vault
+from copotron.core.db import get_db_path, init_db, get_readonly_db, INDEX_SCHEMA_VERSION
 
 # ---------------------------------------------------------
 # Schema & Type Coercion Tests
@@ -126,7 +126,7 @@ def test_parse_frontmatter_utf8_bom(tmp_path):
 def test_vault_path_missing_env_halts(monkeypatch):
     """Verify missing VAULT_PATH exits with code 1."""
     monkeypatch.delenv("VAULT_PATH", raising=False)
-    monkeypatch.setattr("copotron.vault.find_env_file", lambda: None)
+    monkeypatch.setattr("copotron.core.vault.find_env_file", lambda: None)
 
     with pytest.raises(SystemExit) as exc_info:
         get_vault_path(require_root=True)

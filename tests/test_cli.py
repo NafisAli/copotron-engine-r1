@@ -4,7 +4,7 @@ import subprocess
 import pytest
 from pathlib import Path
 from copotron.cli import main
-from copotron.vault import get_vault_path
+from copotron.core.vault import get_vault_path
 
 def test_cli_help(capsys):
     with pytest.raises(SystemExit) as exc_info:

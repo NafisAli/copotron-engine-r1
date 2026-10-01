@@ -1,9 +1,9 @@
 import sys
 import argparse
 from pathlib import Path
-from copotron.schema import parse_frontmatter
+from copotron.core.schema import parse_frontmatter
 from pydantic import ValidationError
-from copotron.vault import get_vault_path
+from copotron.core.vault import get_vault_path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")

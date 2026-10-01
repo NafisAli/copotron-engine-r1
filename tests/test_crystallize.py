@@ -4,9 +4,9 @@ import json
 import pytest
 from pathlib import Path
 
-from copotron.schema import parse_frontmatter, parse_frontmatter_and_body
-from copotron.vault import atomic_write_text
-from copotron.crystallize import (
+from copotron.core.schema import parse_frontmatter, parse_frontmatter_and_body
+from copotron.core.vault import atomic_write_text
+from copotron.system_two.crystallize import (
     clean_slug,
     generate_unique_id,
     create_memory_node,
@@ -14,10 +14,10 @@ from copotron.crystallize import (
     suggest_parents,
     resolve_auto_parent,
 )
-from copotron.db import init_db, get_db_path
-from copotron.indexer import load_vault
-from copotron.search import search_graph
-from copotron.navigate import navigate
+from copotron.core.db import init_db, get_db_path
+from copotron.core.indexer import load_vault
+from copotron.system_two.search import search_graph
+from copotron.core.navigate import navigate
 
 
 @pytest.fixture
@@ -197,7 +197,7 @@ def test_auto_parent_resolution(mock_vault):
 
 
 def test_cli_single_node_and_json(mock_vault, monkeypatch, capsys):
-    from copotron.crystallize import main
+    from copotron.system_two.crystallize import main
 
     test_args = [
         "crystallize.py",
@@ -219,7 +219,7 @@ def test_cli_single_node_and_json(mock_vault, monkeypatch, capsys):
 
 
 def test_cli_manifest_file(mock_vault, monkeypatch, capsys, tmp_path):
-    from copotron.crystallize import main
+    from copotron.system_two.crystallize import main
 
     manifest_file = tmp_path / "manifest.json"
     manifest_data = [
@@ -254,7 +254,7 @@ def test_cli_manifest_file(mock_vault, monkeypatch, capsys, tmp_path):
 
 
 def test_update_existing_memory_node_in_place(mock_vault):
-    from copotron.crystallize import create_or_update_memory_node, find_memory_file
+    from copotron.system_two.crystallize import create_or_update_memory_node, find_memory_file
 
     # 1. Create original node
     created = create_or_update_memory_node(
@@ -301,7 +301,7 @@ def test_update_existing_memory_node_in_place(mock_vault):
 
 
 def test_manifest_batch_with_update(mock_vault):
-    from copotron.crystallize import create_or_update_memory_node, crystallize_manifest
+    from copotron.system_two.crystallize import create_or_update_memory_node, crystallize_manifest
 
     # Create base node
     base = create_or_update_memory_node(

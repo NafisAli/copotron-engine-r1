@@ -1,45 +1,46 @@
 """
 Copotron: Second Brain Cognitive Memory Engine.
+Dual-Process Architecture (Core Substrate, System One, System Two).
 """
 
-from copotron.schema import (
+from copotron.core.schema import (
     MemorySchema,
     parse_frontmatter,
     dump_frontmatter,
     parse_frontmatter_and_body,
 )
-from copotron.vault import (
+from copotron.core.vault import (
     get_vault_path,
     load_env,
     atomic_write_text,
     atomic_write_json,
 )
-from copotron.db import (
+from copotron.core.db import (
     get_db_path,
     init_db,
     get_readonly_db,
     INDEX_SCHEMA_VERSION,
 )
-from copotron.indexer import (
+from copotron.core.indexer import (
     load_vault,
     compute_frontmatter_hash,
 )
-from copotron.search import (
+from copotron.system_two.search import (
     search_graph,
     format_fts_query,
 )
-from copotron.navigate import (
+from copotron.core.navigate import (
     navigate,
 )
-from copotron.domains import (
+from copotron.system_two.domains import (
     get_domain_hubs,
     resolve_auto_parent,
 )
-from copotron.validate import (
+from copotron.core.validate import (
     validate_file,
     validate_vault,
 )
-from copotron.crystallize import (
+from copotron.system_two.crystallize import (
     create_memory_node,
     update_memory_node,
     create_or_update_memory_node,

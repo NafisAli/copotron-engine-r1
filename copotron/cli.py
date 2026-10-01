@@ -3,17 +3,18 @@ import json
 import argparse
 from pathlib import Path
 
-from copotron.search import search_graph
-from copotron.navigate import navigate
-from copotron.domains import get_domain_hubs, resolve_auto_parent
-from copotron.validate import validate_file, validate_vault
-from copotron.indexer import load_vault
-from copotron.crystallize import (
+from copotron.system_two.search import search_graph
+from copotron.core.navigate import navigate
+from copotron.system_two.domains import get_domain_hubs, resolve_auto_parent
+from copotron.core.validate import validate_file, validate_vault
+from copotron.core.indexer import load_vault
+from copotron.system_two.crystallize import (
     create_or_update_memory_node,
     crystallize_manifest,
     suggest_parents,
 )
-from copotron.setup import setup_vault
+from copotron.system_two.audit import audit_vault_health
+from copotron.core.setup import setup_vault
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -40,7 +41,7 @@ def cmd_domains(args) -> int:
 
 
 def cmd_search(args) -> int:
-    """Search vault index via FTS5 BM25 or direct ID matching."""
+    """Search vault index via FTS5 BM25 or direct ID matching with optional System One reranking."""
     query = args.query or args.query_flag
     search_graph(
         query=query,
@@ -50,6 +51,7 @@ def cmd_search(args) -> int:
         limit=args.limit,
         offset=args.offset,
         print_output=True,
+        rerank=getattr(args, "rerank", False),
     )
     return 0
 
@@ -86,6 +88,43 @@ def cmd_validate(args) -> int:
         return 0 if errors == 0 else 1
 
 
+def cmd_audit(args) -> int:
+    """Audit vault graph health, orphan nodes, and task completion drift."""
+    is_json = getattr(args, "json", False)
+    report = audit_vault_health(check_semantic=not getattr(args, "syntax_only", False))
+    if is_json:
+        print(json.dumps(report, indent=2))
+    else:
+        print(f"Vault Health Audit ({report['total_nodes']} nodes examined):")
+        if report['broken_parent_references']:
+            print(f"  ❌ Broken Parent References: {len(report['broken_parent_references'])}")
+            for b in report['broken_parent_references']:
+                print(f"      [{b['id']}] {b['title']} -> missing parent: {b['missing_parent']}")
+        else:
+            print("  ✅ Broken Parents: None")
+
+        if report['orphan_nodes']:
+            print(f"  ⚠️  Orphan Nodes (No parent hubs): {len(report['orphan_nodes'])}")
+            for o in report['orphan_nodes'][:5]:
+                print(f"      [{o['id']}] {o['title']}")
+        else:
+            print("  ✅ Orphan Nodes: None")
+
+        if report['completion_drift']:
+            print(f"  📌 Task Completion Drift: {len(report['completion_drift'])}")
+            for d in report['completion_drift'][:5]:
+                print(f"      [{d['id']}] {d['title']}")
+        else:
+            print("  ✅ Task Drift: None")
+
+        if report['truncated_slugs']:
+            print(f"  ✂️  Notes with Truncated Slugs: {len(report['truncated_slugs'])}")
+            for s in report['truncated_slugs'][:5]:
+                print(f"      [{s['id']}] ...{s['slug']}")
+
+    return 0
+
+
 def cmd_index(args) -> int:
     """Incrementally synchronize Markdown vault memories into SQLite local index (.index.sqlite3)."""
     is_json = getattr(args, "json", False)
@@ -103,7 +142,7 @@ def cmd_setup(args) -> int:
 
 def cmd_crystallize(args) -> int:
     """Create or update memory notes atomically."""
-    from copotron.vault import get_vault_path
+    from copotron.core.vault import get_vault_path
     vault_dir = get_vault_path(require_root=True)
 
     if args.suggest_parents:
@@ -158,6 +197,7 @@ def cmd_crystallize(args) -> int:
         status=args.status or "active",
         node_id=args.id,
         auto_parent=args.auto_parent,
+        auto_type=getattr(args, "auto_type", False),
     )
     if not args.no_index:
         load_vault(vault_dir, silent=True)
@@ -220,6 +260,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_search.add_argument("--status", "-s", type=str, choices=["active", "completed", "archived", "none"], help="Filter by status")
     p_search.add_argument("--limit", "-l", type=int, default=20, help="Max results (default: 20; 0 for all)")
     p_search.add_argument("--offset", type=int, default=0, help="Results offset (default: 0)")
+    p_search.add_argument("--rerank", action="store_true", help="Re-rank results using System One semantic scoring")
     p_search.add_argument("--json", action="store_true", help="Output results in JSON format")
     p_search.set_defaults(func=cmd_search)
 
@@ -246,9 +287,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_cryst.add_argument("--id", type=str, help="Existing 8-character ID to update in-place")
     p_cryst.add_argument("--title", type=str, help="Memory title")
     p_cryst.add_argument("--type", type=str, choices=["declarative", "procedural", "prospective", "episodic"], help="Memory biological type")
+    p_cryst.add_argument("--auto-type", action="store_true", help="Infer biological memory type using System One")
     p_cryst.add_argument("--summary", type=str, help="1-2 sentence memory summary")
     p_cryst.add_argument("--body", type=str, help="Markdown body content")
-    p_cryst.add_argument("--append-body", action="store_true", help="Append body content to existing note instead of replacing")
+    p_cryst.add_argument("--append-body", action="store_true", help="Append/splice body content into existing note")
     p_cryst.add_argument("--parents", "-p", nargs="*", default=None, help="Parent 8-character IDs")
     p_cryst.add_argument("--tags", "-t", nargs="*", default=None, help="Tags for taxonomy")
     p_cryst.add_argument("--status", type=str, choices=["active", "completed", "archived", "none"], default="active", help="Lifecycle status")
@@ -264,12 +306,18 @@ def build_parser() -> argparse.ArgumentParser:
     p_val.add_argument("--json", action="store_true", help="Output validation results as JSON")
     p_val.set_defaults(func=cmd_validate)
 
-    # 6. index
+    # 6. audit
+    p_audit = subparsers.add_parser("audit", help="Audit vault graph health, orphan notes, and task completion drift")
+    p_audit.add_argument("--syntax-only", action="store_true", help="Skip semantic drift checks and perform structural graph audit only")
+    p_audit.add_argument("--json", action="store_true", help="Output audit report as JSON")
+    p_audit.set_defaults(func=cmd_audit)
+
+    # 7. index
     p_index = subparsers.add_parser("index", help="Synchronize Markdown vault notes into SQLite local index")
     p_index.add_argument("--json", action="store_true", help="Output indexing status as JSON")
     p_index.set_defaults(func=cmd_index)
 
-    # 7. setup
+    # 8. setup
     p_setup = subparsers.add_parser("setup", help="Initialize or link a Copotron Vault")
     p_setup.add_argument("--init", type=str, help="Initialize a brand new vault in the specified directory")
     p_setup.add_argument("--link", type=str, help="Link an existing vault directory in .env")

@@ -36,7 +36,7 @@ def atomic_write_json(target_path: Path | str, data: Any, indent: int = 2):
 
 def find_env_file() -> Path | None:
     """Locate .env in copotron-engine directory or current working directory."""
-    engine_env = Path(__file__).resolve().parent.parent / ".env"
+    engine_env = Path(__file__).resolve().parent.parent.parent / ".env"
     if engine_env.is_file():
         return engine_env
     cwd_env = Path.cwd() / ".env"

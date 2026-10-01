@@ -8,11 +8,16 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
-from copotron.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
-from copotron.vault import get_vault_path, atomic_write_text
-from copotron.indexer import load_vault
-from copotron.search import search_graph
-from copotron.domains import get_domain_hubs, resolve_auto_parent
+from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
+from copotron.core.vault import get_vault_path, atomic_write_text
+from copotron.core.indexer import load_vault
+from copotron.system_two.search import search_graph
+from copotron.system_two.domains import get_domain_hubs
+from copotron.system_one.judgments.slug import generate_clean_slug
+from copotron.system_one.judgments.routing import resolve_domain_parent
+from copotron.system_one.judgments.rerank import rerank_candidates
+from copotron.system_one.judgments.classification import infer_memory_type
+from copotron.system_two.splicer import splice_markdown_sections
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -21,11 +26,8 @@ if hasattr(sys.stderr, "reconfigure"):
 
 
 def clean_slug(title: str) -> str:
-    """Generate a clean, lower-case, hyphenated slug for filenames."""
-    s = title.lower()
-    s = re.sub(r"[^\w\s-]", "", s)
-    s = re.sub(r"[\s_]+", "-", s).strip("-")
-    return s[:50] or "untitled"
+    """Generate a clean, lower-case, hyphenated slug without cutting words in half."""
+    return generate_clean_slug(title)
 
 
 def generate_unique_id(vault_dir: Path, title: str, date_str: str, extra_entropy: str = "") -> str:
@@ -50,19 +52,18 @@ def generate_unique_id(vault_dir: Path, title: str, date_str: str, extra_entropy
 
 
 def suggest_parents(query: str, limit: int = 5, vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
-    """Search index for candidate parent nodes matching a keyword query."""
+    """Search index for candidate parent nodes and rerank using System One."""
     try:
-        results = search_graph(query=query, limit=limit, print_output=False)
+        results = search_graph(query=query, limit=max(limit * 2, 10), print_output=False)
         if not results:
-            # If multi-token AND search finds nothing, search by significant tokens
             tokens = [t for t in re.findall(r'\w+', query) if len(t) > 3]
             for t in tokens:
-                sub_results = search_graph(query=t, limit=limit, print_output=False)
+                sub_results = search_graph(query=t, limit=max(limit * 2, 10), print_output=False)
                 if sub_results:
                     results = sub_results
                     break
 
-        return [
+        candidates = [
             {
                 "id": r["id"],
                 "title": r["title"],
@@ -72,21 +73,33 @@ def suggest_parents(query: str, limit: int = 5, vault_dir: Optional[Path] = None
             }
             for r in results
         ]
+
+        # Rerank via System One Score
+        reranked = rerank_candidates(query, "", candidates, purpose="parent")
+        return reranked[:limit] if reranked else candidates[:limit]
+
     except Exception as e:
         print(f"Warning: Parent search failed ({e}).", file=sys.stderr)
         return []
 
 
-def resolve_auto_parent(title: str, summary: str, vault_dir: Path) -> List[str]:
-    """Find the most relevant parent ID or default to root node '00000000'."""
-    query = f"{title} {summary}".strip()
-    candidates = suggest_parents(query, limit=5, vault_dir=vault_dir)
-    # Prefer domain or project hubs (declarative or prospective) over episodic
+def resolve_auto_parent(title: str, summary: str, vault_dir: Optional[Path] = None) -> List[str]:
+    """Find the most relevant parent ID (domain hub or project parent) or default to root node '00000000'."""
+    if vault_dir is None:
+        vault_dir = get_vault_path(require_root=True)
+
+    hubs = get_domain_hubs(vault_dir)
+    if hubs:
+        res = resolve_domain_parent(title=title, summary=summary, hubs=hubs)
+        if res and res != ["00000000"]:
+            return res
+
+    # Check candidates from suggest_parents (prefer declarative or prospective over episodic)
+    candidates = suggest_parents(f"{title} {summary}".strip(), limit=5, vault_dir=vault_dir)
     for c in candidates:
         if c["type"] in ("declarative", "prospective") and c["id"] != "00000000":
             return [c["id"]]
 
-    # Fallback to root if root exists
     root_file = vault_dir / "00000000-root.md"
     if root_file.is_file():
         return ["00000000"]
@@ -96,7 +109,7 @@ def resolve_auto_parent(title: str, summary: str, vault_dir: Path) -> List[str]:
 def create_memory_node(
     vault_dir: Path,
     title: str,
-    memory_type: str,
+    memory_type: Optional[str] = None,
     summary: str = "",
     body: str = "",
     parents: Optional[List[str]] = None,
@@ -107,6 +120,7 @@ def create_memory_node(
     persona: Optional[str] = None,
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
+    auto_type: bool = False,
 ) -> Dict[str, Any]:
     """
     Create, validate, and write a single memory file in the vault.
@@ -121,6 +135,12 @@ def create_memory_node(
     if auto_parent and not parents:
         parents = resolve_auto_parent(title, summary, vault_dir)
 
+    if (auto_type or not memory_type) and title:
+        memory_type = infer_memory_type(title=title, summary=summary, body=body)
+
+    if not memory_type:
+        memory_type = "declarative"
+
     if node_id:
         final_id = str(node_id).strip().lower()
         if len(final_id) < 8:
@@ -132,7 +152,6 @@ def create_memory_node(
     filename = f"{final_id}-{slug}.md"
     file_path = vault_dir / filename
 
-    # Build schema data including open tail extra fields
     schema_data = {
         "id": final_id,
         "title": title,
@@ -150,10 +169,7 @@ def create_memory_node(
     memory = MemorySchema(**schema_data)
     content = dump_frontmatter(memory, body)
 
-    # Atomically write file
     atomic_write_text(file_path, content)
-
-    # Validate output
     parse_frontmatter(file_path)
 
     return {
@@ -203,7 +219,7 @@ def update_memory_node(
     """
     Update an existing memory note in-place.
     Preserves existing metadata and open-tail fields when not explicitly overridden.
-    Renames file if title/slug changes.
+    Uses intelligent section splicing when append_body is True.
     """
     existing_schema, existing_body = parse_frontmatter_and_body(existing_file)
 
@@ -221,16 +237,15 @@ def update_memory_node(
     final_persona = persona if persona is not None else existing_schema.persona
     final_date = node_date if node_date else datetime.now().strftime("%Y-%m-%d")
 
-    # Body update logic
+    # Body update logic with section splicing
     if body is not None and body.strip():
         if append_body:
-            final_body = f"{existing_body.rstrip()}\n\n{body.lstrip()}".strip()
+            final_body = splice_markdown_sections(existing_body, body)
         else:
             final_body = body.strip()
     else:
         final_body = existing_body
 
-    # Open tail metadata merge
     merged_extra = dict(existing_schema.model_extra or {})
     if extra_fields:
         merged_extra.update(extra_fields)
@@ -257,7 +272,6 @@ def update_memory_node(
 
     atomic_write_text(new_file_path, content)
 
-    # Clean up old file if slug changed
     if new_file_path.resolve() != existing_file.resolve() and existing_file.exists():
         try:
             existing_file.unlink()
@@ -296,11 +310,9 @@ def create_or_update_memory_node(
     persona: Optional[str] = None,
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
+    auto_type: bool = False,
 ) -> Dict[str, Any]:
-    """
-    Dispatcher: updates existing node if node_id matches an existing file,
-    otherwise creates a new memory node.
-    """
+    """Dispatcher: updates existing node if node_id matches an existing file, else creates a new memory node."""
     if node_id:
         existing = find_memory_file(vault_dir, node_id)
         if existing:
@@ -320,8 +332,8 @@ def create_or_update_memory_node(
                 extra_fields=extra_fields,
             )
 
-    if not title or not memory_type:
-        raise ValueError("Both 'title' and 'type' are required when creating a new memory node.")
+    if not title:
+        raise ValueError("Field 'title' is required when creating a new memory node.")
 
     return create_memory_node(
         vault_dir=vault_dir,
@@ -337,6 +349,7 @@ def create_or_update_memory_node(
         persona=persona,
         extra_fields=extra_fields,
         auto_parent=auto_parent,
+        auto_type=auto_type,
     )
 
 
@@ -357,14 +370,10 @@ def crystallize_manifest(
     auto_index: bool = True,
     quiet_index: bool = False
 ) -> List[Dict[str, Any]]:
-    """
-    Commit a batch of memory nodes atomically.
-    Supports in-place updates for existing IDs and reference substitution via $temp_ref.
-    """
+    """Commit a batch of memory nodes atomically."""
     created_nodes = []
     ref_map: Dict[str, str] = {}
 
-    # First pass: pre-assign IDs so inter-node references can resolve
     for item in manifest_nodes:
         temp_ref = item.get("temp_ref")
         if item.get("id"):
@@ -379,7 +388,6 @@ def crystallize_manifest(
             ref_map[f"${temp_ref}"] = assigned_id
             ref_map[temp_ref] = assigned_id
 
-    # Second pass: resolve parent references and create or update nodes
     for item in manifest_nodes:
         raw_parents = item.get("parents", [])
         resolved_parents = []
@@ -399,7 +407,7 @@ def crystallize_manifest(
             k: v for k, v in item.items()
             if k not in (
                 "title", "type", "summary", "body", "parents", "tags",
-                "status", "date", "id", "persona", "temp_ref", "_assigned_id", "auto_parent", "append_body"
+                "status", "date", "id", "persona", "temp_ref", "_assigned_id", "auto_parent", "auto_type", "append_body"
             )
         }
 
@@ -419,6 +427,7 @@ def crystallize_manifest(
             persona=item.get("persona"),
             extra_fields=extra_keys,
             auto_parent=item.get("auto_parent", False),
+            auto_type=item.get("auto_type", False),
         )
         created_nodes.append(created)
 
@@ -432,13 +441,11 @@ def main():
     parser = argparse.ArgumentParser(
         description="Copotron Memory Crystallizer: transform conversational discoveries into validated DAG memory nodes."
     )
-    # Manifest / batch options
     parser.add_argument("--manifest", help="Path to a JSON file containing a list of memory nodes to crystallize.")
     parser.add_argument("--json", dest="json_str", help="JSON string containing a list of memory nodes to crystallize.")
-    
-    # Single node options
     parser.add_argument("--title", help="Title of the memory node.")
     parser.add_argument("--type", choices=["episodic", "declarative", "procedural", "prospective"], help="Memory type.")
+    parser.add_argument("--auto-type", action="store_true", help="Infer biological memory type using System One.")
     parser.add_argument("--summary", default="", help="1-2 sentence summary for AI context scanning.")
     parser.add_argument("--body", default="", help="Markdown body content.")
     parser.add_argument("--parent", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
@@ -448,18 +455,14 @@ def main():
     parser.add_argument("--id", default=None, help="Explicit 8-character ID (defaults to auto-generated).")
     parser.add_argument("--persona", default=None, help="Persona identifier.")
     parser.add_argument("--auto-parent", action="store_true", help="Auto-resolve parent node via semantic search.")
-    parser.add_argument("--append-body", action="store_true", help="When updating an existing node, append to the body instead of replacing.")
-    
-    # Utility / query options
+    parser.add_argument("--append-body", action="store_true", help="When updating an existing node, append/splice body instead of replacing.")
     parser.add_argument("--suggest-parents", help="Query the index and return top candidate parent node IDs without creating a node.")
     parser.add_argument("--no-index", action="store_true", help="Skip re-indexing SQLite database after node creation.")
     parser.add_argument("--json-output", action="store_true", help="Format CLI output as JSON.")
 
     args = parser.parse_args()
-
     vault_dir = get_vault_path(require_root=True)
 
-    # Mode 1: Parent suggestion query
     if args.suggest_parents:
         candidates = suggest_parents(args.suggest_parents, limit=10, vault_dir=vault_dir)
         if args.json_output:
@@ -470,7 +473,6 @@ def main():
                 print(f"  [{c['id']}] ({c['type']}) {c['title']} — {c.get('summary', '')}")
         return
 
-    # Mode 2: Batch manifest mode
     manifest_nodes = None
     if args.manifest:
         manifest_path = Path(args.manifest)
@@ -500,11 +502,10 @@ def main():
                 print(f"  • [{node['id']}] {node['filename']} ({node['type']}) [{action_label}]")
         return
 
-    # Mode 3: Single node mode (create or update)
     existing_file = find_memory_file(vault_dir, args.id) if args.id else None
-    if not existing_file and (not args.title or not args.type):
+    if not existing_file and (not args.title or (not args.type and not args.auto_type)):
         parser.print_help(sys.stderr)
-        print("\nError: --title and --type are required when creating a new memory node.", file=sys.stderr)
+        print("\nError: --title and either --type or --auto-type are required when creating a new memory node.", file=sys.stderr)
         sys.exit(1)
 
     node = create_or_update_memory_node(
@@ -521,6 +522,7 @@ def main():
         node_id=args.id,
         persona=args.persona,
         auto_parent=args.auto_parent,
+        auto_type=args.auto_type,
     )
 
     if not args.no_index:
@@ -532,6 +534,6 @@ def main():
         action_verb = "updated" if node.get("action") == "updated" else "crystallized"
         print(f"✅ Successfully {action_verb} node: [{node['id']}] {node['filename']}")
 
-
 if __name__ == "__main__":
     main()
+

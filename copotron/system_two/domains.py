@@ -1,10 +1,9 @@
 import json
-import re
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
-from copotron.vault import get_vault_path
-from copotron.db import get_db_path, get_readonly_db
+from copotron.core.vault import get_vault_path
+from copotron.core.db import get_db_path, get_readonly_db
 
 
 def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
@@ -54,7 +53,7 @@ def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
 
 def resolve_auto_parent(title: str, summary: str, vault_dir: Optional[Path] = None) -> List[str]:
     """
-    Dynamically determine the most relevant domain hub for a note based on keyword overlap.
+    Dynamically determine the most relevant domain hub for a note using System One Choice.
     Falls back to root node '00000000' if no specific domain hub matches.
     """
     if vault_dir is None:
@@ -65,30 +64,5 @@ def resolve_auto_parent(title: str, summary: str, vault_dir: Optional[Path] = No
         root_file = vault_dir / "00000000-root.md"
         return ["00000000"] if root_file.is_file() else []
 
-    text_to_match = f"{title} {summary}".lower()
-    tokens = set(re.findall(r"\w+", text_to_match))
-    significant_tokens = {t for t in tokens if len(t) > 2}
-
-    best_hub = None
-    best_score = 0
-
-    for hub in hubs:
-        hub_text = f"{hub['title']} {hub['summary']} {' '.join(hub['tags'])}".lower()
-        hub_tokens = set(re.findall(r"\w+", hub_text))
-
-        # Score by token intersection weighted by tag matches
-        score = len(significant_tokens.intersection(hub_tokens))
-        for tag in hub["tags"]:
-            if tag.lower() in significant_tokens:
-                score += 3
-
-        if score > best_score:
-            best_score = score
-            best_hub = hub["id"]
-
-    if best_hub and best_score > 0:
-        return [best_hub]
-
-    # Fallback to root
-    root_file = vault_dir / "00000000-root.md"
-    return ["00000000"] if root_file.is_file() else []
+    from copotron.system_one.judgments.routing import resolve_domain_parent
+    return resolve_domain_parent(title=title, summary=summary, hubs=hubs)
