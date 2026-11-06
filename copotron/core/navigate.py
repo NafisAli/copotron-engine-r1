@@ -55,7 +55,7 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
             tags = []
         results.append({
             "id": row["id"],
-            "file_path": row["file_path"],
+            "file_path": str(vault_dir / row["file_path"]),
             "title": row["title"],
             "summary": row["summary"],
             "type": row["type"],

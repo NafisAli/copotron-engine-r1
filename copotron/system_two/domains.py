@@ -38,7 +38,7 @@ def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
             tags = []
         hubs.append({
             "id": r["id"],
-            "file_path": r["file_path"],
+            "file_path": str(vault_dir / r["file_path"]),
             "title": r["title"],
             "summary": r["summary"],
             "type": r["type"],

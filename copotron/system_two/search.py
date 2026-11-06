@@ -123,7 +123,7 @@ def search_graph(
     for row in rows:
         results.append({
             "id": row["id"],
-            "file_path": row["file_path"],
+            "file_path": str(vault_dir / row["file_path"]),
             "title": row["title"],
             "type": row["type"],
             "status": row["status"],
