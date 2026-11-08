@@ -90,7 +90,9 @@ class Slot:
 class Container:
     """One slot grid. Owners with separate grids (suit, ship) yield several."""
 
-    category: str  # suit | ship | multitool | freighter | storage | exocraft | refiner
+    # suit | ship | multitool | freighter | storage | exocraft | ingredients | corvette |
+    # rocket-locker | fishing-platform | bait-box | food-unit | grave | chest-magic
+    category: str
     owner: str  # "Exosuit", ship label, "Storage 3", "Nautilon", ...
     grid: str  # general | cargo | tech
     capacity: int  # unlocked slots (len ValidSlotIndices), not width x height

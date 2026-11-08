@@ -27,7 +27,11 @@ from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
 from nmslib.model import Container, Save, Slot  # noqa: E402
 
-CATEGORIES = ["suit", "ship", "ships", "multitool", "freighter", "storage", "exocraft", "refiner"]
+CATEGORIES = [
+    "suit", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
+    "ingredients", "corvette", "rocket-locker", "fishing-platform", "bait-box", "food-unit",
+    "grave", "chest-magic",
+]
 
 
 class Fail(Exception):
@@ -195,7 +199,7 @@ def cmd_inventory(args) -> int:
             continue
         cap = sum(1 for x in c.slots if x.at_cap)
         cur = "" if c.is_current or c.category not in ("ship", "multitool") else "  (stored)"
-        rows.append(f"{c.category:<10} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
+        rows.append(f"{c.category:<16} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
                     + (f"  {cap} at cap" if cap else "") + (f"  {len(sel)} match" if filtered else "") + cur)
         data_rows.append({**container_json(c), **({"matching": len(sel)} if filtered else {})})
     emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"])

@@ -31,17 +31,19 @@ SHIP_KINDS = {
 # WheeledBike, Hovercraft, Submarine, Mech). Index 1 is an unused slot.
 EXOCRAFT = ["Roamer", "Bike", "Colossus", "Pilgrim", "Nomad", "Nautilon", "Minotaur"]
 
-# Extra storage grids beyond Chest1-10, shown only when they hold items.
-EXTRA_STORAGE = [
-    ("CookingIngredientsInventory", "Ingredient Storage"),
-    ("CorvetteStorageInventory", "Corvette Storage"),
-    ("RocketLockerInventory", "Rocket Locker"),
-    ("FishPlatformInventory", "Fishing Platform"),
-    ("FishBaitBoxInventory", "Bait Box"),
-    ("FoodUnitInventory", "Food Unit"),
-    ("ChestMagicInventory", "ChestMagic"),
-    ("ChestMagic2Inventory", "ChestMagic2"),
-    ("GraveInventory", "Grave"),
+# Single-grid containers outside Chest1-10: (save field, category, label).
+# Each is its own category and is shown only when it holds items. ChestMagic's
+# purpose is unknown, so it keeps the raw field name rather than a guessed one.
+SINGLE_GRIDS = [
+    ("CookingIngredientsInventory", "ingredients", "Ingredient Storage"),
+    ("CorvetteStorageInventory", "corvette", "Corvette Storage"),
+    ("RocketLockerInventory", "rocket-locker", "Rocket Locker"),
+    ("FishPlatformInventory", "fishing-platform", "Fishing Platform"),
+    ("FishBaitBoxInventory", "bait-box", "Bait Box"),
+    ("FoodUnitInventory", "food-unit", "Food Unit"),
+    ("GraveInventory", "grave", "Grave (dropped on death)"),
+    ("ChestMagicInventory", "chest-magic", "ChestMagic"),
+    ("ChestMagic2Inventory", "chest-magic", "ChestMagic2"),
 ]
 
 
@@ -233,8 +235,8 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
         c = _grid("storage", f"Storage {n - 1}", "general", ps.get(f"Chest{n}Inventory"))
         if c and c.slots:
             out.append(c)
-    for key, label in EXTRA_STORAGE:
-        c = _grid("storage", label, "general", ps.get(key))
+    for key, category, label in SINGLE_GRIDS:
+        c = _grid(category, label, "general", ps.get(key))
         if c and c.slots:
             out.append(c)
 
@@ -243,11 +245,8 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
         grids = _owner_grids("exocraft", label, v, ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
         if any(c.slots for c in grids if c.grid != "tech"):  # every exocraft ships default tech
             out += grids
-
-    for i, r in enumerate(ps.get("PersonalMaintenanceInteractions") or []):
-        c = _grid("refiner", f"Portable Refiner #{i}", "general", r.get("InventoryContainer"))
-        if c and c.slots:
-            out.append(c)
+    # No refiner category: nothing in the save reliably ties refiner contents to
+    # the player's refiners (PersonalMaintenanceInteractions holds repair markers).
     return out
 
 

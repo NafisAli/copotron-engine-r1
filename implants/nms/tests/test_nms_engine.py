@@ -5,7 +5,7 @@ import struct
 
 import nms
 import pytest
-from conftest import UID, save_doc, write_save
+from conftest import UID, save_doc, slot, write_save
 from nmslib import decode, extract
 
 
@@ -71,6 +71,36 @@ def test_model_from_main_context(save_path):
     assert system.name == "Testoria" and system.is_mine
     assert [(pl.index, pl.biome, pl.infested, pl.name) for pl in system.planets] == [
         (2, "Scorched", False, None), (3, "Radioactive", True, "Glowball")]
+
+
+def test_single_grids_are_their_own_categories(nms_root, capsys):
+    grid = lambda *slots: {"ValidSlotIndices": [{}] * 50, "Slots": list(slots)}  # noqa: E731
+    doc = save_doc(
+        CookingIngredientsInventory=grid(slot("^YELLOW2", 5, 500)),
+        GraveInventory=grid(slot("^FUEL1", 20, 500)),
+        ChestMagicInventory=grid(slot("^OXYGEN", 1, 500)),
+        ChestMagic2Inventory=grid(slot("^OXYGEN", 2, 500)),
+        FoodUnitInventory=grid(),  # empty: hidden
+        PersonalMaintenanceInteractions=[{"InventoryContainer": grid(slot("^MAINT_TECH3", 50, 50))}],
+    )
+    s = extract.load_path(write_save(nms_root / "save.hg", doc, 1000))
+    cats = [(c.category, c.label) for c in s.containers if c.category not in
+            ("suit", "ship", "multitool", "storage", "exocraft")]
+    assert cats == [("ingredients", "Ingredient Storage"), ("grave", "Grave (dropped on death)"),
+                    ("chest-magic", "ChestMagic"), ("chest-magic", "ChestMagic2")]
+    assert not any(c.category == "refiner" for c in s.containers)
+    assert [c.owner for c in s.containers if c.category == "storage"] == ["Storage 3"]
+
+    _, d, _ = run(capsys, "inventory", "--have", "Copper:659", "--save", str(nms_root / "save.hg"))
+    assert d["requirements"][0]["have"] == 664  # ingredients count toward requisitions
+    _, d, _ = run(capsys, "inventory", "chest-magic", "--save", str(nms_root / "save.hg"))
+    assert [c["owner"] for c in d["containers"]] == ["ChestMagic", "ChestMagic2"]
+
+
+def test_refiner_is_not_a_category(save_path, capsys):
+    with pytest.raises(SystemExit) as e:
+        nms.main(["inventory", "refiner"])
+    assert e.value.code == 2
 
 
 def test_expedition_context_is_read(nms_root):
