@@ -1,7 +1,7 @@
 import os
 import sys
 import json
-from typing import Any
+from typing import Any, Optional
 from pathlib import Path
 
 def atomic_write_text(target_path: Path | str, content: str, encoding: str = "utf-8"):
@@ -108,3 +108,17 @@ def get_vault_path(require_root: bool = True) -> Path:
             sys.exit(1)
 
     return vault_dir
+
+
+def find_memory_file(vault_dir: Path, node_id: str) -> Optional[Path]:
+    """Find an existing markdown file in vault_dir matching {node_id}-*.md."""
+    if not vault_dir.is_dir() or not node_id:
+        return None
+    norm_id = str(node_id).strip().lower()
+    if len(norm_id) < 8 and norm_id.isdigit():
+        norm_id = f"{int(norm_id):08d}"
+
+    for p in vault_dir.glob(f"{norm_id}-*.md"):
+        if p.is_file():
+            return p
+    return None

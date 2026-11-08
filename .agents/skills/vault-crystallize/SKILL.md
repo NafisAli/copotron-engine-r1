@@ -38,10 +38,13 @@ For multiple nodes or structured content, write a scratch JSON manifest:
     "type": "prospective",
     "summary": "Outdoor telemetry project using ESP-NOW.",
     "parents": ["00000004"],
-    "tags": ["esp32", "hardware"]
+    "tags": ["esp32", "hardware"],
+    "persona": "c19b60a6"
   }
 ]
 ```
+
+**Persona**: `persona` is optional and must be the 8-character id of a **Persona Definition** (a `declarative` memory tagged `persona`), never a name such as `aegis-null`. Copy the id from `uv run copotron search "persona <name>"`. To reference a Persona Definition created in the same manifest, give it a `temp_ref`, set `"type": "declarative"` and `"tags": ["persona", ...]`, and put it **before** the items that use it (`"persona": "$<temp_ref>"`). A batch with an invalid persona is rejected before anything is written. Set persona through a manifest; the single-node flags have no persona option.
 
 #### Step 3: Commit via `copotron crystallize`
 Run the manifest:
