@@ -54,6 +54,24 @@ ESP-NOW protocol."""
     assert "### Network\n\nESP-NOW protocol" in spliced
 
 
+def _write_legacy_memory(vault_dir: Path, memory_id: str, title: str, parents_yaml: str) -> None:
+    """Write a memory straight to disk, bypassing the write-path guards, as legacy data would be."""
+    (vault_dir / f"{memory_id}-{title.lower().replace(' ', '-')}.md").write_text(
+        "---\n"
+        f"id: '{memory_id}'\n"
+        f"title: {title}\n"
+        "date: '2026-09-01'\n"
+        "summary: Legacy memory.\n"
+        "type: declarative\n"
+        "status: active\n"
+        f"parents: {parents_yaml}\n"
+        "tags: []\n"
+        "---\n\n"
+        f"# {title}\n",
+        encoding="utf-8",
+    )
+
+
 def test_vault_health_audit(tmp_path):
     vault_dir = tmp_path / "audit_vault"
     vault_dir.mkdir(parents=True, exist_ok=True)
@@ -67,23 +85,9 @@ def test_vault_health_audit(tmp_path):
         parents=[],
     )
 
-    # 2. Create node with broken parent
-    create_memory_node(
-        vault_dir=vault_dir,
-        title="Broken Parent Node",
-        memory_type="declarative",
-        node_id="11111111",
-        parents=["deadbeef"],
-    )
-
-    # 3. Create orphan node
-    create_memory_node(
-        vault_dir=vault_dir,
-        title="Orphan Node",
-        memory_type="declarative",
-        node_id="22222222",
-        parents=[],
-    )
+    # 2-3. Legacy data the write path now refuses: a broken parent and an Orphan
+    _write_legacy_memory(vault_dir, "11111111", "Broken Parent Node", "['deadbeef']")
+    _write_legacy_memory(vault_dir, "22222222", "Orphan Node", "[]")
 
     load_vault(vault_dir, silent=True)
 
@@ -104,9 +108,11 @@ def test_create_with_auto_type(tmp_path):
     mock.set_answer("mem_type", ChoiceAnswer(choice="procedural", confidence=0.9))
     client = SystemOneClient(provider=mock, use_cache=False)
 
+    create_memory_node(vault_dir=vault_dir, title="Root", memory_type="declarative", node_id="00000000")
     node = create_memory_node(
         vault_dir=vault_dir,
         title="Deploy Script Instructions",
+        parents=["00000000"],
         summary="How to run deployment",
         body="Step 1: run deploy.sh",
         auto_type=True,

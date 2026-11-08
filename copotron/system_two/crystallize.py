@@ -6,11 +6,12 @@ import hashlib
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Collection, List, Dict, Any, Optional
 
 from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import get_vault_path, atomic_write_text, find_memory_file
 from copotron.core.indexer import load_vault
+from copotron.core.parents import require_parents
 from copotron.core.personas import (
     PERSONA_DEFINITION_TAG,
     PERSONA_DEFINITION_TYPE,
@@ -137,6 +138,17 @@ def _declares_persona_definition(item: Dict[str, Any]) -> bool:
     )
 
 
+def _resolve_auto_parents(vault_dir: Path, memory_id: str, title: str, summary: str) -> List[str]:
+    """Resolve auto-parent for a new memory, refusing a result that would make it an Orphan."""
+    parents = resolve_auto_parent(title, summary, vault_dir)
+    if not parents:
+        raise ValueError(
+            f"memory {memory_id!r}: auto-parent found no parent, which would make it an Orphan. "
+            f"Pass --parents <id> instead."
+        )
+    return parents
+
+
 def create_memory_node(
     vault_dir: Path,
     title: str,
@@ -152,10 +164,13 @@ def create_memory_node(
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
     auto_type: bool = False,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """
     Create, validate, and write a single memory file in the vault.
-    Returns metadata dict for the created node.
+    Returns metadata dict for the created node. Refuses to write an Orphan or
+    a memory whose parent does not exist; batch_ids are the memories a
+    manifest batch writes, which count as existing parents.
     """
     if node_date is None:
         node_date = datetime.now().strftime("%Y-%m-%d")
@@ -164,9 +179,6 @@ def create_memory_node(
     tags = list(tags) if tags else []
 
     persona = _validated_persona(vault_dir, persona)
-
-    if auto_parent and not parents:
-        parents = resolve_auto_parent(title, summary, vault_dir)
 
     if (auto_type or not memory_type) and title:
         memory_type = infer_memory_type(title=title, summary=summary, body=body)
@@ -180,6 +192,10 @@ def create_memory_node(
             final_id = f"{int(final_id):08d}" if final_id.isdigit() else final_id.zfill(8)
     else:
         final_id = generate_unique_id(vault_dir, title, node_date)
+
+    if auto_parent and not parents:
+        parents = _resolve_auto_parents(vault_dir, final_id, title, summary)
+    require_parents(vault_dir, final_id, parents, batch_ids)
 
     slug = clean_slug(title)
     filename = f"{final_id}-{slug}.md"
@@ -234,6 +250,7 @@ def update_memory_node(
     node_date: Optional[str] = None,
     persona: Optional[str] = None,
     extra_fields: Optional[Dict[str, Any]] = None,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """
     Update an existing memory note in-place.
@@ -246,7 +263,13 @@ def update_memory_node(
     final_type = memory_type if memory_type else existing_schema.type
     final_summary = summary.strip() if summary and summary.strip() else existing_schema.summary
     final_status = status if status else existing_schema.status
-    final_parents = list(parents) if parents is not None else existing_schema.parents
+    # Only parents supplied by this write are checked; an existing Orphan or
+    # missing parent is left for the audit and vault doctor.
+    if parents is not None:
+        final_parents = list(parents)
+        require_parents(vault_dir, existing_schema.id, final_parents, batch_ids)
+    else:
+        final_parents = existing_schema.parents
 
     if tags is not None and len(tags) > 0:
         final_tags = sorted(list(set(existing_schema.tags + list(tags))))
@@ -335,6 +358,7 @@ def create_or_update_memory_node(
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
     auto_type: bool = False,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """Dispatcher: updates existing node if node_id matches an existing file, else creates a new memory node."""
     if node_id:
@@ -354,6 +378,7 @@ def create_or_update_memory_node(
                 node_date=node_date,
                 persona=persona,
                 extra_fields=extra_fields,
+                batch_ids=batch_ids,
             )
 
     if not title:
@@ -374,6 +399,7 @@ def create_or_update_memory_node(
         extra_fields=extra_fields,
         auto_parent=auto_parent,
         auto_type=auto_type,
+        batch_ids=batch_ids,
     )
 
 
@@ -439,21 +465,34 @@ def crystallize_manifest(
             batch_persona_definitions.discard(assigned_id)
             batch_demoted.add(assigned_id)
 
-    for item, persona in zip(manifest_nodes, resolved_personas):
-        raw_parents = item.get("parents", [])
-        resolved_parents = []
-        if raw_parents is not None:
-            for p in raw_parents:
-                p_str = str(p).strip()
-                if p_str in ref_map:
-                    resolved_parents.append(ref_map[p_str])
-                elif p_str.startswith("$") and p_str in ref_map:
-                    resolved_parents.append(ref_map[p_str])
-                else:
-                    resolved_parents.append(p_str)
-        else:
+    # Check every item's parents before writing anything, so a batch that would
+    # leave an Orphan or a missing parent leaves the vault untouched. A parent
+    # may be any memory the batch writes, in any order. An update that does not
+    # supply parents (no key, or null) keeps its existing ones, and an
+    # auto-parent create without parents is resolved here, so it is checked
+    # with the rest of the batch.
+    batch_ids = frozenset(item["_assigned_id"] for item in manifest_nodes)
+    resolved_parent_lists: List[Optional[List[str]]] = []
+    for item in manifest_nodes:
+        memory_id = item["_assigned_id"]
+        raw_parents = item.get("parents")
+        if raw_parents is None:
             resolved_parents = None
+        else:
+            resolved_parents = [ref_map.get(str(p).strip(), str(p).strip()) for p in raw_parents]
 
+        is_update = find_memory_file(vault_dir, memory_id) is not None
+        if not is_update and not resolved_parents and item.get("auto_parent"):
+            resolved_parents = _resolve_auto_parents(
+                vault_dir, memory_id, item.get("title") or "", item.get("summary", "")
+            )
+        resolved_parent_lists.append(resolved_parents)
+
+        if is_update and resolved_parents is None:
+            continue
+        require_parents(vault_dir, memory_id, resolved_parents or [], batch_ids)
+
+    for item, persona, resolved_parents in zip(manifest_nodes, resolved_personas, resolved_parent_lists):
         extra_keys = {
             k: v for k, v in item.items()
             if k not in (
@@ -479,6 +518,7 @@ def crystallize_manifest(
             extra_fields=extra_keys,
             auto_parent=item.get("auto_parent", False),
             auto_type=item.get("auto_type", False),
+            batch_ids=batch_ids,
         )
         created_nodes.append(created)
 
@@ -499,7 +539,7 @@ def main():
     parser.add_argument("--auto-type", action="store_true", help="Infer biological memory type using System One.")
     parser.add_argument("--summary", default="", help="1-2 sentence summary for AI context scanning.")
     parser.add_argument("--body", default="", help="Markdown body content.")
-    parser.add_argument("--parent", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
+    parser.add_argument("--parent", "--parents", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
     parser.add_argument("--tag", action="append", dest="tags", default=[], help="Semantic tag (can specify multiple).")
     parser.add_argument("--status", choices=["active", "completed", "archived", "none"], default="active", help="Lifecycle status.")
     parser.add_argument("--date", default=None, help="Date in YYYY-MM-DD format (defaults to today).")
