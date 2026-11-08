@@ -42,7 +42,7 @@ Instead of explicit separate "Project" and "Task" schemas, the system uses the `
 
 ## 5. Persona System & Cascading Inheritance
 Personas dictate AI tone, domain instructions, and behavior:
-* **Storage:** Each Persona lives in a Persona Definition: a `declarative` memory tagged `persona`. Other memories reference it by id (`persona: c19b60a6`), never by name. `copotron.core.personas.find_persona_definition` is the shared lookup (see ADR 0002 in the control plane).
+* **Storage:** Each Persona lives in a Persona Definition: a `declarative` memory tagged `persona`. Other memories reference it by id (`persona: c19b60a6`), never by name. `copotron.core.personas` is the shared lookup: `find_persona_definition` resolves a reference, `require_persona_definition` guards write paths, and `diagnose_persona_reference` tells `copotron audit` which Dangling Persona case applies (see ADR 0002 in the control plane).
 * **Attachment:** Defined on root nodes or domain hubs.
 * **Inheritance:** `indexer.py` traverses the DAG. Child nodes inherit their parent's persona.
 * **Nearest Override:** If a child node explicitly declares a persona, it overrides ancestor personas for itself and its subtree.

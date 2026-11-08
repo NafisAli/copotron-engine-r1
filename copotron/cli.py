@@ -89,7 +89,7 @@ def cmd_validate(args) -> int:
 
 
 def cmd_audit(args) -> int:
-    """Audit vault graph health, orphan nodes, and task completion drift."""
+    """Audit vault graph health, orphan nodes, Dangling Personas, and task completion drift."""
     is_json = getattr(args, "json", False)
     report = audit_vault_health(check_semantic=not getattr(args, "syntax_only", False))
     if is_json:
@@ -109,6 +109,13 @@ def cmd_audit(args) -> int:
                 print(f"      [{o['id']}] {o['title']}")
         else:
             print("  ✅ Orphan Nodes: None")
+
+        if report['dangling_personas']:
+            print(f"  ❌ Dangling Personas: {len(report['dangling_personas'])}")
+            for d in report['dangling_personas']:
+                print(f"      [{d['id']}] {d['title']} -> persona {d['persona']!r} ({d['problem']})")
+        else:
+            print("  ✅ Dangling Personas: None")
 
         if report['completion_drift']:
             print(f"  📌 Task Completion Drift: {len(report['completion_drift'])}")
