@@ -119,8 +119,16 @@ def _normalize_persona(persona: Any) -> Optional[str]:
     return stripped or None
 
 
+def _validated_persona(vault_dir: Path, persona: Any) -> Optional[str]:
+    """Normalize a persona supplied by a write and require it to be a Persona Definition id."""
+    persona = _normalize_persona(persona)
+    if persona is not None:
+        require_persona_definition(vault_dir, persona)
+    return persona
+
+
 def _declares_persona_definition(item: Dict[str, Any]) -> bool:
-    """True when a manifest item will be written as a Persona Definition."""
+    """True when a manifest item declares itself a Persona Definition (explicit type and tag)."""
     return (
         item.get("type") == PERSONA_DEFINITION_TYPE
         and not item.get("auto_type")
@@ -154,9 +162,7 @@ def create_memory_node(
     parents = list(parents) if parents else []
     tags = list(tags) if tags else []
 
-    persona = _normalize_persona(persona)
-    if persona is not None:
-        require_persona_definition(vault_dir, persona)
+    persona = _validated_persona(vault_dir, persona)
 
     if auto_parent and not parents:
         parents = resolve_auto_parent(title, summary, vault_dir)
@@ -249,9 +255,7 @@ def update_memory_node(
     # Only a persona supplied by this write is validated; an existing Dangling
     # Persona is left for the audit and vault doctor. A blank persona clears it.
     if persona is not None:
-        final_persona = _normalize_persona(persona)
-        if final_persona is not None:
-            require_persona_definition(vault_dir, final_persona)
+        final_persona = _validated_persona(vault_dir, persona)
     else:
         final_persona = existing_schema.persona
     final_date = node_date if node_date else datetime.now().strftime("%Y-%m-%d")
@@ -409,18 +413,30 @@ def crystallize_manifest(
 
     # Validate every persona before writing anything, so a rejected batch leaves
     # the vault untouched. A persona may name a Persona Definition created by an
-    # earlier item in the same batch.
+    # earlier item in the same batch, and an earlier item that changes a
+    # definition's type stops it counting.
     resolved_personas: List[Optional[str]] = []
-    batch_persona_definitions: set = set()
+    batch_persona_definitions: set[str] = set()
+    batch_demoted: set[str] = set()
     for item in manifest_nodes:
         persona = _normalize_persona(item.get("persona"))
         if persona is not None:
             persona = ref_map.get(persona, persona)
             if persona not in batch_persona_definitions:
+                if persona in batch_demoted:
+                    raise ValueError(
+                        f"persona {persona!r} is changed by an earlier manifest item so that it is no longer "
+                        f"a Persona Definition ({PERSONA_DEFINITION_TYPE} memory tagged '{PERSONA_DEFINITION_TAG}')."
+                    )
                 require_persona_definition(vault_dir, persona)
         resolved_personas.append(persona)
+        assigned_id = item["_assigned_id"]
         if _declares_persona_definition(item):
-            batch_persona_definitions.add(item["_assigned_id"])
+            batch_persona_definitions.add(assigned_id)
+            batch_demoted.discard(assigned_id)
+        elif item.get("auto_type") or (item.get("type") and item["type"] != PERSONA_DEFINITION_TYPE):
+            batch_persona_definitions.discard(assigned_id)
+            batch_demoted.add(assigned_id)
 
     for item, persona in zip(manifest_nodes, resolved_personas):
         raw_parents = item.get("parents", [])

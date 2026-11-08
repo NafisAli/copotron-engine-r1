@@ -523,3 +523,16 @@ def test_manifest_update_rejects_invalid_persona(persona_vault):
         crystallize_manifest(persona_vault, [{"id": "00000001", "persona": "aegis-null"}], auto_index=False)
 
     assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_manifest_rejects_persona_whose_definition_is_demoted_earlier_in_batch(persona_vault):
+    files_before = {p: p.read_text(encoding="utf-8") for p in persona_vault.glob("*.md")}
+    manifest = [
+        {"id": PERSONA_DEFINITION_ID, "type": "procedural"},
+        {"title": "Guarded Memory", "type": "declarative", "parents": ["00000000"], "persona": PERSONA_DEFINITION_ID},
+    ]
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        crystallize_manifest(persona_vault, manifest, auto_index=False)
+
+    assert {p: p.read_text(encoding="utf-8") for p in persona_vault.glob("*.md")} == files_before

@@ -1,8 +1,17 @@
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import List, Literal, Optional, Any
 from datetime import date as DateType, datetime as DateTimeType
+import re
 import yaml
 from pathlib import Path
+
+MEMORY_ID_PATTERN = re.compile(r"^[0-9a-f]{8}$")
+
+
+def is_memory_id(value: object) -> bool:
+    """True when value has the shape of a memory identifier (8 lower-case hex characters)."""
+    return isinstance(value, str) and bool(MEMORY_ID_PATTERN.match(value))
+
 
 class MemorySchema(BaseModel):
     model_config = ConfigDict(extra="allow")
