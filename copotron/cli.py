@@ -89,7 +89,7 @@ def cmd_validate(args) -> int:
 
 
 def cmd_audit(args) -> int:
-    """Audit vault graph health, orphan nodes, and task completion drift."""
+    """Audit vault graph health, orphan nodes, Dangling Personas, and task completion drift."""
     is_json = getattr(args, "json", False)
     report = audit_vault_health(check_semantic=not getattr(args, "syntax_only", False))
     if is_json:

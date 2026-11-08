@@ -14,6 +14,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     2. Orphan nodes (isolated from domain hubs)
     3. Prospective completion drift (tasks marked active that appear done)
     4. Truncated slugs
+    5. Dangling Personas (persona does not identify a Persona Definition)
     """
     if vault_dir is None:
         vault_dir = get_vault_path(require_root=True)
@@ -64,7 +65,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                 "title": rec["title"]
             })
 
-        # Dangling Persona check (persona does not identify a Persona Definition)
+        # 5. Dangling Persona check (persona does not identify a Persona Definition)
         if rec["persona"] is not None:
             problem = diagnose_persona_reference(vault_dir, rec["persona"])
             if problem is not None:
