@@ -307,6 +307,30 @@ def test_topological_cycle_detection(tmp_path, monkeypatch, capsys):
     assert "0000000a" in graph
     assert "0000000b" in graph
 
+def test_topological_cycle_persona_inheritance(tmp_path, monkeypatch, capsys):
+    """Verify nodes in or downstream of a cycle still inherit persona from an acyclic ancestor."""
+    vault = tmp_path / "cycle_persona_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[], persona="home")
+    # Cycle C <-> D, entered from Root; E hangs below the cycle
+    _create_test_note(vault, "0000000c", "Cycle Node C", parents=["00000000", "0000000d"])
+    _create_test_note(vault, "0000000d", "Cycle Node D", parents=["0000000c"])
+    _create_test_note(vault, "0000000e", "Below Cycle E", parents=["0000000d"])
+    # Cycle F <-> G where F declares its own persona
+    _create_test_note(vault, "0000000f", "Cycle Node F", parents=["00000010"], persona="work")
+    _create_test_note(vault, "00000010", "Cycle Node G", parents=["0000000f"])
+
+    graph = load_vault()
+    capsys.readouterr()
+
+    assert graph["0000000c"]["inherited_persona"] == "home"
+    assert graph["0000000d"]["inherited_persona"] == "home"
+    assert graph["0000000e"]["inherited_persona"] == "home"
+    assert graph["0000000f"]["inherited_persona"] == "work"
+    assert graph["00000010"]["inherited_persona"] == "work"
+
 # ---------------------------------------------------------
 # Phase 1: Streaming Frontmatter & Parser Tests
 # ---------------------------------------------------------
