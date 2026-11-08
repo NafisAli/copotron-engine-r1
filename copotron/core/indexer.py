@@ -48,8 +48,8 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
 
 def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
     """
-    Resolve a node's effective persona: its own persona wins, otherwise the
-    first declared parent (present in graph) with an inherited persona.
+    Resolve a node's Inherited Persona: its own persona wins, otherwise the
+    first declared parent (present in graph) with an Inherited Persona.
     """
     if node.get("persona"):
         return node["persona"]

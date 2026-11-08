@@ -318,7 +318,7 @@ def test_topological_cycle_persona_inheritance(tmp_path, monkeypatch, capsys):
     _create_test_note(vault, "0000000c", "Cycle Node C", parents=["00000000", "0000000d"])
     _create_test_note(vault, "0000000d", "Cycle Node D", parents=["0000000c"])
     _create_test_note(vault, "0000000e", "Below Cycle E", parents=["0000000d"])
-    # Cycle F <-> G where F declares its own persona
+    # Cycle F <-> G (00000010) where F declares its own persona
     _create_test_note(vault, "0000000f", "Cycle Node F", parents=["00000010"], persona="work")
     _create_test_note(vault, "00000010", "Cycle Node G", parents=["0000000f"])
 
