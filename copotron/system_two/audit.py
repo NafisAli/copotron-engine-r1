@@ -4,6 +4,7 @@ from pathlib import Path
 from copotron.core.vault import get_vault_path
 from copotron.core.schema import parse_frontmatter_and_body
 from copotron.core.indexer import scan_vault_files
+from copotron.core.personas import diagnose_persona_reference
 from copotron.system_one.judgments.classification import infer_task_completed
 
 def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = True) -> Dict[str, Any]:
@@ -33,6 +34,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                 "type": mem.type,
                 "status": mem.status,
                 "parents": mem.parents,
+                "persona": mem.persona,
                 "body": body,
             })
         except Exception:
@@ -42,6 +44,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     orphan_nodes = []
     completion_drift = []
     truncated_slugs = []
+    dangling_personas = []
 
     for rec in node_records:
         n_id = rec["id"]
@@ -60,6 +63,17 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                 "id": n_id,
                 "title": rec["title"]
             })
+
+        # Dangling Persona check (persona does not identify a Persona Definition)
+        if rec["persona"] is not None:
+            problem = diagnose_persona_reference(vault_dir, rec["persona"])
+            if problem is not None:
+                dangling_personas.append({
+                    "id": n_id,
+                    "title": rec["title"],
+                    "persona": rec["persona"],
+                    "problem": problem,
+                })
 
         # 3. Truncated slug check (trailing hyphen or short chop)
         fname = Path(rec["file_path"]).stem
@@ -86,5 +100,6 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
         "orphan_nodes": orphan_nodes,
         "truncated_slugs": truncated_slugs,
         "completion_drift": completion_drift,
-        "healthy": not (broken_parents or orphan_nodes or completion_drift)
+        "dangling_personas": dangling_personas,
+        "healthy": not (broken_parents or orphan_nodes or completion_drift or dangling_personas)
     }

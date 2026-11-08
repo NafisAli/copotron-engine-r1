@@ -110,6 +110,13 @@ def cmd_audit(args) -> int:
         else:
             print("  ✅ Orphan Nodes: None")
 
+        if report['dangling_personas']:
+            print(f"  ❌ Dangling Personas: {len(report['dangling_personas'])}")
+            for d in report['dangling_personas']:
+                print(f"      [{d['id']}] {d['title']} -> persona {d['persona']!r} ({d['problem']})")
+        else:
+            print("  ✅ Dangling Personas: None")
+
         if report['completion_drift']:
             print(f"  📌 Task Completion Drift: {len(report['completion_drift'])}")
             for d in report['completion_drift'][:5]:
