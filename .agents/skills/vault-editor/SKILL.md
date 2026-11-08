@@ -20,10 +20,12 @@ parents:           # list of parent 8-character node IDs
   - "00000000"
 tags:              # list of semantic tags
   - "domain"
-persona: null      # optional persona identifier
+persona: null      # optional: 8-character id of a Persona Definition, e.g. "c19b60a6"
 ---
 ```
 *Open Tail:* Arbitrary metadata fields outside core keys are preserved in the index.
+
+*Persona:* `persona` holds the id of a **Persona Definition**: a `declarative` memory tagged `persona`. Never write a name such as `aegis-null`. Find the definition with `uv run copotron search "persona <name>"` and copy its `id`. To add a Persona, create its definition first. `copotron crystallize` rejects any other value, but direct edits and `validate` do not check it, so verify the id yourself. A value that does not identify a Persona Definition is a **Dangling Persona**. It still indexes, but the audit flags it.
 
 ### 2. Validation & Indexing
 ```bash

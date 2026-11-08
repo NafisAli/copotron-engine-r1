@@ -29,7 +29,7 @@ The brain is modeled as a Directed Acyclic Graph (DAG) of "Memories". The schema
 * **`status`** (enum): Lifecycle status: `active`, `completed`, `archived`, `none`.
 * **`parents`** (List[str]): List of parent 8-character node IDs.
 * **`tags`** (List[str]): Semantic tags for taxonomy and filtering.
-* **`persona`** (Optional[str]): Behavioral persona identifier attached to roots or branch overrides.
+* **`persona`** (Optional[str]): 8-character id of a Persona Definition, attached to roots or branch overrides. Write paths reject any other value; indexing accepts any string, so a Dangling Persona still indexes.
 
 ### Open Tail:
 Additional arbitrary metadata keys may be included for semantic flexibility and must be preserved during migrations and re-indexing.
@@ -42,7 +42,7 @@ Instead of explicit separate "Project" and "Task" schemas, the system uses the `
 
 ## 5. Persona System & Cascading Inheritance
 Personas dictate AI tone, domain instructions, and behavior:
-* **Storage:** Personas exist natively in the vault as memories (tagged with `persona`).
+* **Storage:** Each Persona lives in a Persona Definition: a `declarative` memory tagged `persona`. Other memories reference it by id (`persona: c19b60a6`), never by name. `copotron.core.personas.find_persona_definition` is the shared lookup (see ADR 0002 in the control plane).
 * **Attachment:** Defined on root nodes or domain hubs.
 * **Inheritance:** `indexer.py` traverses the DAG. Child nodes inherit their parent's persona.
 * **Nearest Override:** If a child node explicitly declares a persona, it overrides ancestor personas for itself and its subtree.

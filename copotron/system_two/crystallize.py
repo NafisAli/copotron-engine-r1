@@ -9,8 +9,13 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 
 from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
-from copotron.core.vault import get_vault_path, atomic_write_text
+from copotron.core.vault import get_vault_path, atomic_write_text, find_memory_file
 from copotron.core.indexer import load_vault
+from copotron.core.personas import (
+    PERSONA_DEFINITION_TAG,
+    PERSONA_DEFINITION_TYPE,
+    require_persona_definition,
+)
 from copotron.system_two.search import search_graph
 from copotron.system_two.domains import get_domain_hubs
 from copotron.system_one.judgments.slug import generate_clean_slug
@@ -106,6 +111,31 @@ def resolve_auto_parent(title: str, summary: str, vault_dir: Optional[Path] = No
     return []
 
 
+def _normalize_persona(persona: Any) -> Optional[str]:
+    """Strip a persona value; a blank value means no persona."""
+    if persona is None:
+        return None
+    stripped = str(persona).strip()
+    return stripped or None
+
+
+def _validated_persona(vault_dir: Path, persona: Any) -> Optional[str]:
+    """Normalize a persona supplied by a write and require it to be a Persona Definition id."""
+    persona = _normalize_persona(persona)
+    if persona is not None:
+        require_persona_definition(vault_dir, persona)
+    return persona
+
+
+def _declares_persona_definition(item: Dict[str, Any]) -> bool:
+    """True when a manifest item declares itself a Persona Definition (explicit type and tag)."""
+    return (
+        item.get("type") == PERSONA_DEFINITION_TYPE
+        and not item.get("auto_type")
+        and PERSONA_DEFINITION_TAG in (item.get("tags") or [])
+    )
+
+
 def create_memory_node(
     vault_dir: Path,
     title: str,
@@ -131,6 +161,8 @@ def create_memory_node(
 
     parents = list(parents) if parents else []
     tags = list(tags) if tags else []
+
+    persona = _validated_persona(vault_dir, persona)
 
     if auto_parent and not parents:
         parents = resolve_auto_parent(title, summary, vault_dir)
@@ -187,20 +219,6 @@ def create_memory_node(
     }
 
 
-def find_memory_file(vault_dir: Path, node_id: str) -> Optional[Path]:
-    """Find an existing markdown file in vault_dir matching {node_id}-*.md."""
-    if not vault_dir.is_dir() or not node_id:
-        return None
-    norm_id = str(node_id).strip().lower()
-    if len(norm_id) < 8 and norm_id.isdigit():
-        norm_id = f"{int(norm_id):08d}"
-
-    for p in vault_dir.glob(f"{norm_id}-*.md"):
-        if p.is_file():
-            return p
-    return None
-
-
 def update_memory_node(
     vault_dir: Path,
     existing_file: Path,
@@ -234,7 +252,12 @@ def update_memory_node(
     else:
         final_tags = existing_schema.tags
 
-    final_persona = persona if persona is not None else existing_schema.persona
+    # Only a persona supplied by this write is validated; an existing Dangling
+    # Persona is left for the audit and vault doctor. A blank persona clears it.
+    if persona is not None:
+        final_persona = _validated_persona(vault_dir, persona)
+    else:
+        final_persona = existing_schema.persona
     final_date = node_date if node_date else datetime.now().strftime("%Y-%m-%d")
 
     # Body update logic with section splicing
@@ -388,7 +411,34 @@ def crystallize_manifest(
             ref_map[f"${temp_ref}"] = assigned_id
             ref_map[temp_ref] = assigned_id
 
+    # Validate every persona before writing anything, so a rejected batch leaves
+    # the vault untouched. A persona may name a Persona Definition created by an
+    # earlier item in the same batch, and an earlier item that changes a
+    # definition's type stops it counting.
+    resolved_personas: List[Optional[str]] = []
+    batch_persona_definitions: set[str] = set()
+    batch_demoted: set[str] = set()
     for item in manifest_nodes:
+        persona = _normalize_persona(item.get("persona"))
+        if persona is not None:
+            persona = ref_map.get(persona, persona)
+            if persona not in batch_persona_definitions:
+                if persona in batch_demoted:
+                    raise ValueError(
+                        f"persona {persona!r} is changed by an earlier manifest item so that it is no longer "
+                        f"a Persona Definition ({PERSONA_DEFINITION_TYPE} memory tagged '{PERSONA_DEFINITION_TAG}')."
+                    )
+                require_persona_definition(vault_dir, persona)
+        resolved_personas.append(persona)
+        assigned_id = item["_assigned_id"]
+        if _declares_persona_definition(item):
+            batch_persona_definitions.add(assigned_id)
+            batch_demoted.discard(assigned_id)
+        elif item.get("auto_type") or (item.get("type") and item["type"] != PERSONA_DEFINITION_TYPE):
+            batch_persona_definitions.discard(assigned_id)
+            batch_demoted.add(assigned_id)
+
+    for item, persona in zip(manifest_nodes, resolved_personas):
         raw_parents = item.get("parents", [])
         resolved_parents = []
         if raw_parents is not None:
@@ -424,7 +474,7 @@ def crystallize_manifest(
             status=item.get("status", "active"),
             node_date=item.get("date"),
             node_id=node_id_to_use,
-            persona=item.get("persona"),
+            persona=persona,
             extra_fields=extra_keys,
             auto_parent=item.get("auto_parent", False),
             auto_type=item.get("auto_type", False),

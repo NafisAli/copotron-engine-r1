@@ -337,3 +337,202 @@ def test_manifest_batch_with_update(mock_vault):
     assert results[1]["parents"] == [base["id"]]
 
 
+
+
+# ---------------------------------------------------------------------------
+# Persona references a Persona Definition by id
+# ---------------------------------------------------------------------------
+
+PERSONA_DEFINITION_ID = "c19b60a6"
+
+
+@pytest.fixture
+def persona_vault(mock_vault):
+    """mock_vault plus a Persona Definition (declarative, tagged persona)."""
+    content = (
+        "---\n"
+        f"id: '{PERSONA_DEFINITION_ID}'\n"
+        "title: Aegis Null\n"
+        "date: '2026-09-01'\n"
+        "summary: Terse, security-minded assistant voice.\n"
+        "type: declarative\n"
+        "status: active\n"
+        "parents: ['00000000']\n"
+        "tags: [persona, aegis-null]\n"
+        "---\n\n"
+        "# Aegis Null\n"
+    )
+    (mock_vault / f"{PERSONA_DEFINITION_ID}-aegis-null.md").write_text(content, encoding="utf-8")
+    return mock_vault
+
+
+INVALID_PERSONAS = [
+    pytest.param("aegis-null", id="not-an-id"),
+    pytest.param("deadbeef", id="unknown-id"),
+    pytest.param("00000001", id="not-a-persona-definition"),
+]
+
+
+@pytest.mark.parametrize("persona", INVALID_PERSONAS)
+def test_create_rejects_persona_that_is_not_a_persona_definition(persona_vault, persona):
+    files_before = set(persona_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        create_memory_node(
+            vault_dir=persona_vault,
+            title="Guarded Memory",
+            memory_type="declarative",
+            parents=["00000000"],
+            persona=persona,
+        )
+
+    assert set(persona_vault.glob("*.md")) == files_before
+
+
+def test_create_accepts_persona_definition_id(persona_vault):
+    node = create_memory_node(
+        vault_dir=persona_vault,
+        title="Guarded Memory",
+        memory_type="declarative",
+        parents=["00000000"],
+        persona=PERSONA_DEFINITION_ID,
+    )
+
+    assert parse_frontmatter(Path(node["file_path"])).persona == PERSONA_DEFINITION_ID
+
+
+def test_manifest_references_persona_definition_created_in_same_batch(mock_vault):
+    manifest = [
+        {
+            "temp_ref": "aegis",
+            "title": "Aegis Null",
+            "type": "declarative",
+            "summary": "Terse, security-minded assistant voice.",
+            "parents": ["00000000"],
+            "tags": ["persona", "aegis-null"],
+        },
+        {
+            "title": "Firewall Runbook",
+            "type": "procedural",
+            "summary": "Steps to harden the home firewall.",
+            "parents": ["00000001"],
+            "persona": "$aegis",
+        },
+    ]
+
+    definition, runbook = crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+    assert parse_frontmatter(Path(runbook["file_path"])).persona == definition["id"]
+
+
+@pytest.mark.parametrize("persona", INVALID_PERSONAS)
+def test_manifest_rejects_invalid_persona_before_writing_anything(persona_vault, persona):
+    files_before = set(persona_vault.glob("*.md"))
+    manifest = [
+        {
+            "title": "Valid Sibling",
+            "type": "declarative",
+            "parents": ["00000000"],
+            "persona": PERSONA_DEFINITION_ID,
+        },
+        {
+            "title": "Guarded Memory",
+            "type": "declarative",
+            "parents": ["00000000"],
+            "persona": persona,
+        },
+    ]
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        crystallize_manifest(persona_vault, manifest, auto_index=False)
+
+    assert set(persona_vault.glob("*.md")) == files_before
+
+
+def test_manifest_rejects_temp_ref_persona_that_is_not_a_persona_definition(mock_vault):
+    manifest = [
+        {"temp_ref": "plain", "title": "Plain Fact", "type": "declarative", "parents": ["00000000"]},
+        {"title": "Guarded Memory", "type": "declarative", "parents": ["00000000"], "persona": "$plain"},
+    ]
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+
+def _write_legacy_persona_memory(vault_dir: Path) -> Path:
+    """A memory written before persona became an id reference."""
+    legacy = vault_dir / "0000beef-legacy-memory.md"
+    legacy.write_text(
+        "---\n"
+        "id: 0000beef\n"
+        "title: Legacy Memory\n"
+        "date: '2026-09-01'\n"
+        "summary: Written when persona held a name.\n"
+        "type: declarative\n"
+        "status: active\n"
+        "parents: ['00000000']\n"
+        "tags: []\n"
+        "persona: aegis-null\n"
+        "---\n\n"
+        "Original body.\n",
+        encoding="utf-8",
+    )
+    return legacy
+
+
+@pytest.mark.parametrize("persona", INVALID_PERSONAS)
+def test_update_rejects_persona_that_is_not_a_persona_definition(persona_vault, persona):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    target = persona_vault / "00000001-hardware-hub.md"
+    content_before = target.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        create_or_update_memory_node(vault_dir=persona_vault, node_id="00000001", persona=persona)
+
+    assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_update_accepts_persona_definition_id(persona_vault):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    updated = create_or_update_memory_node(
+        vault_dir=persona_vault, node_id="00000001", persona=PERSONA_DEFINITION_ID
+    )
+
+    assert parse_frontmatter(Path(updated["file_path"])).persona == PERSONA_DEFINITION_ID
+
+
+def test_update_leaves_existing_dangling_persona_untouched_when_persona_not_supplied(persona_vault):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    _write_legacy_persona_memory(persona_vault)
+
+    updated = create_or_update_memory_node(
+        vault_dir=persona_vault, node_id="0000beef", body="Appended note.", append_body=True
+    )
+
+    assert parse_frontmatter(Path(updated["file_path"])).persona == "aegis-null"
+
+
+def test_manifest_update_rejects_invalid_persona(persona_vault):
+    target = persona_vault / "00000001-hardware-hub.md"
+    content_before = target.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        crystallize_manifest(persona_vault, [{"id": "00000001", "persona": "aegis-null"}], auto_index=False)
+
+    assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_manifest_rejects_persona_whose_definition_is_demoted_earlier_in_batch(persona_vault):
+    files_before = {p: p.read_text(encoding="utf-8") for p in persona_vault.glob("*.md")}
+    manifest = [
+        {"id": PERSONA_DEFINITION_ID, "type": "procedural"},
+        {"title": "Guarded Memory", "type": "declarative", "parents": ["00000000"], "persona": PERSONA_DEFINITION_ID},
+    ]
+
+    with pytest.raises(ValueError, match="Persona Definition"):
+        crystallize_manifest(persona_vault, manifest, auto_index=False)
+
+    assert {p: p.read_text(encoding="utf-8") for p in persona_vault.glob("*.md")} == files_before

@@ -760,3 +760,19 @@ def test_search_resilient_or_fallback(tmp_path, monkeypatch):
     assert "22222222" in matched_ids
 
 
+
+def test_indexing_accepts_dangling_persona_name(tmp_path):
+    """Reads stay lenient: a vault still holding a persona name (a Dangling Persona) indexes."""
+    vault = tmp_path / "legacy_persona_vault"
+    vault.mkdir()
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "0000000a", "Legacy Hub", parents=["00000000"], persona="aegis-null")
+    _create_test_note(vault, "0000000b", "Legacy Child", parents=["0000000a"])
+
+    graph = load_vault(vault, silent=True)
+
+    assert graph["0000000a"]["persona"] == "aegis-null"
+    assert graph["0000000b"]["inherited_persona"] == "aegis-null"
+    with get_readonly_db(get_db_path(vault)) as conn:
+        row = conn.execute("SELECT persona FROM memories WHERE id = '0000000a';").fetchone()
+    assert row["persona"] == "aegis-null"
