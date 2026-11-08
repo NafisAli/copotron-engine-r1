@@ -755,3 +755,78 @@ def test_manifest_rejects_auto_parent_that_finds_no_parent_before_writing_anythi
         crystallize_manifest(mock_vault, manifest, auto_index=False)
 
     assert set(mock_vault.glob("*.md")) == files_before
+
+
+def _memory_date(vault_dir, memory_id):
+    from copotron.system_two.crystallize import find_memory_file
+    return parse_frontmatter(find_memory_file(vault_dir, memory_id)).date
+
+
+def test_cli_update_by_id_without_date_keeps_original_date(mock_vault):
+    from copotron.cli import main as copotron_main
+
+    created = create_memory_node(
+        vault_dir=mock_vault,
+        title="Trip to the Coast",
+        memory_type="episodic",
+        summary="Weekend at the coast.",
+        parents=["00000001"],
+        node_date="2026-01-15",
+    )
+
+    copotron_main(["crystallize", "--id", created["id"], "--summary", "Weekend at the coast, revisited.", "--no-index"])
+
+    assert _memory_date(mock_vault, created["id"]) == "2026-01-15"
+
+
+def test_manifest_update_without_date_keeps_original_date(mock_vault):
+    created = create_memory_node(
+        vault_dir=mock_vault,
+        title="Trip to the Coast",
+        memory_type="episodic",
+        summary="Weekend at the coast.",
+        parents=["00000001"],
+        node_date="2026-01-15",
+    )
+
+    crystallize_manifest(
+        mock_vault,
+        [{"id": created["id"], "summary": "Weekend at the coast, revisited."}],
+        auto_index=False,
+    )
+
+    assert _memory_date(mock_vault, created["id"]) == "2026-01-15"
+
+
+def test_manifest_update_with_explicit_date_overrides_original_date(mock_vault):
+    created = create_memory_node(
+        vault_dir=mock_vault,
+        title="Trip to the Coast",
+        memory_type="episodic",
+        summary="Weekend at the coast.",
+        parents=["00000001"],
+        node_date="2026-01-15",
+    )
+
+    crystallize_manifest(
+        mock_vault,
+        [{"id": created["id"], "date": "2026-01-17"}],
+        auto_index=False,
+    )
+
+    assert _memory_date(mock_vault, created["id"]) == "2026-01-17"
+
+
+def test_create_without_date_defaults_to_today(mock_vault):
+    from datetime import date
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    created = create_or_update_memory_node(
+        vault_dir=mock_vault,
+        title="Fresh Insight",
+        memory_type="declarative",
+        summary="Learned today.",
+        parents=["00000001"],
+    )
+
+    assert _memory_date(mock_vault, created["id"]) == date.today().isoformat()
