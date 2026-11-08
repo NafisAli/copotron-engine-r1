@@ -7,6 +7,9 @@ from pathlib import Path
 
 MEMORY_ID_PATTERN = re.compile(r"^[0-9a-f]{8}$")
 
+# The Root is the one memory allowed to have no parents.
+ROOT_ID = "00000000"
+
 
 def is_memory_id(value: object) -> bool:
     """True when value has the shape of a memory identifier (8 lower-case hex characters)."""

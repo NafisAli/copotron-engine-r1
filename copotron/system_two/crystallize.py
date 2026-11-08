@@ -6,9 +6,9 @@ import hashlib
 import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Collection, List, Dict, Any, Optional
 
-from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
+from copotron.core.schema import ROOT_ID, MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import get_vault_path, atomic_write_text, find_memory_file
 from copotron.core.indexer import load_vault
 from copotron.core.personas import (
@@ -137,6 +137,26 @@ def _declares_persona_definition(item: Dict[str, Any]) -> bool:
     )
 
 
+def _require_parents(
+    vault_dir: Path, memory_id: str, parents: List[str], batch_ids: Collection[str] = ()
+) -> None:
+    """
+    Write-path guard: refuse to write a non-Root memory with no parents (an
+    Orphan), or one that names a parent that does not exist. batch_ids are the
+    memories a manifest batch writes; they count as existing.
+    """
+    if not parents and memory_id != ROOT_ID:
+        raise ValueError(
+            f"memory {memory_id!r} has no parents, which would make it an Orphan. Every memory except "
+            f"the Root ({ROOT_ID}) needs a parent: pass --parents <id> or --auto-parent."
+        )
+    for parent in parents:
+        if parent not in batch_ids and find_memory_file(vault_dir, parent) is None:
+            raise ValueError(
+                f"memory {memory_id!r} names parent {parent!r}, which does not identify an existing memory."
+            )
+
+
 def create_memory_node(
     vault_dir: Path,
     title: str,
@@ -152,10 +172,13 @@ def create_memory_node(
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
     auto_type: bool = False,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """
     Create, validate, and write a single memory file in the vault.
-    Returns metadata dict for the created node.
+    Returns metadata dict for the created node. Refuses to write an Orphan or
+    a memory whose parent does not exist; batch_ids are the memories a
+    manifest batch writes, which count as existing parents.
     """
     if node_date is None:
         node_date = datetime.now().strftime("%Y-%m-%d")
@@ -180,6 +203,8 @@ def create_memory_node(
             final_id = f"{int(final_id):08d}" if final_id.isdigit() else final_id.zfill(8)
     else:
         final_id = generate_unique_id(vault_dir, title, node_date)
+
+    _require_parents(vault_dir, final_id, parents, batch_ids)
 
     slug = clean_slug(title)
     filename = f"{final_id}-{slug}.md"
@@ -234,6 +259,7 @@ def update_memory_node(
     node_date: Optional[str] = None,
     persona: Optional[str] = None,
     extra_fields: Optional[Dict[str, Any]] = None,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """
     Update an existing memory note in-place.
@@ -246,7 +272,13 @@ def update_memory_node(
     final_type = memory_type if memory_type else existing_schema.type
     final_summary = summary.strip() if summary and summary.strip() else existing_schema.summary
     final_status = status if status else existing_schema.status
-    final_parents = list(parents) if parents is not None else existing_schema.parents
+    # Only parents supplied by this write are checked; an existing Orphan or
+    # missing parent is left for the audit and vault doctor.
+    if parents is not None:
+        final_parents = list(parents)
+        _require_parents(vault_dir, existing_schema.id, final_parents, batch_ids)
+    else:
+        final_parents = existing_schema.parents
 
     if tags is not None and len(tags) > 0:
         final_tags = sorted(list(set(existing_schema.tags + list(tags))))
@@ -335,6 +367,7 @@ def create_or_update_memory_node(
     extra_fields: Optional[Dict[str, Any]] = None,
     auto_parent: bool = False,
     auto_type: bool = False,
+    batch_ids: Collection[str] = (),
 ) -> Dict[str, Any]:
     """Dispatcher: updates existing node if node_id matches an existing file, else creates a new memory node."""
     if node_id:
@@ -354,6 +387,7 @@ def create_or_update_memory_node(
                 node_date=node_date,
                 persona=persona,
                 extra_fields=extra_fields,
+                batch_ids=batch_ids,
             )
 
     if not title:
@@ -374,6 +408,7 @@ def create_or_update_memory_node(
         extra_fields=extra_fields,
         auto_parent=auto_parent,
         auto_type=auto_type,
+        batch_ids=batch_ids,
     )
 
 
@@ -439,21 +474,30 @@ def crystallize_manifest(
             batch_persona_definitions.discard(assigned_id)
             batch_demoted.add(assigned_id)
 
-    for item, persona in zip(manifest_nodes, resolved_personas):
-        raw_parents = item.get("parents", [])
-        resolved_parents = []
-        if raw_parents is not None:
-            for p in raw_parents:
-                p_str = str(p).strip()
-                if p_str in ref_map:
-                    resolved_parents.append(ref_map[p_str])
-                elif p_str.startswith("$") and p_str in ref_map:
-                    resolved_parents.append(ref_map[p_str])
-                else:
-                    resolved_parents.append(p_str)
-        else:
+    # Check every item's parents before writing anything, so a batch that would
+    # leave an Orphan or a missing parent leaves the vault untouched. A parent
+    # may be any memory the batch writes, in any order. An update that does not
+    # supply parents (no key, or null) keeps its existing ones, and an
+    # auto-parent create without parents is resolved, and checked again, when
+    # it is written.
+    batch_ids = frozenset(item["_assigned_id"] for item in manifest_nodes)
+    resolved_parent_lists: List[Optional[List[str]]] = []
+    for item in manifest_nodes:
+        raw_parents = item.get("parents")
+        if raw_parents is None:
             resolved_parents = None
+        else:
+            resolved_parents = [ref_map.get(str(p).strip(), str(p).strip()) for p in raw_parents]
+        resolved_parent_lists.append(resolved_parents)
 
+        is_update = find_memory_file(vault_dir, item["_assigned_id"]) is not None
+        if is_update and resolved_parents is None:
+            continue
+        if not is_update and not resolved_parents and item.get("auto_parent"):
+            continue
+        _require_parents(vault_dir, item["_assigned_id"], resolved_parents or [], batch_ids)
+
+    for item, persona, resolved_parents in zip(manifest_nodes, resolved_personas, resolved_parent_lists):
         extra_keys = {
             k: v for k, v in item.items()
             if k not in (
@@ -479,6 +523,7 @@ def crystallize_manifest(
             extra_fields=extra_keys,
             auto_parent=item.get("auto_parent", False),
             auto_type=item.get("auto_type", False),
+            batch_ids=batch_ids,
         )
         created_nodes.append(created)
 

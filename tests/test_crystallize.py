@@ -536,3 +536,151 @@ def test_manifest_rejects_persona_whose_definition_is_demoted_earlier_in_batch(p
         crystallize_manifest(persona_vault, manifest, auto_index=False)
 
     assert {p: p.read_text(encoding="utf-8") for p in persona_vault.glob("*.md")} == files_before
+
+
+# ---------------------------------------------------------------------------
+# Writes never produce an Orphan (a non-Root memory with no parents)
+# ---------------------------------------------------------------------------
+
+
+def test_create_rejects_non_root_memory_without_parents(mock_vault):
+    files_before = set(mock_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match=r"Orphan.*--parent.*--auto-parent"):
+        create_memory_node(vault_dir=mock_vault, title="Campaign Plan", memory_type="prospective")
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+def test_create_rejects_parent_that_does_not_exist(mock_vault):
+    files_before = set(mock_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match="'deadbeef'"):
+        create_memory_node(
+            vault_dir=mock_vault, title="Campaign Plan", memory_type="prospective", parents=["00000001", "deadbeef"]
+        )
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+@pytest.mark.parametrize(
+    "orphan_item",
+    [
+        pytest.param({"title": "Campaign Plan", "type": "prospective"}, id="parents-missing"),
+        pytest.param({"title": "Campaign Plan", "type": "prospective", "parents": []}, id="parents-empty"),
+        pytest.param({"title": "Campaign Plan", "type": "prospective", "parents": ["deadbeef"]}, id="parent-unknown"),
+    ],
+)
+def test_manifest_rejects_orphan_before_writing_anything(mock_vault, orphan_item):
+    files_before = set(mock_vault.glob("*.md"))
+    manifest = [
+        {"title": "Valid Sibling", "type": "declarative", "parents": ["00000001"]},
+        orphan_item,
+    ]
+
+    with pytest.raises(ValueError, match="Orphan|'deadbeef'"):
+        crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+@pytest.mark.parametrize(
+    "parents, error",
+    [
+        pytest.param([], "Orphan", id="drops-all-parents"),
+        pytest.param(["deadbeef"], "'deadbeef'", id="parent-unknown"),
+    ],
+)
+def test_update_rejects_parents_that_would_orphan_the_memory(mock_vault, parents, error):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    target = mock_vault / "00000001-hardware-hub.md"
+    content_before = target.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match=error):
+        create_or_update_memory_node(vault_dir=mock_vault, node_id="00000001", parents=parents)
+
+    assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_manifest_update_rejects_dropping_all_parents(mock_vault):
+    target = mock_vault / "00000001-hardware-hub.md"
+    content_before = target.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Orphan"):
+        crystallize_manifest(mock_vault, [{"id": "00000001", "parents": []}], auto_index=False)
+
+    assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_manifest_accepts_parent_written_later_in_same_batch(mock_vault):
+    manifest = [
+        {"title": "Corvette Hull Notes", "type": "declarative", "parents": ["$campaign"]},
+        {"temp_ref": "campaign", "title": "Campaign Plan", "type": "prospective", "parents": ["00000001"]},
+    ]
+
+    notes, campaign = crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+    assert parse_frontmatter(Path(notes["file_path"])).parents == [campaign["id"]]
+
+
+def test_manifest_update_without_parents_keeps_existing_parents(mock_vault):
+    updated, = crystallize_manifest(mock_vault, [{"id": "00000001", "summary": "Boards and motors."}], auto_index=False)
+
+    assert parse_frontmatter(Path(updated["file_path"])).parents == ["00000000"]
+
+
+def test_update_without_parents_leaves_existing_orphan_untouched(mock_vault):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    (mock_vault / "31f6706f-legacy-orphan.md").write_text(
+        "---\n"
+        "id: 31f6706f\n"
+        "title: Legacy Orphan\n"
+        "date: '2026-09-01'\n"
+        "summary: Written before writes refused Orphans.\n"
+        "type: prospective\n"
+        "status: active\n"
+        "parents: []\n"
+        "---\n\n"
+        "Original body.\n",
+        encoding="utf-8",
+    )
+
+    updated = create_or_update_memory_node(vault_dir=mock_vault, node_id="31f6706f", status="completed")
+
+    assert parse_frontmatter(Path(updated["file_path"])).parents == []
+
+
+def test_create_with_auto_parent_and_no_parents_succeeds(mock_vault):
+    node = create_memory_node(
+        vault_dir=mock_vault,
+        title="Hardware Debugging Tools",
+        memory_type="declarative",
+        summary="Oscilloscopes and logic analyzers.",
+        auto_parent=True,
+    )
+
+    assert parse_frontmatter(Path(node["file_path"])).parents == ["00000001"]
+
+
+def test_root_memory_may_have_no_parents(tmp_path):
+    vault_dir = tmp_path / "fresh_vault"
+    vault_dir.mkdir()
+
+    root = create_memory_node(vault_dir=vault_dir, title="Root", memory_type="declarative", node_id="00000000")
+
+    assert parse_frontmatter(Path(root["file_path"])).parents == []
+
+
+def test_setup_init_creates_root_memory(tmp_path):
+    from copotron.core.setup import create_root_memory
+
+    vault_dir = tmp_path / "fresh_vault"
+    vault_dir.mkdir()
+
+    create_root_memory(vault_dir)
+
+    root = parse_frontmatter(vault_dir / "00000000-root.md")
+    assert root.id == "00000000"
+    assert root.parents == []
