@@ -4,6 +4,7 @@ import argparse
 from pathlib import Path
 from copotron.core.vault import get_vault_path
 from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.personas import attach_persona_titles
 
 def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, status: str | None = None, print_output: bool = True):
     vault_dir = get_vault_path(require_root=True)
@@ -65,6 +66,7 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
         })
 
     conn.close()
+    attach_persona_titles(vault_dir, results)
     if print_output:
         print(json.dumps(results, indent=2))
     return results

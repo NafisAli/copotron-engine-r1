@@ -4,6 +4,7 @@ from typing import List, Dict, Any, Optional
 
 from copotron.core.vault import get_vault_path
 from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.personas import attach_persona_titles
 
 
 def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
@@ -48,7 +49,7 @@ def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
         })
 
     conn.close()
-    return hubs
+    return attach_persona_titles(vault_dir, hubs)
 
 
 def resolve_auto_parent(title: str, summary: str, vault_dir: Optional[Path] = None) -> List[str]:
