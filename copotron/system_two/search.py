@@ -5,7 +5,7 @@ import argparse
 from pathlib import Path
 from copotron.core.vault import get_vault_path
 from copotron.core.db import get_db_path, get_readonly_db
-from copotron.core.personas import attach_persona_titles
+from copotron.core.personas import attach_inherited_persona_titles
 from copotron.system_one.judgments.rerank import rerank_candidates
 from copotron.system_one.judgments.intent import parse_search_intent
 
@@ -142,7 +142,7 @@ def search_graph(
     if limit > 0 and len(results) > limit:
         results = results[:limit]
 
-    attach_persona_titles(vault_dir, results)
+    attach_inherited_persona_titles(vault_dir, results)
 
     if print_output:
         print(json.dumps(results, indent=2))

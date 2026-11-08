@@ -3,7 +3,7 @@ Persona Definition lookup: the one place that decides whether a persona
 reference identifies a Persona Definition (a declarative memory tagged
 `persona`). Write paths validate through `require_persona_definition`, the
 audit classifies Dangling Personas through `diagnose_persona_reference`, and
-retrieval resolves titles through `attach_persona_titles`.
+retrieval resolves titles through `attach_inherited_persona_titles`.
 """
 
 from enum import StrEnum
@@ -80,9 +80,9 @@ def require_persona_definition(vault_dir: Path, persona_id: str) -> MemorySchema
     return memory
 
 
-def attach_persona_titles(vault_dir: Path, records: list[dict]) -> list[dict]:
+def attach_inherited_persona_titles(vault_dir: Path, records: list[dict]) -> None:
     """
-    Set `inherited_persona_title` on each record (in place, and returned) to the
+    Set `inherited_persona_title` on each record, in place, to the
     title of the Persona Definition its `inherited_persona` identifies. A
     missing or Dangling Persona gets None, leaving `inherited_persona` as is:
     retrieval reports what the index holds and never fails over it. Each
@@ -95,4 +95,3 @@ def attach_persona_titles(vault_dir: Path, records: list[dict]) -> list[dict]:
             definition = find_persona_definition(vault_dir, reference)
             titles[reference] = definition.title if definition else None
         record["inherited_persona_title"] = titles.get(reference) if reference else None
-    return records

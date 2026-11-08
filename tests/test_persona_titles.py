@@ -184,3 +184,20 @@ def test_cli_suggest_parents_text_shows_persona_title(vault, monkeypatch, capsys
 
     assert "persona: Aegis Null [c19b60a6]" in _line_for(out, VALID)
     assert "persona: aegis-null (dangling)" in _line_for(out, DANGLING)
+
+
+@pytest.mark.parametrize(
+    "reference",
+    [
+        "deadbeef",  # well-formed id of no memory
+        "00000000",  # an existing memory that is not a Persona Definition
+    ],
+)
+def test_dangling_persona_id_returns_null_title(vault, reference):
+    _write_memory(vault, "44444444", "Stale Hub", ["domain"], parents=["00000000"], persona=reference)
+    load_vault(vault, silent=True)
+
+    result = _by_id(navigate("00000000", "down", print_output=False))["44444444"]
+
+    assert result["inherited_persona"] == reference
+    assert result["inherited_persona_title"] is None
