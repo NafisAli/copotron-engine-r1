@@ -21,7 +21,7 @@ Partition content into Copotron memory types:
 - **New or unknown topics**: Query the vault with `uv run copotron search "<keywords>" --limit 5`.
 - **Revisiting a phase**: Update existing notes in place via `id`.
 - **New topic**: Parent to the matched domain hub (or use `--auto-parent`). Fall back to `00000000` (Root) if no hub matches.
-- **Parents are required**: Every new memory except the Root needs at least one parent that exists in the vault or in the same manifest. Crystallize rejects a memory with no parents (an **Orphan**) or with an unknown parent id, and names the problem parent. Pass `--parents <id>` or `--auto-parent`. A manifest item may name any memory the same batch writes (`"$<temp_ref>"` or its `id`), in any order. An update that leaves out `parents` keeps the existing ones. An update cannot set `parents` to `[]`. A batch with a bad parent is rejected before anything is written.
+- **Parents are required**: Every new memory except the Root needs at least one parent that exists in the vault or in the same manifest. Crystallize rejects a memory with no parents (an **Orphan**) or with a parent that is not an existing memory id (or is the memory itself), and names the problem parent. An `--auto-parent` that finds no parent is rejected too. Pass `--parents <id>` or `--auto-parent`. A manifest item may name any memory the same batch writes (`"$<temp_ref>"` or its `id`), in any order. An update that leaves out `parents` keeps the existing ones. An update cannot set `parents` to `[]`. A batch with a bad parent is rejected before anything is written.
 
 #### Step 2: Manifest Creation via `write_to_file`
 For multiple nodes or structured content, write a scratch JSON manifest:

@@ -8,9 +8,10 @@ from pathlib import Path
 from datetime import datetime
 from typing import Collection, List, Dict, Any, Optional
 
-from copotron.core.schema import ROOT_ID, MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
+from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import get_vault_path, atomic_write_text, find_memory_file
 from copotron.core.indexer import load_vault
+from copotron.core.parents import require_parents
 from copotron.core.personas import (
     PERSONA_DEFINITION_TAG,
     PERSONA_DEFINITION_TYPE,
@@ -137,24 +138,15 @@ def _declares_persona_definition(item: Dict[str, Any]) -> bool:
     )
 
 
-def _require_parents(
-    vault_dir: Path, memory_id: str, parents: List[str], batch_ids: Collection[str] = ()
-) -> None:
-    """
-    Write-path guard: refuse to write a non-Root memory with no parents (an
-    Orphan), or one that names a parent that does not exist. batch_ids are the
-    memories a manifest batch writes; they count as existing.
-    """
-    if not parents and memory_id != ROOT_ID:
+def _resolve_auto_parents(vault_dir: Path, memory_id: str, title: str, summary: str) -> List[str]:
+    """Resolve auto-parent for a new memory, refusing a result that would make it an Orphan."""
+    parents = resolve_auto_parent(title, summary, vault_dir)
+    if not parents:
         raise ValueError(
-            f"memory {memory_id!r} has no parents, which would make it an Orphan. Every memory except "
-            f"the Root ({ROOT_ID}) needs a parent: pass --parents <id> or --auto-parent."
+            f"memory {memory_id!r}: auto-parent found no parent, which would make it an Orphan. "
+            f"Pass --parents <id> instead."
         )
-    for parent in parents:
-        if parent not in batch_ids and find_memory_file(vault_dir, parent) is None:
-            raise ValueError(
-                f"memory {memory_id!r} names parent {parent!r}, which does not identify an existing memory."
-            )
+    return parents
 
 
 def create_memory_node(
@@ -188,9 +180,6 @@ def create_memory_node(
 
     persona = _validated_persona(vault_dir, persona)
 
-    if auto_parent and not parents:
-        parents = resolve_auto_parent(title, summary, vault_dir)
-
     if (auto_type or not memory_type) and title:
         memory_type = infer_memory_type(title=title, summary=summary, body=body)
 
@@ -204,7 +193,9 @@ def create_memory_node(
     else:
         final_id = generate_unique_id(vault_dir, title, node_date)
 
-    _require_parents(vault_dir, final_id, parents, batch_ids)
+    if auto_parent and not parents:
+        parents = _resolve_auto_parents(vault_dir, final_id, title, summary)
+    require_parents(vault_dir, final_id, parents, batch_ids)
 
     slug = clean_slug(title)
     filename = f"{final_id}-{slug}.md"
@@ -276,7 +267,7 @@ def update_memory_node(
     # missing parent is left for the audit and vault doctor.
     if parents is not None:
         final_parents = list(parents)
-        _require_parents(vault_dir, existing_schema.id, final_parents, batch_ids)
+        require_parents(vault_dir, existing_schema.id, final_parents, batch_ids)
     else:
         final_parents = existing_schema.parents
 
@@ -478,24 +469,28 @@ def crystallize_manifest(
     # leave an Orphan or a missing parent leaves the vault untouched. A parent
     # may be any memory the batch writes, in any order. An update that does not
     # supply parents (no key, or null) keeps its existing ones, and an
-    # auto-parent create without parents is resolved, and checked again, when
-    # it is written.
+    # auto-parent create without parents is resolved here, so it is checked
+    # with the rest of the batch.
     batch_ids = frozenset(item["_assigned_id"] for item in manifest_nodes)
     resolved_parent_lists: List[Optional[List[str]]] = []
     for item in manifest_nodes:
+        memory_id = item["_assigned_id"]
         raw_parents = item.get("parents")
         if raw_parents is None:
             resolved_parents = None
         else:
             resolved_parents = [ref_map.get(str(p).strip(), str(p).strip()) for p in raw_parents]
+
+        is_update = find_memory_file(vault_dir, memory_id) is not None
+        if not is_update and not resolved_parents and item.get("auto_parent"):
+            resolved_parents = _resolve_auto_parents(
+                vault_dir, memory_id, item.get("title") or "", item.get("summary", "")
+            )
         resolved_parent_lists.append(resolved_parents)
 
-        is_update = find_memory_file(vault_dir, item["_assigned_id"]) is not None
         if is_update and resolved_parents is None:
             continue
-        if not is_update and not resolved_parents and item.get("auto_parent"):
-            continue
-        _require_parents(vault_dir, item["_assigned_id"], resolved_parents or [], batch_ids)
+        require_parents(vault_dir, memory_id, resolved_parents or [], batch_ids)
 
     for item, persona, resolved_parents in zip(manifest_nodes, resolved_personas, resolved_parent_lists):
         extra_keys = {
@@ -544,7 +539,7 @@ def main():
     parser.add_argument("--auto-type", action="store_true", help="Infer biological memory type using System One.")
     parser.add_argument("--summary", default="", help="1-2 sentence summary for AI context scanning.")
     parser.add_argument("--body", default="", help="Markdown body content.")
-    parser.add_argument("--parent", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
+    parser.add_argument("--parent", "--parents", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
     parser.add_argument("--tag", action="append", dest="tags", default=[], help="Semantic tag (can specify multiple).")
     parser.add_argument("--status", choices=["active", "completed", "archived", "none"], default="active", help="Lifecycle status.")
     parser.add_argument("--date", default=None, help="Date in YYYY-MM-DD format (defaults to today).")

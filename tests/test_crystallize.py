@@ -684,3 +684,74 @@ def test_setup_init_creates_root_memory(tmp_path):
     root = parse_frontmatter(vault_dir / "00000000-root.md")
     assert root.id == "00000000"
     assert root.parents == []
+
+
+def test_copotron_cli_rejects_orphan_create(mock_vault):
+    from copotron.cli import main as copotron_main
+
+    files_before = set(mock_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match="Orphan"):
+        copotron_main(["crystallize", "--title", "Campaign Plan", "--type", "prospective", "--no-index"])
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+def test_legacy_crystallize_script_accepts_the_parents_flag_the_orphan_error_names(mock_vault, monkeypatch, capsys):
+    from copotron.system_two.crystallize import main
+
+    monkeypatch.setattr(sys, "argv", [
+        "crystallize.py", "--title", "Campaign Plan", "--type", "prospective",
+        "--parents", "00000001", "--no-index", "--json-output",
+    ])
+    main()
+
+    assert json.loads(capsys.readouterr().out)["parents"] == ["00000001"]
+
+
+@pytest.mark.parametrize("parent", ["1", "0000000A", "*"])
+def test_create_rejects_parent_that_is_not_a_memory_id(mock_vault, parent):
+    files_before = set(mock_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match="not a memory id"):
+        create_memory_node(vault_dir=mock_vault, title="Campaign Plan", memory_type="prospective", parents=[parent])
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+def test_update_rejects_memory_as_its_own_parent(mock_vault):
+    from copotron.system_two.crystallize import create_or_update_memory_node
+
+    target = mock_vault / "00000001-hardware-hub.md"
+    content_before = target.read_text(encoding="utf-8")
+
+    with pytest.raises(ValueError, match="own parent"):
+        create_or_update_memory_node(vault_dir=mock_vault, node_id="00000001", parents=["00000001"])
+
+    assert target.read_text(encoding="utf-8") == content_before
+
+
+def test_manifest_rejects_memory_as_its_own_parent(mock_vault):
+    files_before = set(mock_vault.glob("*.md"))
+    manifest = [{"temp_ref": "loop", "title": "Campaign Plan", "type": "prospective", "parents": ["$loop"]}]
+
+    with pytest.raises(ValueError, match="own parent"):
+        crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+    assert set(mock_vault.glob("*.md")) == files_before
+
+
+def test_manifest_rejects_auto_parent_that_finds_no_parent_before_writing_anything(mock_vault, monkeypatch):
+    import copotron.system_two.crystallize as crystallize
+
+    monkeypatch.setattr(crystallize, "resolve_auto_parent", lambda title, summary, vault_dir=None: [])
+    files_before = set(mock_vault.glob("*.md"))
+    manifest = [
+        {"title": "Valid Sibling", "type": "declarative", "parents": ["00000001"]},
+        {"title": "Campaign Plan", "type": "prospective", "auto_parent": True},
+    ]
+
+    with pytest.raises(ValueError, match="auto-parent found no parent"):
+        crystallize_manifest(mock_vault, manifest, auto_index=False)
+
+    assert set(mock_vault.glob("*.md")) == files_before
