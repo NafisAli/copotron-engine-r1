@@ -307,6 +307,49 @@ def test_topological_cycle_detection(tmp_path, monkeypatch, capsys):
     assert "0000000a" in graph
     assert "0000000b" in graph
 
+def test_topological_cycle_persona_inheritance(tmp_path, monkeypatch, capsys):
+    """Verify nodes in or downstream of a cycle still inherit persona from an acyclic ancestor."""
+    vault = tmp_path / "cycle_persona_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[], persona="home")
+    # Cycle C <-> D, entered from Root; E hangs below the cycle
+    _create_test_note(vault, "0000000c", "Cycle Node C", parents=["00000000", "0000000d"])
+    _create_test_note(vault, "0000000d", "Cycle Node D", parents=["0000000c"])
+    _create_test_note(vault, "0000000e", "Below Cycle E", parents=["0000000d"])
+    # Cycle F <-> G (00000010) where F declares its own persona
+    _create_test_note(vault, "0000000f", "Cycle Node F", parents=["00000010"], persona="work")
+    _create_test_note(vault, "00000010", "Cycle Node G", parents=["0000000f"])
+
+    graph = load_vault()
+    capsys.readouterr()
+
+    assert graph["0000000c"]["inherited_persona"] == "home"
+    assert graph["0000000d"]["inherited_persona"] == "home"
+    assert graph["0000000e"]["inherited_persona"] == "home"
+    assert graph["0000000f"]["inherited_persona"] == "work"
+    assert graph["00000010"]["inherited_persona"] == "work"
+
+def test_topological_cycle_persona_skips_unresolved_later_parent(tmp_path, monkeypatch, capsys):
+    """Verify a cyclic node skips a first parent not yet resolved (later in id order) and falls back to the next parent."""
+    vault = tmp_path / "cycle_order_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+
+    _create_test_note(vault, "00000000", "Root", parents=[], persona="home")
+    _create_test_note(vault, "0000000a", "Work Hub", parents=["00000000"], persona="work")
+    # Cycle C <-> D. C's first parent is D, which the fallback resolves after C.
+    _create_test_note(vault, "0000000c", "Cycle Node C", parents=["0000000d", "00000000"])
+    _create_test_note(vault, "0000000d", "Cycle Node D", parents=["0000000a", "0000000c"])
+
+    graph = load_vault()
+    capsys.readouterr()
+
+    # D has no persona of its own and is unresolved when C is visited, so C takes Root's.
+    assert graph["0000000c"]["inherited_persona"] == "home"
+    assert graph["0000000d"]["inherited_persona"] == "work"
+
 # ---------------------------------------------------------
 # Phase 1: Streaming Frontmatter & Parser Tests
 # ---------------------------------------------------------

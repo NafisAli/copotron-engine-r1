@@ -46,6 +46,18 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
     _scan(vault_dir)
     return files
 
+def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
+    """
+    Resolve a node's Inherited Persona: its own persona wins, otherwise the
+    first declared parent (present in graph) with an Inherited Persona.
+    """
+    if node.get("persona"):
+        return node["persona"]
+    for parent_id in node.get("parents", []):
+        if parent_id in graph and graph[parent_id].get("inherited_persona"):
+            return graph[parent_id]["inherited_persona"]
+    return None
+
 def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     """
     Incrementally synchronize Markdown vault memories into SQLite local index (.index.sqlite3).
@@ -204,16 +216,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         u = heapq.heappop(queue)
         processed_count += 1
         node = graph[u]
-
-        if node.get("persona"):
-            node["inherited_persona"] = node["persona"]
-        else:
-            inherited = None
-            for parent_id in node.get("parents", []):
-                if parent_id in graph and graph[parent_id].get("inherited_persona"):
-                    inherited = graph[parent_id]["inherited_persona"]
-                    break
-            node["inherited_persona"] = inherited
+        node["inherited_persona"] = _resolve_inherited_persona(node, graph)
 
         for child_id in node.get("children", []):
             if child_id in in_degree:
@@ -226,15 +229,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         print(f"Warning: Cycle detected involving nodes: {cyclic_nodes}", file=sys.stderr)
         for node_id in cyclic_nodes:
             node = graph[node_id]
-            if node.get("persona"):
-                node["inherited_persona"] = node["persona"]
-            else:
-                inherited = None
-                for parent_id in node.get("parents", []):
-                    if parent_id in graph and graph[parent_id].get("inherited_persona"):
-                        inherited = graph[parent_id]["inherited_persona"]
-                        break
-                node["inherited_persona"] = inherited
+            node["inherited_persona"] = _resolve_inherited_persona(node, graph)
 
     # -------------------------------------------------------------------------
     # Phase 3: Atomic Batch Commit (Single SQLite Transaction)
