@@ -15,7 +15,7 @@ Treat `copotron` strictly as a compiled binary tool.
 - **Navigate**: `uv run copotron navigate "<id>" --direction <up|down>` (DAG edge traversal).
 - **Crystallize**: `uv run copotron crystallize --manifest <path>` (atomic batch creation or in-place node updates).
 - **Validate & Index**: `uv run copotron validate [path]` and `uv run copotron index`.
-- **Persona**: Adopt instructions from any returned `inherited_persona`.
+- **Persona**: When a result's `inherited_persona_title` is set, open the `inherited_persona` id and adopt its instructions. A null title means a Dangling Persona: proceed without one (see `vault-query`).
 
 ## Progressive Memory Formation
 

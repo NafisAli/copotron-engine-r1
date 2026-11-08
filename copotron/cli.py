@@ -22,6 +22,28 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8")
 
 
+def _persona_label(record: dict) -> str:
+    """Text-output suffix naming a record's Inherited Persona by title, or flagging it as dangling."""
+    reference = record.get("inherited_persona")
+    if not reference:
+        return ""
+    title = record.get("inherited_persona_title")
+    if title is None:
+        return f"  · persona: {reference} (dangling)"
+    return f"  · persona: {title} [{reference}]"
+
+
+def _print_memory_list(records: list[dict], empty_message: str) -> None:
+    """Print retrieval results as text: one line per memory, summary indented below."""
+    if not records:
+        print(empty_message)
+        return
+    for r in records:
+        print(f"  [{r['id']}] ({r['type']}, {r['status']}) {r['title']}{_persona_label(r)}")
+        if r.get("summary"):
+            print(f"      {r['summary']}")
+
+
 def cmd_domains(args) -> int:
     """List all active domain hubs currently registered in the vault."""
     hubs = get_domain_hubs()
@@ -34,7 +56,7 @@ def cmd_domains(args) -> int:
         print(f"Active Domain Hubs ({len(hubs)}):")
         for h in hubs:
             tags_str = f" [{', '.join(h['tags'])}]" if h["tags"] else ""
-            print(f"  • [{h['id']}] {h['title']}{tags_str}")
+            print(f"  • [{h['id']}] {h['title']}{tags_str}{_persona_label(h)}")
             if h.get("summary"):
                 print(f"      {h['summary']}")
     return 0
@@ -43,16 +65,21 @@ def cmd_domains(args) -> int:
 def cmd_search(args) -> int:
     """Search vault index via FTS5 BM25 or direct ID matching with optional System One reranking."""
     query = args.query or args.query_flag
-    search_graph(
+    results = search_graph(
         query=query,
         tag=args.tag,
         memory_type=args.type,
         status=args.status,
         limit=args.limit,
         offset=args.offset,
-        print_output=True,
+        print_output=False,
         rerank=getattr(args, "rerank", False),
     )
+    if getattr(args, "json", False):
+        print(json.dumps(results, indent=2))
+    else:
+        print(f"Search results ({len(results)}):")
+        _print_memory_list(results, "  (no matches)")
     return 0
 
 
@@ -62,14 +89,20 @@ def cmd_navigate(args) -> int:
     if not node_id:
         print("Error: Node ID is required to navigate.", file=sys.stderr)
         return 1
-    navigate(
+    results = navigate(
         node_id=node_id,
         direction=args.direction,
         limit=args.limit,
         offset=args.offset,
         status=args.status,
-        print_output=True,
+        print_output=False,
     )
+    if getattr(args, "json", False):
+        print(json.dumps(results, indent=2))
+    else:
+        relation = "Children" if args.direction == "down" else "Parents"
+        print(f"{relation} of [{node_id}] ({len(results)}):")
+        _print_memory_list(results, "  (none)")
     return 0
 
 
@@ -159,7 +192,7 @@ def cmd_crystallize(args) -> int:
         else:
             print(f"Parent candidates for '{args.suggest_parents}':")
             for c in candidates:
-                print(f"  [{c['id']}] ({c['type']}) {c['title']} — {c.get('summary', '')[:80]}")
+                print(f"  [{c['id']}] ({c['type']}) {c['title']} — {c.get('summary', '')[:80]}{_persona_label(c)}")
         return 0
 
     # Batch manifest mode

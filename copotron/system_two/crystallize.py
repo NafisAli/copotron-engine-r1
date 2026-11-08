@@ -74,7 +74,8 @@ def suggest_parents(query: str, limit: int = 5, vault_dir: Optional[Path] = None
                 "title": r["title"],
                 "type": r["type"],
                 "summary": r.get("summary", ""),
-                "inherited_persona": r.get("inherited_persona")
+                "inherited_persona": r.get("inherited_persona"),
+                "inherited_persona_title": r.get("inherited_persona_title"),
             }
             for r in results
         ]
