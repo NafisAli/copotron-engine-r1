@@ -5,7 +5,7 @@ import struct
 
 import nms
 import pytest
-from conftest import UID, save_doc, slot, write_save
+from conftest import UID, refiner_state, save_doc, slot, write_save
 from nmslib import catalog, decode, extract
 
 
@@ -129,10 +129,74 @@ def test_catalog_names_carried_base_parts_and_modular_parts(nms_root, capsys):
         ("BUILD_REFINER1", "Portable Refiner"), ("FOS_HEAD_BH", "Longhorn Skull")]
 
 
-def test_refiner_is_not_a_category(save_path, capsys):
-    with pytest.raises(SystemExit) as e:
-        nms.main(["inventory", "refiner"])
-    assert e.value.code == 2
+# ---- the exosuit's Personal Refiner (#22) ---------------------------------------
+REFINER_NOTE = ("The save doesn't reveal refiners in bases, on the freighter, in exocraft or on the corvette. "
+                "Contents are as of the save; refining continues when the game loads.")
+
+
+@pytest.fixture
+def refiner_save(nms_root):
+    working = refiner_state(slot("^MAINT_FUEL1", 40, 100, "Technology", x=0), slot("^SPACEGUNK4", 54, 9999, x=2),
+                            slot("^SPACEGUNK2", 150, 9999, x=1))  # list order is not slot order
+    return write_save(nms_root / "save.hg", save_doc(**working), 1000)
+
+
+def test_the_personal_refiner_is_the_entry_keyed_by_the_sentinel(refiner_save):
+    s = extract.load_path(refiner_save)
+    [r] = [c for c in s.containers if c.category == "refiner"]
+    assert (r.owner, r.label, r.fuel_pct) == ("Exosuit", "Personal Refiner", 40)
+    assert [(x.name, x.amount, x.role) for x in r.slots] == [("Runaway Mould", 150, "output"),
+                                                             ("Living Slime", 54, "input")]  # slot order
+
+
+def test_an_empty_personal_refiner_is_still_shown(nms_root):
+    doc = save_doc(**refiner_state(slot("^MAINT_FUEL1", 8, 100, "Technology"),
+                                   slot("^MAINT_REFINER", 0, 100, "Technology", x=1)))
+    s = extract.load_path(write_save(nms_root / "save.hg", doc, 1000))
+    [r] = [c for c in s.containers if c.category == "refiner"]
+    assert (r.fuel_pct, r.slots) == (8, [])
+
+
+def test_no_sentinel_key_means_no_refiner(nms_root):
+    planet = {"GalacticAddress": "0x210300FCA77448", "Value": 1, "Position": [1.0, 1.0, 1.0, 1.0]}
+    doc = save_doc(**refiner_state(slot("^MAINT_FUEL1", 54, 100, "Technology"), slot("^LAND1", 448, 9999, x=1),
+                                   keys=[planet] * 3))  # fuel plus material, but a planet key: a harvester
+    s = extract.load_path(write_save(nms_root / "save.hg", doc, 1000))
+    assert not any(c.category == "refiner" for c in s.containers)
+
+
+def test_inventory_refiner_schema_labels_slots_and_notes_the_unreadable_refiners(refiner_save, capsys):
+    code, d, _ = run(capsys, "inventory", "refiner")
+    assert code == 0 and d["notes"] == ["Only the exosuit's Personal Refiner can be read. " + REFINER_NOTE]
+    [c] = d["containers"]
+    assert set(c) == {"category", "owner", "grid", "is_current", "capacity", "used", "at_cap", "name",
+                      "fuel_pct", "items"}
+    assert (c["owner"], c["name"], c["fuel_pct"]) == ("Exosuit", "Personal Refiner", 40)
+    assert [(i["id"], i["role"]) for i in c["items"]] == [("SPACEGUNK2", "output"), ("SPACEGUNK4", "input")]
+    assert set(c["items"][0]) == {"id", "name", "amount", "max_amount", "type", "at_cap", "damage_factor",
+                                  "fully_installed", "x", "y", "role"}
+
+
+def test_inventory_refiner_text_shows_fuel_output_and_inputs(refiner_save, capsys):
+    assert nms.main(["inventory", "refiner", "--save", str(refiner_save)]) == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "Personal Refiner — Fuel 40%", "  Output: Runaway Mould ×150", "  Input: Living Slime ×54",
+        "Note      Only the exosuit's Personal Refiner can be read. " + REFINER_NOTE]
+
+
+def test_without_a_personal_refiner_the_note_says_none_is_installed(save_path, capsys):
+    _, d, _ = run(capsys, "inventory", "refiner")
+    assert d["containers"] == [] and d["notes"] == ["No Personal Refiner installed. " + REFINER_NOTE]
+
+
+def test_refiner_contents_count_toward_search_and_have_but_fuel_never_does(refiner_save, capsys):
+    _, d, _ = run(capsys, "inventory", "--search", "slime")
+    assert d["items"][0]["locations"] == {"Personal Refiner": 54}
+    code, d, _ = run(capsys, "inventory", "--have", "Runaway Mould:150")
+    assert code == 0 and d["requirements"][0]["locations"] == {"Personal Refiner": 150}
+    _, d, _ = run(capsys, "inventory")
+    assert d["notes"] == []  # the refiner note belongs to `inventory refiner` only
+    assert [c["owner"] for c in d["containers"] if c["category"] == "refiner"] == ["Exosuit"]
 
 
 def test_expedition_context_is_read(nms_root):

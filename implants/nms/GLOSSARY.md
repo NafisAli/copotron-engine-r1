@@ -62,6 +62,14 @@ _Avoid_: Have-check, Shopping list, Shortage report
 The bundled reference that names items from their game identifiers. An identifier it does not know is shown as is, never given a guessed name.
 _Avoid_: Item database, Dictionary, Translations
 
+**Refiner**:
+A machine that turns input items into an output item over time, burning fuel as it works.
+_Avoid_: Refinery, Smelter
+
+**Personal Refiner**:
+The Refiner built into the exosuit.
+_Avoid_: Suit refiner, Portable refiner
+
 ## The Universe
 
 **Address**:

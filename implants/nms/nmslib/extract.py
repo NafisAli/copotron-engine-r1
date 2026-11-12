@@ -200,6 +200,9 @@ def _owner_grids(category, owner, holder: dict, keys: tuple, is_current=True) ->
 def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
     out: list[Container] = []
     out += _owner_grids("suit", "Exosuit", ps, ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
+    refiner = _personal_refiner(ps)
+    if refiner:
+        out.append(refiner)
 
     owned = ps.get("ShipOwnership") or []
     for ship in ships:
@@ -246,9 +249,43 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
         grids = _owner_grids("exocraft", label, v, ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
         if any(c.slots for c in grids if c.grid != "tech"):  # every exocraft ships default tech
             out += grids
-    # No refiner category: nothing in the save reliably ties refiner contents to
-    # the player's refiners (PersonalMaintenanceInteractions holds repair markers).
     return out
+
+
+def _is_sentinel(key) -> bool:
+    """The exosuit refiner's key: galactic address 0 at position (1,1,1,1)."""
+    pos = key.get("Position") or []
+    return _vp_int(key.get("GalacticAddress")) == 0 and len(pos) == 4 and all(float(p) == 1.0 for p in pos)
+
+
+def _personal_refiner(ps: dict) -> Container | None:
+    """The exosuit's Personal Refiner, shown even when empty; None when not installed.
+
+    `PersonalMaintenanceInteractions[i]` pairs by index with `StoredInteractions[9]`
+    key i. Only the exosuit refiner's key is reliable (#21): base, freighter,
+    exocraft and corvette refiners can't be told from harvesters, so they are not read.
+    """
+    personal = ps.get("PersonalMaintenanceInteractions") or []
+    stored = ps.get("StoredInteractions") or []
+    keys = ((stored[9] or {}).get("Interactions") or []) if len(stored) > 9 else []
+    i = next((i for i, k in enumerate(keys[:len(personal)]) if _is_sentinel(k)), None)
+    if i is None:
+        return None
+    inv = personal[i].get("InventoryContainer") or {}
+    width = int(inv.get("Width") or 0)
+
+    def index(sl: Slot) -> int:  # slot 0 is fuel (a MAINT_ marker, not an item), 1 the output, 2+ inputs
+        return sl.y * width + sl.x
+
+    slots = sorted(_slots(inv), key=index)
+    for sl in slots:
+        sl.role = "output" if index(sl) == 1 else "input"
+    fuel = next((s for s in inv.get("Slots") or [] if (s.get("Id") or "").lstrip("^").startswith("MAINT_FUEL")),
+                None)  # Amount is a percentage (MaxAmount 100)
+    c = _grid("refiner", "Exosuit", "general", inv)
+    c.slots, c.name = slots, "Personal Refiner"
+    c.fuel_pct = int(fuel.get("Amount") or 0) if fuel else None
+    return c
 
 
 # ---- bases and discoveries ---------------------------------------------------

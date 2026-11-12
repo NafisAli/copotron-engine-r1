@@ -54,9 +54,29 @@ def player_state(**overrides) -> dict:
     return ps
 
 
-def slot(item_id, amount, max_amount, kind="Substance"):
+def slot(item_id, amount, max_amount, kind="Substance", x=0):
     return {"Type": {"InventoryType": kind}, "Id": item_id, "Amount": amount, "MaxAmount": max_amount,
-            "DamageFactor": 0.0, "FullyInstalled": True, "Index": {"X": 0, "Y": 0}}
+            "DamageFactor": 0.0, "FullyInstalled": True, "Index": {"X": x, "Y": 0}}
+
+
+SENTINEL = {"GalacticAddress": 0, "Value": 0, "Position": [1.0, 1.0, 1.0, 1.0]}  # the exosuit refiner's key
+
+
+def refiner_state(*slots, key_at=1, keys=None) -> dict:
+    """PersonalMaintenanceInteractions paired by index with StoredInteractions[9] keys.
+
+    Entry `key_at` holds `slots` (a 16x1 maintenance grid: slot 0 fuel, 1 output,
+    2+ inputs); the others are portal repair entries keyed by a planet position.
+    """
+    repair = {"InventoryContainer": {"ValidSlotIndices": [], "Width": 16, "Height": 1, "Slots": [
+        slot("^MAINT_PORTAL9", 20, 20, "Technology")]}}
+    planet = {"GalacticAddress": "0x210300FCA77448", "Value": 1, "Position": [-8930.36, 4248.44, 1170.72, 1.0]}
+    pmi = [repair, repair, repair]
+    pmi[key_at] = {"InventoryContainer": {"ValidSlotIndices": [], "Width": 16, "Height": 1, "Slots": list(slots)}}
+    keys = keys or [SENTINEL if i == key_at else planet for i in range(3)]
+    unused = {"GalacticAddress": 0, "Value": 0, "Position": [0.0, 0.0, 0.0, -1.0]}
+    stored = [{"Interactions": [], "CurrentPos": 0}] * 9 + [{"Interactions": keys + [unused] * 47, "CurrentPos": 3}]
+    return {"PersonalMaintenanceInteractions": pmi, "StoredInteractions": stored}
 
 
 def ship(name, filename, slots):

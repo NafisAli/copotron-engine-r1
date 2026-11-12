@@ -39,10 +39,14 @@ T_IMPORTED = time.perf_counter()
 SCHEMA_VERSION = 1  # every --json shape is pinned by the tests; a breaking change bumps it
 
 CATEGORIES = [
-    "suit", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
+    "suit", "refiner", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
     "ingredients", "corvette", "rocket-locker", "fishing-platform", "bait-box", "food-unit",
     "grave", "chest-magic",
 ]
+
+
+REFINER_UNREADABLE = ("The save doesn't reveal refiners in bases, on the freighter, in exocraft or on the "
+                      "corvette. Contents are as of the save; refining continues when the game loads.")
 
 
 class Fail(Exception):
@@ -169,6 +173,7 @@ def slot_json(sl: Slot) -> dict:
         "id": sl.id, "name": sl.name, "amount": sl.amount, "max_amount": sl.max_amount,
         "type": sl.item_type, "at_cap": sl.at_cap, "damage_factor": sl.damage_factor,
         "fully_installed": sl.fully_installed, "x": sl.x, "y": sl.y,
+        **({"role": sl.role} if sl.role else {}),
     }
 
 
@@ -178,6 +183,7 @@ def container_json(c: Container, slots: list[Slot] | None = None) -> dict:
         "category": c.category, "owner": c.owner, "grid": c.grid, "is_current": c.is_current,
         "capacity": c.capacity, "used": len(c.slots),
         "at_cap": sum(1 for x in c.slots if x.at_cap),
+        **({"name": c.name, "fuel_pct": c.fuel_pct} if c.category == "refiner" else {}),
     }
 
 
@@ -216,6 +222,9 @@ def cmd_inventory(args) -> int:
     cs = select_containers(s, args.category, args.name)
     base = {"save": save_ref(s), "catalog": catalog.snapshot()["libmbin_version"]}
     notes = stale_notes(s)
+    if args.category == "refiner":  # only when the refiner is the target, not on a full inventory
+        notes.insert(0, ("Only the exosuit's Personal Refiner can be read. " if cs
+                         else "No Personal Refiner installed. ") + REFINER_UNREADABLE)
 
     if args.have:
         return inventory_have(args, cs, keep, base, notes)
@@ -233,6 +242,7 @@ def cmd_inventory(args) -> int:
         cap = sum(1 for x in c.slots if x.at_cap)
         cur = "" if c.is_current or c.category not in ("ship", "multitool") else "  (stored)"
         rows.append(f"{c.category:<16} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
+                    + (f"  Fuel {c.fuel_pct}%" if c.fuel_pct is not None else "")
                     + (f"  {cap} at cap" if cap else "") + (f"  {len(sel)} match" if filtered else "") + cur)
         data_rows.append({**container_json(c), **({"matching": len(sel)} if filtered else {})})
     emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"], "inventory",
@@ -247,6 +257,10 @@ def inventory_list(args, cs, keep, base, notes) -> int:
         if not sel and (args.tech or args.cargo or args.near_cap):
             continue
         out.append({**container_json(c), "items": [slot_json(x) for x in sel]})
+        if c.category == "refiner":
+            text.append(f"{c.label} — Fuel {'-' if c.fuel_pct is None else f'{c.fuel_pct}%'}")
+            text += [f"  {x.role.capitalize()}: {x.display} ×{x.amount}" for x in sel] or ["  (empty)"]
+            continue
         text.append(f"{c.label} — {len(c.slots)}/{c.capacity}" + ("" if c.is_current else " (stored)"))
         for section, items in (("cargo", [x for x in sel if not x.is_tech]), ("tech", [x for x in sel if x.is_tech])):
             if not items:

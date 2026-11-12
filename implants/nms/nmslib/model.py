@@ -69,6 +69,7 @@ class Slot:
     fully_installed: bool
     x: int
     y: int
+    role: str | None = None  # refiner slots only: "output" | "input"
 
     @property
     def is_tech(self) -> bool:
@@ -90,7 +91,7 @@ class Slot:
 class Container:
     """One slot grid. Owners with separate grids (suit, ship) yield several."""
 
-    # suit | ship | multitool | freighter | storage | exocraft | ingredients | corvette |
+    # suit | refiner | ship | multitool | freighter | storage | exocraft | ingredients | corvette |
     # rocket-locker | fishing-platform | bait-box | food-unit | grave | chest-magic
     category: str
     owner: str  # "Exosuit", ship label, "Storage 3", "Nautilon", ...
@@ -98,9 +99,13 @@ class Container:
     capacity: int  # unlocked slots (len ValidSlotIndices), not width x height
     slots: list[Slot]
     is_current: bool = True  # current ship / multitool; always True for single-owner categories
+    name: str | None = None  # a container named apart from its owner: "Personal Refiner" (owner Exosuit)
+    fuel_pct: int | None = None  # refiner only; fuel is a container value, never an item
 
     @property
     def label(self) -> str:
+        if self.name:
+            return self.name
         return self.owner if self.grid == "general" else f"{self.owner} ({self.grid})"
 
 
