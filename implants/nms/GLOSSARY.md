@@ -98,6 +98,10 @@ _Avoid_: Owned, Personal, Local
 A structure the game persists at an Address, such as a planetary base, the freighter base or a corvette.
 _Avoid_: Settlement, Outpost, Home (except the home planet base)
 
+**Base Part**:
+An item the player places to build a Base, such as a wall, a refiner or a flag. It can also be carried in the Inventory before it is placed.
+_Avoid_: Building, Structure, Base object
+
 **Visited Base**:
 A Base owned by another player that the Save keeps a copy of because the player came near it.
 _Avoid_: Foreign base, Other base, Community base
