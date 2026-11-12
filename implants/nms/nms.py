@@ -41,7 +41,7 @@ SCHEMA_VERSION = 1  # every --json shape is pinned by the tests; a breaking chan
 CATEGORIES = [
     "suit", "refiner", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
     "ingredients", "corvette", "rocket-locker", "fishing-platform", "bait-box", "food-unit",
-    "grave", "chest-magic",
+    "grave", "salvage",
 ]
 
 

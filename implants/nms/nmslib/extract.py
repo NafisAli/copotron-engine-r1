@@ -34,8 +34,8 @@ SHIP_KINDS = {
 EXOCRAFT = ["Roamer", "Nomad", "Colossus", "Pilgrim", "Dragonfly", "Nautilon", "Minotaur"]
 
 # Single-grid containers outside Chest1-10: (save field, category, label).
-# Each is its own category and is shown only when it holds items. ChestMagic's
-# purpose is unknown, so it keeps the raw field name rather than a guessed one.
+# Each is its own category and is shown only when it holds items. ChestMagic is
+# the Base Salvage Capsule (#27); ChestMagic2's purpose is unknown, so it isn't read.
 SINGLE_GRIDS = [
     ("CookingIngredientsInventory", "ingredients", "Ingredient Storage"),
     ("CorvetteStorageInventory", "corvette", "Corvette Storage"),
@@ -44,8 +44,7 @@ SINGLE_GRIDS = [
     ("FishBaitBoxInventory", "bait-box", "Bait Box"),
     ("FoodUnitInventory", "food-unit", "Food Unit"),
     ("GraveInventory", "grave", "Grave (dropped on death)"),
-    ("ChestMagicInventory", "chest-magic", "ChestMagic"),
-    ("ChestMagic2Inventory", "chest-magic", "ChestMagic2"),
+    ("ChestMagicInventory", "salvage", "Base Salvage Capsule"),
 ]
 
 

@@ -94,7 +94,7 @@ class Container:
     """One slot grid. Owners with separate grids (suit, ship) yield several."""
 
     # suit | refiner | ship | multitool | freighter | storage | exocraft | ingredients | corvette |
-    # rocket-locker | fishing-platform | bait-box | food-unit | grave | chest-magic
+    # rocket-locker | fishing-platform | bait-box | food-unit | grave | salvage
     category: str
     owner: str  # "Exosuit", ship label, "Storage 3", "Nautilon", ...
     grid: str  # general | cargo | tech

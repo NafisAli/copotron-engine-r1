@@ -110,14 +110,18 @@ def test_single_grids_are_their_own_categories(nms_root, capsys):
     cats = [(c.category, c.label) for c in s.containers if c.category not in
             ("suit", "ship", "multitool", "storage", "exocraft")]
     assert cats == [("ingredients", "Ingredient Storage"), ("grave", "Grave (dropped on death)"),
-                    ("chest-magic", "ChestMagic"), ("chest-magic", "ChestMagic2")]
+                    ("salvage", "Base Salvage Capsule")]  # ChestMagic2's purpose is unknown: not read
     assert not any(c.category == "refiner" for c in s.containers)
     assert [c.owner for c in s.containers if c.category == "storage"] == ["Storage 3"]
 
-    _, d, _ = run(capsys, "inventory", "--have", "Copper:659", "--save", str(nms_root / "save.hg"))
+    _, d, _ = run(capsys, "inventory", "--have", "Copper:659", "Oxygen:1", "--save", str(nms_root / "save.hg"))
     assert d["requirements"][0]["have"] == 664  # ingredients count toward requisitions
-    _, d, _ = run(capsys, "inventory", "chest-magic", "--save", str(nms_root / "save.hg"))
-    assert [c["owner"] for c in d["containers"]] == ["ChestMagic", "ChestMagic2"]
+    assert d["requirements"][1]["locations"] == {"Base Salvage Capsule": 1}  # and so does salvage
+    _, d, _ = run(capsys, "inventory", "salvage", "--save", str(nms_root / "save.hg"))
+    assert [c["owner"] for c in d["containers"]] == ["Base Salvage Capsule"]
+    with pytest.raises(SystemExit) as e:
+        nms.main(["inventory", "chest-magic"])
+    assert e.value.code == 2
 
 
 # ---- storage chests: shown when built or holding items (#28) --------------------

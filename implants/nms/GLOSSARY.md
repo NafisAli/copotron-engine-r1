@@ -50,6 +50,10 @@ _Avoid_: Vehicle, Buggy, Rover
 Describes an Exocraft whose geobay the player has built, so it can be summoned.
 _Avoid_: Owned, Unlocked
 
+**Base Salvage Capsule**:
+The store that keeps what was left when one of the player's Bases was destroyed.
+_Avoid_: Magic Chest, ChestMagic
+
 **Category**:
 A named group of Containers that a query can target, such as suit, ship, storage or grave.
 _Avoid_: Type, Kind, Section
