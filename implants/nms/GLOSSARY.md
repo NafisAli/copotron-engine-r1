@@ -5,7 +5,7 @@ The vocabulary of the world the NMS Implant couples the brain to: a player's sav
 ## Saves
 
 **Save**:
-One snapshot of a player's game, as the game wrote it to disk. The Implant only ever reads it.
+One copy of a player's game, as the game wrote it to disk. The Implant only ever reads it.
 _Avoid_: Game file, Profile, World
 
 **Save Slot**:
@@ -23,6 +23,10 @@ _Avoid_: Mode, Season, Playthrough
 **Game Mode**:
 The difficulty preset a Save is played under, such as Normal, Survival or Permadeath.
 _Avoid_: Difficulty, Context
+
+**Game Data Snapshot**:
+The bundled Item Catalog plus key mapping, built together from one pinned MBINCompiler release. It is **stale** when a Save's base version is higher than the version it was built for.
+_Avoid_: Snapshot (for a Save), Game files, Cache
 
 ## Inventory
 

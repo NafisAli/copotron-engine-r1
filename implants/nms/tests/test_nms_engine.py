@@ -6,7 +6,7 @@ import struct
 import nms
 import pytest
 from conftest import UID, save_doc, slot, write_save
-from nmslib import decode, extract
+from nmslib import catalog, decode, extract
 
 
 @pytest.fixture
@@ -313,3 +313,41 @@ def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):
     assert code == 2 and d is None and err.startswith("nms: ")
     code, d, err = run(capsys, "find", "lush")
     assert code == 2 and "#14" in err
+
+
+# ---- Game Data Snapshot staleness (#26) ----------------------------------------
+def stale_doc(ahead=2):
+    """A Save whose base version (Version % 512) is `ahead` of the snapshot's."""
+    doc = save_doc()
+    doc["Version"] = 9 * 512 + catalog.snapshot()["save_base_version"] + ahead
+    return doc
+
+
+def test_a_save_newer_than_the_game_data_adds_one_note_to_every_save_command(nms_root, capsys):
+    built = catalog.snapshot()["save_base_version"]
+    write_save(nms_root / "save.hg", stale_doc(), 1000)
+    note = (f"Game data built for save version {built}; this save is {built + 2}. Some items may show "
+            "raw ids and some fields may be missing until the game data is refreshed.")
+    for argv in (["status"], ["inventory"], ["inventory", "suit"], ["inventory", "--search", "copper"],
+                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"]):
+        assert run(capsys, *argv)[1]["notes"] == [note], argv
+    assert run(capsys, "convert", "0EA4:007D:05BD:005F")[1]["notes"] == []  # reads no Save
+
+
+def test_the_staleness_note_is_the_final_stdout_line_in_text(nms_root, capsys):
+    write_save(nms_root / "save.hg", stale_doc(), 1000)
+    assert nms.main(["status"]) == 0
+    out = capsys.readouterr()
+    assert out.out.splitlines()[-1].startswith("Note      Game data built for save version")
+    assert out.err == ""
+
+
+def test_saves_lists_the_slots_ahead_of_the_game_data_unless_quick(nms_root, capsys):
+    built = catalog.snapshot()["save_base_version"]
+    write_save(nms_root / "save3.hg", stale_doc(), 1000)  # slot 2
+    write_save(nms_root / "save9.hg", stale_doc(1), 900)  # slot 5
+    write_save(nms_root / "save5.hg", save_doc(), 800)  # slot 3, current
+    _, d, _ = run(capsys, "saves")
+    assert d["notes"] == [f"Game data built for save version {built}; slots 2, 5 are newer. Some items "
+                          "may show raw ids and some fields may be missing until the game data is refreshed."]
+    assert run(capsys, "saves", "--quick")[1]["notes"] == []  # decodes nothing

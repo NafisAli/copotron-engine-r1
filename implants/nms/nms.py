@@ -67,6 +67,21 @@ def load(args) -> Save:
     return extract.load(locate.resolve(args.save, args.slot))
 
 
+STALE_ADVICE = "Some items may show raw ids and some fields may be missing until the game data is refreshed."
+
+
+def built_for() -> int:
+    """The save base version the bundled Game Data Snapshot was built for."""
+    return catalog.snapshot()["save_base_version"]
+
+
+def stale_notes(s: Save) -> list[str]:
+    """One note when this Save is newer than the Game Data Snapshot; advice, never a warning."""
+    if s.base_version <= built_for():
+        return []
+    return [f"Game data built for save version {built_for()}; this save is {s.base_version}. {STALE_ADVICE}"]
+
+
 def save_ref(s: Save) -> dict:
     return {**s.file.to_json(), "version": s.version, "save_name": s.player.save_name}
 
@@ -144,7 +159,7 @@ def cmd_status(args) -> int:
         f"Ship      " + (f"{ship.name or 'unnamed'} ({ship.kind}, {ship.inventory_class}-class)" if ship else "-"),
     ]
     text += [f"Warning   {w}" for w in s.warnings]
-    emit(args, data, text, "status")
+    emit(args, data, text, "status", stale_notes(s))
     return 0
 
 
@@ -200,13 +215,14 @@ def cmd_inventory(args) -> int:
     keep = slot_filter(args)
     cs = select_containers(s, args.category, args.name)
     base = {"save": save_ref(s), "catalog": catalog.snapshot()["libmbin_version"]}
+    notes = stale_notes(s)
 
     if args.have:
-        return inventory_have(args, s, cs, keep, base)
+        return inventory_have(args, cs, keep, base, notes)
     if args.search:
-        return inventory_search(args, cs, keep, base)
+        return inventory_search(args, cs, keep, base, notes)
     if args.category:
-        return inventory_list(args, cs, keep, base)
+        return inventory_list(args, cs, keep, base, notes)
 
     filtered = args.tech or args.cargo or args.near_cap
     rows, data_rows = [], []
@@ -219,11 +235,12 @@ def cmd_inventory(args) -> int:
         rows.append(f"{c.category:<16} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
                     + (f"  {cap} at cap" if cap else "") + (f"  {len(sel)} match" if filtered else "") + cur)
         data_rows.append({**container_json(c), **({"matching": len(sel)} if filtered else {})})
-    emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"], "inventory")
+    emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"], "inventory",
+         notes)
     return 0
 
 
-def inventory_list(args, cs, keep, base) -> int:
+def inventory_list(args, cs, keep, base, notes) -> int:
     text, out = [], []
     for c in cs:
         sel = [x for x in c.slots if keep(x)]
@@ -244,7 +261,7 @@ def inventory_list(args, cs, keep, base) -> int:
         if not sel:
             text.append("  (empty)")
     emit(args, {**base, "mode": "category", "category": args.category, "containers": out},
-         text or [f"(no {args.category} containers)"], "inventory")
+         text or [f"(no {args.category} containers)"], "inventory", notes)
     return 0
 
 
@@ -282,14 +299,14 @@ def fmt_item(t: dict) -> str:
     return f"{t['name'] or t['ids'][0]} ×{t['total']} ({where}){ids}"
 
 
-def inventory_search(args, cs, keep, base) -> int:
+def inventory_search(args, cs, keep, base, notes) -> int:
     q = args.search.lower()
     hits = [t for t in by_name(aggregate(cs, keep))
             if any(q in i.lower() for i in t["ids"]) or (t["name"] and q in t["name"].lower())]
     hits.sort(key=lambda t: (t["name"] or t["ids"][0]).lower())
     data = {**base, "mode": "search", "query": args.search,
             "items": [{**t, "locations": dict(t["locations"].most_common())} for t in hits]}
-    emit(args, data, [fmt_item(t) for t in hits] or [f"no items match {args.search!r}"], "inventory")
+    emit(args, data, [fmt_item(t) for t in hits] or [f"no items match {args.search!r}"], "inventory", notes)
     return 0
 
 
@@ -330,7 +347,7 @@ def stacks_of(ids: list[str], totals: dict[str, dict]) -> tuple[int, collections
     return total, where
 
 
-def inventory_have(args, s, cs, keep, base) -> int:
+def inventory_have(args, cs, keep, base, notes) -> int:
     totals = aggregate(cs, keep)
     reqs, text = [], []
     for spec in args.have:
@@ -349,7 +366,7 @@ def inventory_have(args, s, cs, keep, base) -> int:
         text.append(f"{'ok   ' if met else 'SHORT'} {name or ids[0]}: {have}/{need}"
                     + ("" if met else f" (need {need - have} more)") + f"  [{where}]")
     all_met = all(r["met"] for r in reqs)
-    emit(args, {**base, "mode": "have", "all_met": all_met, "requirements": reqs}, text, "inventory")
+    emit(args, {**base, "mode": "have", "all_met": all_met, "requirements": reqs}, text, "inventory", notes)
     return 0 if all_met else 1
 
 
@@ -384,7 +401,7 @@ def cmd_bases(args) -> int:
             f"Distance  {ly(d)} from you",
             f"Objects   {b.object_count} · last update {local(b.last_update) if b.last_update else '-'}",
         ]
-        emit(args, data, text, "bases")
+        emit(args, data, text, "bases", stale_notes(s))
         return 0
 
     rows = sorted(pool, key=lambda b: (here.distance_ly(b.address) is None, here.distance_ly(b.address) or 0))
@@ -398,7 +415,7 @@ def cmd_bases(args) -> int:
         others = len(s.bases) - len(s.my_bases)
         if others:
             text.append(f"(+{others} visited bases from other players: --all)")
-    emit(args, data, text or ["(no bases)"], "bases")
+    emit(args, data, text or ["(no bases)"], "bases", stale_notes(s))
     return 0
 
 
@@ -457,7 +474,7 @@ def cmd_saves(args) -> int:
         selected = locate.resolve(None, None).path
     except locate.LocateError:
         selected = None
-    accounts = []
+    accounts, ahead = [], []  # ahead: (account, slot) whose Save is newer than the game data
     text = [f"Root      {root}" + (f"  (NMS_SAVE_PATH={env})" if env else "")]
     for d in locate.account_dirs(root):
         saves = locate.list_saves(d)
@@ -473,6 +490,8 @@ def cmd_saves(args) -> int:
             if not args.quick:
                 try:
                     sv = extract.load(newest)
+                    if sv.base_version > built_for():
+                        ahead.append((d.name, n))
                     info = {"mode": sv.player.game_mode, "context": sv.player.context,
                             "play_time_s": sv.player.play_time_s, "summary": sv.player.save_summary}
                 except Exception as e:  # one unreadable slot must not hide the rest
@@ -491,8 +510,20 @@ def cmd_saves(args) -> int:
         accounts.append(acct)
     text.append("\n* = read by default (newest overall). Pick another with --slot N.")
     emit(args, {"root": str(root), "nms_save_path": env, "selected": str(selected) if selected else None,
-                "accounts": accounts}, text, "saves")
+                "accounts": accounts}, text, "saves", slots_ahead_notes(ahead, len(accounts) > 1))
     return 0
+
+
+def slots_ahead_notes(ahead: list[tuple[str, int]], qualify: bool) -> list[str]:
+    """One note naming the slots ahead of the game data; `qualify` adds the account when there are several."""
+    if not ahead:
+        return []
+    one = len(ahead) == 1
+    if qualify:
+        which = ", ".join(f"{acct} slot {n}" for acct, n in sorted(ahead))
+    else:
+        which = ("slot " if one else "slots ") + ", ".join(str(n) for _, n in sorted(ahead))
+    return [f"Game data built for save version {built_for()}; {which} {'is' if one else 'are'} newer. {STALE_ADVICE}"]
 
 
 # ---- bench (dev only) ----------------------------------------------------------

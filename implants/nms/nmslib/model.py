@@ -178,6 +178,11 @@ class Save:
     warnings: list[str] = field(default_factory=list)  # tolerated decode problems
 
     @property
+    def base_version(self) -> int:
+        """The game's save format version (`Version % 512`), compared with the Game Data Snapshot's."""
+        return self.version % 512
+
+    @property
     def my_bases(self) -> list[Base]:
         return [b for b in self.bases if b.is_mine]
 
