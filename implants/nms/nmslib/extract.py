@@ -9,6 +9,7 @@ Handles three save layouts seen in the wild:
 from __future__ import annotations
 
 import collections
+from collections.abc import Mapping
 from pathlib import Path
 
 from . import catalog
@@ -48,10 +49,10 @@ SINGLE_GRIDS = [
 
 
 def load(file: SaveFile) -> Save:
-    return build(read_save(file.path), file)
+    return build(read_save(file.path), file)  # doc is a dict, or a lazy decode.Node view
 
 
-def build(doc: dict, file: SaveFile) -> Save:
+def build(doc: Mapping, file: SaveFile) -> Save:
     warnings: list[str] = []
     ctx_name = doc.get("ActiveContext")
     if ctx_name is None and "PlayerStateData" in doc:
@@ -175,7 +176,7 @@ def _slots(inv: dict) -> list[Slot]:
 
 
 def _grid(category, owner, grid, inv, is_current=True) -> Container | None:
-    if not isinstance(inv, dict):
+    if not isinstance(inv, Mapping):
         return None
     return Container(
         category=category, owner=owner, grid=grid,

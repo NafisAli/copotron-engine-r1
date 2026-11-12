@@ -32,6 +32,18 @@ def test_obfuscated_keys_are_mapped():
     assert decode.decode_bytes(json.dumps(doc).encode())["ActiveContext"] == "Main"
 
 
+def test_obfuscated_keys_resolve_through_objects_lists_and_fixups():
+    keys, fixups = decode._mapping()
+    obf = {fixups.get(v, v): k for k, v in keys.items()}
+    doc = {"F2P": 4746, obf["BaseContext"]: {obf["PlayerStateData"]: {
+        obf["Multitools"]: [{obf["Name"]: "Lance"}], "unmapped": 1}}}
+    root = decode.decode_bytes(json.dumps(doc).encode())
+    ps = root["BaseContext"]["PlayerStateData"]
+    assert root["Version"] == 4746
+    assert ps["Multitools"][0]["Name"] == "Lance"  # MultiTools fixup applied
+    assert ps.get("unmapped") == 1 and ps.get("Units") is None and "Multitools" in ps
+
+
 def test_lz4_blocks_decode():
     lz4 = pytest.importorskip("lz4.block")
     body = json.dumps({"Version": 1, "pad": "x" * 0x90000}).encode()
@@ -206,6 +218,13 @@ def test_saves_schema(save_path, capsys):
     assert set(slot) == {"slot", "manual", "auto", "newest", "selected", "mode", "context",
                          "play_time_s", "summary"}
     assert slot["slot"] == 2 and slot["selected"] and slot["mode"] == "Survival"
+
+
+def test_bench_reports_timings_and_counts(save_path, capsys):
+    code, d, _ = run(capsys, "bench")
+    assert code == 0
+    assert {"import", "read", "decode", "extract", "total_in_process"} <= set(d["timings_ms"])
+    assert d["counts"]["slots"] > 0 and d["obfuscated"] is False
 
 
 def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):

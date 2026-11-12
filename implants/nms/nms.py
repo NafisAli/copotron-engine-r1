@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["lz4>=4.3"]
+# dependencies = ["lz4>=4.3", "orjson>=3.10"]
 # ///
 """No Man's Sky implant: read-only, deterministic queries over a save.
 
@@ -14,18 +14,24 @@ Errors go to stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
 
 from __future__ import annotations
 
-import argparse
-import collections
-import json
-import sys
-from pathlib import Path
+import time
+
+T_START = time.perf_counter()  # bench: import cost is part of the budget
+
+import argparse  # noqa: E402
+import collections  # noqa: E402
+import json  # noqa: E402
+import sys  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from nmslib import catalog, extract, locate  # noqa: E402
+from nmslib import catalog, decode, extract, locate  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
 from nmslib.model import Container, Save, Slot  # noqa: E402
+
+T_IMPORTED = time.perf_counter()
 
 CATEGORIES = [
     "suit", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
@@ -445,6 +451,31 @@ def cmd_saves(args) -> int:
     return 0
 
 
+# ---- bench (dev only) ----------------------------------------------------------
+def cmd_bench(args) -> int:
+    """Phase timings of one cold decode, to check the 250 ms wall budget by hand (#20)."""
+    f = locate.resolve(args.save, args.slot)
+    t0 = time.perf_counter()
+    with open(f.path, "rb") as fh:  # read-only, always
+        raw = fh.read()
+    t1 = time.perf_counter()
+    doc = decode.decode_bytes(raw)
+    t2 = time.perf_counter()
+    s = extract.build(doc, f)
+    t3 = time.perf_counter()
+    slots = [sl for c in s.containers for sl in c.slots]
+    ms = {"import": T_IMPORTED - T_START, "read": t1 - t0, "decode": t2 - t1, "extract": t3 - t2,
+          "total_in_process": t3 - T_START}
+    data = {"save": save_ref(s), "bytes_on_disk": len(raw), "obfuscated": isinstance(doc, decode.Node),
+            "timings_ms": {k: round(v * 1e3, 1) for k, v in ms.items()},
+            "counts": {"containers": len(s.containers), "slots": len(slots),
+                       "named_slots": sum(1 for sl in slots if sl.name), "bases": len(s.bases),
+                       "systems": len(s.systems), "discoveries": len(s.discoveries)}}
+    emit(args, data, [f"{k:<17} {v:>7.1f} ms" for k, v in data["timings_ms"].items()]
+         + [f"{k:<17} {v:>7}" for k, v in data["counts"].items()])
+    return 0
+
+
 # ---- atlas commands (separate ticket) ---------------------------------------
 def cmd_atlas(args) -> int:
     raise Fail(f"'{args.command}' is not implemented yet: it ships with the Discovery Atlas "
@@ -490,6 +521,8 @@ def parser() -> argparse.ArgumentParser:
     sv = sub.add_parser("saves", parents=[common], help="accounts and slots")
     sv.add_argument("--quick", action="store_true", help="skip reading each slot's summary")
     sv.set_defaults(fn=cmd_saves)
+
+    sub.add_parser("bench", parents=[common, pick], help="(dev) decode timings for the 250 ms budget")         .set_defaults(fn=cmd_bench)
 
     for name in ("find", "route", "system"):
         a = sub.add_parser(name, parents=[common, pick], help="(Discovery Atlas, not yet)")
