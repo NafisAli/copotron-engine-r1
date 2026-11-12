@@ -9,7 +9,9 @@ Identity rules
 - A star system is identified by `Address.system_key`
   (galaxy, voxel x, y, z, system index). Planet index is not part of it.
 - A planet is identified by (system_key, planet index).
-- A base or discovery is "mine" when its owner UID is the player's UID.
+- A discovery is "mine" when its owner UID is the player's UID.
+- A base is "mine" when its type is the player's own (home planet, freighter,
+  corvette) or it has no type (legacy saves); its owner UID is not reliable.
 """
 
 from __future__ import annotations

@@ -5,7 +5,7 @@ import struct
 
 import nms
 import pytest
-from conftest import UID, refiner_state, save_doc, slot, write_save
+from conftest import UID, base, refiner_state, save_doc, slot, write_save
 from nmslib import catalog, decode, extract
 
 
@@ -197,6 +197,21 @@ def test_refiner_contents_count_toward_search_and_have_but_fuel_never_does(refin
     _, d, _ = run(capsys, "inventory")
     assert d["notes"] == []  # the refiner note belongs to `inventory refiner` only
     assert [c["owner"] for c in d["containers"] if c["category"] == "refiner"] == ["Exosuit"]
+
+
+def test_a_base_is_mine_by_its_base_type_not_its_owner(nms_root):
+    legacy = base("Old", None, "0x40050003AB8C07", "")
+    del legacy["BaseType"]  # pre-BaseType saves: every persisted base was the player's
+    bases = [
+        base("Home", "HomePlanetBase", "0x40050003AB8C07", ""),  # legacy bases have an empty owner
+        base("Expedition freighter", "FreighterBase", "0x40050003AB8C07", "placeholder"),
+        base("Corvette", "PlayerShipBase", "0x40050003AB8C07", UID),
+        legacy,
+        base("Template", "ExternalPlanetBase", "0x40050003AB8C07", UID),  # an expedition template
+        base("Visited", "ExternalPlanetBase", "0x40050003AB8C07", "999"),
+    ]
+    s = extract.load_path(write_save(nms_root / "save.hg", save_doc(PersistentPlayerBases=bases), 1000))
+    assert [b.name for b in s.my_bases] == ["Home", "Expedition freighter", "Corvette", "Old"]
 
 
 def test_expedition_context_is_read(nms_root):

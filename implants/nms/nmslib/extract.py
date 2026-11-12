@@ -93,7 +93,7 @@ def build(doc: Mapping, file: SaveFile) -> Save:
         platform=doc.get("Platform") or "",
         player=player,
         containers=_containers(ps, ships),
-        bases=_bases(ps.get("PersistentPlayerBases") or [], uid, warnings),
+        bases=_bases(ps.get("PersistentPlayerBases") or [], warnings),
         systems=_systems(pairs),
         discoveries=[d for d, _ in pairs],
         warnings=warnings,
@@ -289,7 +289,23 @@ def _personal_refiner(ps: dict) -> Container | None:
 
 
 # ---- bases and discoveries ---------------------------------------------------
-def _bases(raw: list, uid: str | None, warnings: list[str]) -> list[Base]:
+# The player's own Base types (corvette = PlayerShipBase). ExternalPlanetBase holds
+# other players' bases and expedition templates. Owner UID can't tell: legacy bases
+# have an empty owner and the expedition freighter a placeholder one (#27).
+MY_BASE_TYPES = {"HomePlanetBase", "FreighterBase", "PlayerShipBase"}
+
+
+def _base_type(b) -> str | None:
+    return (b.get("BaseType") or {}).get("PersistentBaseTypes") or None
+
+
+def _is_my_base(b) -> bool:
+    """A Base is the player's when its type is one of MY_BASE_TYPES, or it has none (legacy saves)."""
+    kind = _base_type(b)
+    return kind is None or kind in MY_BASE_TYPES
+
+
+def _bases(raw: list, warnings: list[str]) -> list[Base]:
     out = []
     for i, b in enumerate(raw):
         try:
@@ -301,12 +317,12 @@ def _bases(raw: list, uid: str | None, warnings: list[str]) -> list[Base]:
         pos = b.get("Position") or [0.0, 0.0, 0.0]
         out.append(Base(
             name=(b.get("Name") or "").strip(),
-            kind=(b.get("BaseType") or {}).get("PersistentBaseTypes") or "Unknown",
+            kind=_base_type(b) or "Unknown",
             address=address,
             position=(float(pos[0]), float(pos[1]), float(pos[2])),
             owner_uid=owner.get("UID") or "",
             owner_name=owner.get("USN") or "",
-            is_mine=bool(uid) and owner.get("UID") == uid,
+            is_mine=_is_my_base(b),
             last_update=int(b.get("LastUpdateTimestamp") or 0),
             object_count=len(b.get("Objects") or []),
         ))
