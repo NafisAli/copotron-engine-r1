@@ -185,12 +185,14 @@ def container_json(c: Container, slots: list[Slot] | None = None) -> dict:
         "at_cap": sum(1 for x in c.slots if x.at_cap),
         **({"name": c.name, "fuel_pct": c.fuel_pct} if c.category == "refiner" else {}),
         **({"built": c.built} if c.category == "storage" else {}),
+        **({"type": c.exocraft_type, "deployed": c.deployed} if c.category == "exocraft" else {}),
     }
 
 
 def shown_label(c: Container) -> str:
     """The text label, with the state a Container's category marks (--json carries it as a field)."""
-    return c.label + (" (no container built)" if c.built is False else "")
+    return (c.label + (" (no container built)" if c.built is False else "")
+            + (" (not deployed)" if c.deployed is False else ""))
 
 
 def slot_filter(args):

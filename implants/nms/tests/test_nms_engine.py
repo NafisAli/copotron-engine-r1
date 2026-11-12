@@ -158,6 +158,47 @@ def test_storage_json_carries_built_and_text_marks_an_unbuilt_chest(chest_save, 
     assert "Storage 3 (no container built) — 1/50" in out and "Storage 0 — 0/50" in out
 
 
+# ---- exocraft: shown when deployed or holding cargo (#28) ------------------------
+@pytest.fixture
+def exocraft_save(nms_root):
+    def craft(location, *general, name=""):
+        return {"Name": name, "Location": location,
+                "Inventory": {"ValidSlotIndices": [{}] * 40, "Slots": list(general)},
+                "Inventory_TechOnly": {"ValidSlotIndices": [{}] * 28,
+                                       "Slots": [slot("^VEHICLE_ENGINE", 1, 1, "Technology")]}}
+    tech = slot("^VEHICLE_LASER", 1, 1, "Technology")  # default tech sits in legacy general grids
+    vehicles = [
+        craft("0x209E00FF958E2E"),  # Roamer: deployed (geobay address) and empty
+        craft(4523395107528624, name="Zippy"),  # Nomad: deployed, renamed
+        craft(0, tech),  # Colossus: never deployed, default tech only
+        craft("0x0"),  # Pilgrim: never deployed, empty
+        craft(0, slot("^FUEL1", 5, 250)),  # Dragonfly: can't be deployed, but cargo was left in it
+        craft(0), craft(0),
+    ]
+    return write_save(nms_root / "save.hg", save_doc(VehicleOwnership=vehicles), 1000)
+
+
+def test_an_exocraft_is_shown_when_deployed_or_holding_cargo(exocraft_save):
+    s = extract.load_path(exocraft_save)
+    shown = [(c.owner, c.exocraft_type, c.deployed) for c in s.containers
+             if c.category == "exocraft" and c.grid == "general"]
+    assert shown == [("Roamer", "Roamer", True), ("Zippy (Nomad)", "Nomad", True),
+                     ("Dragonfly", "Dragonfly", False)]
+
+
+def test_exocraft_json_carries_type_and_deployed_and_text_marks_undeployed(exocraft_save, capsys):
+    _, d, _ = run(capsys, "inventory", "exocraft")
+    general = [c for c in d["containers"] if c["grid"] == "general"]
+    assert [(c["owner"], c["type"], c["deployed"]) for c in general] == [
+        ("Roamer", "Roamer", True), ("Zippy (Nomad)", "Nomad", True), ("Dragonfly", "Dragonfly", False)]
+    assert set(general[0]) == {"category", "owner", "grid", "is_current", "capacity", "used", "at_cap",
+                               "type", "deployed", "items"}
+    assert nms.main(["inventory", "--save", str(exocraft_save)]) == 0
+    rows = [r for r in capsys.readouterr().out.splitlines() if r.startswith("exocraft")]
+    assert any("Dragonfly (not deployed)" in r for r in rows)
+    assert not any("not deployed" in r for r in rows if "Roamer" in r or "Zippy" in r)
+
+
 def test_catalog_names_carried_base_parts_and_modular_parts(nms_root, capsys):
     chest = {"ValidSlotIndices": [{}] * 50, "Slots": [
         slot("^BUILD_REFINER1", 1, 5, "Product"), slot("^FOS_HEAD_BH", 1, 1, "Product")]}

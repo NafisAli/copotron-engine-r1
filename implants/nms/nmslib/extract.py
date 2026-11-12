@@ -29,9 +29,9 @@ SHIP_KINDS = {
     "SAILSHIP_PROC": "Solar", "SENTINELSHIP_PROC": "Interceptor",
 }
 
-# VehicleOwnership index -> exocraft (game vehicle enum: Buggy, Bike, Truck,
-# WheeledBike, Hovercraft, Submarine, Mech). Index 1 is an unused slot.
-EXOCRAFT = ["Roamer", "Bike", "Colossus", "Pilgrim", "Nomad", "Nautilon", "Minotaur"]
+# VehicleOwnership index -> exocraft, from game data (GcVehicleType + locale, #27).
+# The Dragonfly is unreleased: it has no buildable geobay, so it is never deployed.
+EXOCRAFT = ["Roamer", "Nomad", "Colossus", "Pilgrim", "Dragonfly", "Nautilon", "Minotaur"]
 
 # Single-grid containers outside Chest1-10: (save field, category, label).
 # Each is its own category and is shown only when it holds items. ChestMagic's
@@ -248,9 +248,16 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
             out.append(c)
 
     for i, v in enumerate(ps.get("VehicleOwnership") or []):
-        label = (v.get("Name") or "").strip() or (EXOCRAFT[i] if i < len(EXOCRAFT) else f"Exocraft #{i}")
-        grids = _owner_grids("exocraft", label, v, ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
-        if any(c.slots for c in grids if c.grid != "tech"):  # every exocraft ships default tech
+        kind = EXOCRAFT[i] if i < len(EXOCRAFT) else f"Exocraft #{i}"
+        name = (v.get("Name") or "").strip()
+        grids = _owner_grids("exocraft", f"{name} ({kind})" if name else kind, v,
+                             ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
+        # Deployed: Location is its geobay's address. An undeployed one is shown only if
+        # cargo was left in it; every exocraft ships default tech, even in its general grid.
+        deployed = bool(_vp_int(v.get("Location")))
+        if deployed or any(not x.is_tech for c in grids if c.grid != "tech" for x in c.slots):
+            for c in grids:
+                c.exocraft_type, c.deployed = kind, deployed
             out += grids
     return out
 

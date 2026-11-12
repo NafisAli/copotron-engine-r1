@@ -104,6 +104,8 @@ class Container:
     name: str | None = None  # a container named apart from its owner: "Personal Refiner" (owner Exosuit)
     fuel_pct: int | None = None  # refiner only; fuel is a container value, never an item
     built: bool | None = None  # storage only: a chest with this number stands at one of the player's Bases
+    exocraft_type: str | None = None  # exocraft only: Roamer, Nomad, ... (owner may be a custom name)
+    deployed: bool | None = None  # exocraft only: its geobay is built, so it can be summoned
 
     @property
     def label(self) -> str:

@@ -42,6 +42,14 @@ _Avoid_: Inventory, Bag, Chest (for anything but storage chests)
 One of the ten numbered chests the player can build at a Base. Every chest built with the same number shares one Container, and its contents stay after the chest is removed.
 _Avoid_: Storage Container, Chest (alone)
 
+**Exocraft**:
+A vehicle the player summons on a planet's surface or underwater.
+_Avoid_: Vehicle, Buggy, Rover
+
+**Deployed**:
+Describes an Exocraft whose geobay the player has built, so it can be summoned.
+_Avoid_: Owned, Unlocked
+
 **Category**:
 A named group of Containers that a query can target, such as suit, ship, storage or grave.
 _Avoid_: Type, Kind, Section
