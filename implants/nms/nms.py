@@ -8,7 +8,8 @@
 
 Commands: status, inventory, bases, convert, saves (find, route, system: see the
 Discovery Atlas ticket). Text by default, one JSON document with --json.
-Errors go to stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
+Each JSON document names its shape in `schema` (nms.<command>/1). Errors go to
+stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
 2 error or bad usage.
 """
 
@@ -33,6 +34,8 @@ from nmslib.model import Container, Save, Slot  # noqa: E402
 
 T_IMPORTED = time.perf_counter()
 
+SCHEMA_VERSION = 1  # every --json shape is pinned by the tests; a breaking change bumps it
+
 CATEGORIES = [
     "suit", "ship", "ships", "multitool", "freighter", "storage", "exocraft",
     "ingredients", "corvette", "rocket-locker", "fishing-platform", "bait-box", "food-unit",
@@ -45,9 +48,11 @@ class Fail(Exception):
 
 
 # ---- helpers -----------------------------------------------------------------
-def emit(args, data: dict, text: list[str]) -> None:
+def emit(args, data: dict, text: list[str], schema: str | None = None) -> None:
+    """Text, or one JSON document whose `schema` (`nms.<command>/<version>`) names its shape."""
     if args.json:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
+        doc = {"schema": f"nms.{schema}/{SCHEMA_VERSION}", **data} if schema else data
+        print(json.dumps(doc, ensure_ascii=False, indent=2))
     else:
         print("\n".join(text))
 
@@ -133,7 +138,7 @@ def cmd_status(args) -> int:
         f"Ship      " + (f"{ship.name or 'unnamed'} ({ship.kind}, {ship.inventory_class}-class)" if ship else "-"),
     ]
     text += [f"Warning   {w}" for w in s.warnings]
-    emit(args, data, text)
+    emit(args, data, text, "status")
     return 0
 
 
@@ -208,7 +213,7 @@ def cmd_inventory(args) -> int:
         rows.append(f"{c.category:<16} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
                     + (f"  {cap} at cap" if cap else "") + (f"  {len(sel)} match" if filtered else "") + cur)
         data_rows.append({**container_json(c), **({"matching": len(sel)} if filtered else {})})
-    emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"])
+    emit(args, {**base, "mode": "summary", "containers": data_rows}, rows or ["(no containers)"], "inventory")
     return 0
 
 
@@ -233,7 +238,7 @@ def inventory_list(args, cs, keep, base) -> int:
         if not sel:
             text.append("  (empty)")
     emit(args, {**base, "mode": "category", "category": args.category, "containers": out},
-         text or [f"(no {args.category} containers)"])
+         text or [f"(no {args.category} containers)"], "inventory")
     return 0
 
 
@@ -262,7 +267,7 @@ def inventory_search(args, cs, keep, base) -> int:
     hits.sort(key=lambda t: (t["name"] or t["id"]).lower())
     data = {**base, "mode": "search", "query": args.search,
             "items": [{**t, "locations": dict(t["locations"])} for t in hits]}
-    emit(args, data, [fmt_item(t) for t in hits] or [f"no items match {args.search!r}"])
+    emit(args, data, [fmt_item(t) for t in hits] or [f"no items match {args.search!r}"], "inventory")
     return 0
 
 
@@ -305,7 +310,7 @@ def inventory_have(args, s, cs, keep, base) -> int:
         text.append(f"{'ok   ' if met else 'SHORT'} {name or item_id}: {have}/{need}"
                     + ("" if met else f" (need {need - have} more)") + f"  [{where}]")
     all_met = all(r["met"] for r in reqs)
-    emit(args, {**base, "mode": "have", "all_met": all_met, "requirements": reqs}, text)
+    emit(args, {**base, "mode": "have", "all_met": all_met, "requirements": reqs}, text, "inventory")
     return 0 if all_met else 1
 
 
@@ -340,7 +345,7 @@ def cmd_bases(args) -> int:
             f"Distance  {ly(d)} from you",
             f"Objects   {b.object_count} · last update {local(b.last_update) if b.last_update else '-'}",
         ]
-        emit(args, data, text)
+        emit(args, data, text, "bases")
         return 0
 
     rows = sorted(pool, key=lambda b: (here.distance_ly(b.address) is None, here.distance_ly(b.address) or 0))
@@ -354,7 +359,7 @@ def cmd_bases(args) -> int:
         others = len(s.bases) - len(s.my_bases)
         if others:
             text.append(f"(+{others} visited bases from other players: --all)")
-    emit(args, data, text or ["(no bases)"])
+    emit(args, data, text or ["(no bases)"], "bases")
     return 0
 
 
@@ -397,7 +402,7 @@ def cmd_convert(args) -> int:
         f"Core      {ly(a.distance_to_core_ly)}"
         + (" · black hole" if a.is_black_hole else "") + (" · Atlas Interface" if a.is_atlas_interface else ""),
     ]
-    emit(args, data, text)
+    emit(args, data, text, "convert")
     return 0
 
 
@@ -447,7 +452,7 @@ def cmd_saves(args) -> int:
         accounts.append(acct)
     text.append("\n* = read by default (newest overall). Pick another with --slot N.")
     emit(args, {"root": str(root), "nms_save_path": env, "selected": str(selected) if selected else None,
-                "accounts": accounts}, text)
+                "accounts": accounts}, text, "saves")
     return 0
 
 
