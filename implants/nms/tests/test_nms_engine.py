@@ -165,8 +165,8 @@ def test_status_schema(save_path, capsys):
     code, d, _ = run(capsys, "status")
     assert code == 0
     assert set(d) == {"schema", "save", "context", "game_mode", "play_time_s", "summary", "location",
-                      "currencies", "current_ship", "warnings"}
-    assert d["schema"] == "nms.status/1"
+                      "currencies", "current_ship", "warnings", "notes"}
+    assert d["schema"] == "nms.status/1" and d["notes"] == []
     assert set(d["save"]) == SAVE_KEYS
     assert set(d["location"]) == ADDRESS_KEYS | {"system_name", "planet_name", "planet_biome",
                                                  "distance_to_core_ly"}
@@ -178,7 +178,7 @@ def test_status_schema(save_path, capsys):
 def test_inventory_summary_schema(save_path, capsys):
     code, d, _ = run(capsys, "inventory")
     assert code == 0 and d["mode"] == "summary"
-    assert set(d) == {"schema", "save", "catalog", "mode", "containers"}
+    assert set(d) == {"schema", "save", "catalog", "mode", "containers", "notes"} and d["notes"] == []
     row = d["containers"][0]
     assert set(row) == {"category", "owner", "grid", "is_current", "capacity", "used", "at_cap"}
     assert (row["owner"], row["used"], row["capacity"], row["at_cap"]) == ("Exosuit", 4, 26, 1)
@@ -253,10 +253,11 @@ def test_search_totals_one_row_per_name(group_save, capsys):
     assert "Copper ×659 (Exosuit 643, Storage 3 9, Shuttle #0 7)" in lines  # one id: none shown
 
 
-def test_every_inventory_mode_carries_the_inventory_schema(save_path, capsys):
+def test_every_inventory_mode_carries_the_inventory_schema_and_notes(save_path, capsys):
     for argv in (["inventory"], ["inventory", "suit"], ["inventory", "--search", "copper"],
                  ["inventory", "--have", "Copper:1"]):
-        assert run(capsys, *argv)[1]["schema"] == "nms.inventory/1"
+        d = run(capsys, *argv)[1]
+        assert d["schema"] == "nms.inventory/1" and d["notes"] == []
 
 
 def test_inventory_filters(save_path, capsys):
@@ -268,7 +269,7 @@ def test_inventory_filters(save_path, capsys):
 
 def test_bases_schema(save_path, capsys):
     _, d, _ = run(capsys, "bases")
-    assert set(d) == {"schema", "save", "scope", "bases"}
+    assert set(d) == {"schema", "save", "scope", "bases", "notes"} and d["notes"] == []
     assert d["scope"] == "mine" and [b["name"] for b in d["bases"]] == ["Home"]
     assert set(d["bases"][0]) == {"name", "kind", "address", "owner_uid", "owner_name", "is_mine",
                                   "last_update", "object_count", "distance_ly"}
@@ -276,7 +277,7 @@ def test_bases_schema(save_path, capsys):
     _, d, _ = run(capsys, "bases", "--all")
     assert len(d["bases"]) == 2
     _, d, _ = run(capsys, "bases", "home")
-    assert set(d) == {"schema", "save", "base"} and d["schema"] == "nms.bases/1"
+    assert set(d) == {"schema", "save", "base", "notes"} and d["schema"] == "nms.bases/1"
     assert d["base"]["name"] == "Home"
 
 
@@ -284,14 +285,16 @@ def test_convert_schema(capsys):
     code, d, _ = run(capsys, "convert", "0EA4:007D:05BD:005F", "--galaxy", "Eissentam", "--planet", "1")
     assert code == 0
     assert set(d) == ADDRESS_KEYS | {"schema", "input", "distance_to_core_ly", "is_black_hole",
-                                     "is_atlas_interface"}
+                                     "is_atlas_interface", "notes"}
+    assert d["notes"] == []  # convert reads no Save, so it never carries a note
     assert d["schema"] == "nms.convert/1"
     assert (d["glyphs"], d["galaxy"]) == ("105FFEDBE6A5", 9)
 
 
 def test_saves_schema(save_path, capsys):
     _, d, _ = run(capsys, "saves")
-    assert set(d) == {"schema", "root", "nms_save_path", "selected", "accounts"} and d["schema"] == "nms.saves/1"
+    assert set(d) == {"schema", "root", "nms_save_path", "selected", "accounts", "notes"}
+    assert d["schema"] == "nms.saves/1" and d["notes"] == []
     slot = d["accounts"][0]["slots"][0]
     assert set(slot) == {"slot", "manual", "auto", "newest", "selected", "mode", "context",
                          "play_time_s", "summary"}

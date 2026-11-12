@@ -8,7 +8,8 @@
 
 Commands: status, inventory, bases, convert, saves (find, route, system: see the
 Discovery Atlas ticket). Text by default, one JSON document with --json.
-Each JSON document names its shape in `schema` (nms.<command>/1). Errors go to
+Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
+`notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
 2 error or bad usage.
 """
@@ -23,6 +24,7 @@ import argparse  # noqa: E402
 import collections  # noqa: E402
 import json  # noqa: E402
 import sys  # noqa: E402
+from collections.abc import Sequence  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -48,13 +50,17 @@ class Fail(Exception):
 
 
 # ---- helpers -----------------------------------------------------------------
-def emit(args, data: dict, text: list[str], schema: str | None = None) -> None:
-    """Text, or one JSON document whose `schema` (`nms.<command>/<version>`) names its shape."""
+def emit(args, data: dict, text: list[str], schema: str | None = None, notes: Sequence[str] = ()) -> None:
+    """Text, or one JSON document whose `schema` (`nms.<command>/<version>`) names its shape.
+
+    `notes` is advice about the tool, not a fault in the Save (that is `warnings`):
+    an always-present array in JSON, and final `Note` lines on stdout in text.
+    """
     if args.json:
-        doc = {"schema": f"nms.{schema}/{SCHEMA_VERSION}", **data} if schema else data
+        doc = {"schema": f"nms.{schema}/{SCHEMA_VERSION}", **data, "notes": list(notes)} if schema else data
         print(json.dumps(doc, ensure_ascii=False, indent=2))
     else:
-        print("\n".join(text))
+        print("\n".join([*text, *(f"Note      {n}" for n in notes)]))
 
 
 def load(args) -> Save:
