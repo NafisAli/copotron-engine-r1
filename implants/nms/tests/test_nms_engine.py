@@ -120,6 +120,44 @@ def test_single_grids_are_their_own_categories(nms_root, capsys):
     assert [c["owner"] for c in d["containers"]] == ["ChestMagic", "ChestMagic2"]
 
 
+# ---- storage chests: shown when built or holding items (#28) --------------------
+@pytest.fixture
+def chest_save(nms_root):
+    def parts(*ids):
+        return [{"ObjectID": f"^{i}", "Position": [0.0, 0.0, 0.0]} for i in ids]
+    home = base("Home", "HomePlanetBase", "0x40050003AB8C07", UID)
+    home["Objects"] = parts("BASE_FLAG", "CONTAINER0")
+    freighter = base("Freighter", "FreighterBase", "0x40050003AB8C07", UID)
+    freighter["Objects"] = parts("FRE_ROOM_STORE2")  # the Storage Room shares chest 2's inventory
+    legacy = base("Old", None, "0x40050003AB8C07", "")
+    del legacy["BaseType"]
+    legacy["Objects"] = parts("S_CONTAINER7")
+    visited = base("Visited", "ExternalPlanetBase", "0x40050003AB8C07", "999")
+    visited["Objects"] = parts("CONTAINER5")  # another player's chest builds nothing of ours
+    # Real saves allocate all ten grids. Chest4Inventory (Storage 3) holds Copper, with no container built.
+    grids = {f"Chest{n}Inventory": {"ValidSlotIndices": [{}] * 50, "Slots": []} for n in (1, 2, 3, 6, 7, 8, 9, 10)}
+    return write_save(nms_root / "save.hg",
+                      save_doc(PersistentPlayerBases=[home, freighter, legacy, visited], **grids), 1000)
+
+
+def test_a_storage_chest_is_shown_when_built_or_holding_items(chest_save):
+    s = extract.load_path(chest_save)
+    assert [(c.owner, c.built, len(c.slots)) for c in s.containers if c.category == "storage"] == [
+        ("Storage 0", True, 0), ("Storage 2", True, 0), ("Storage 3", False, 1), ("Storage 7", True, 0)]
+
+
+def test_storage_json_carries_built_and_text_marks_an_unbuilt_chest(chest_save, capsys):
+    _, d, _ = run(capsys, "inventory", "storage")
+    assert [(c["owner"], c["built"]) for c in d["containers"]] == [
+        ("Storage 0", True), ("Storage 2", True), ("Storage 3", False), ("Storage 7", True)]
+    _, d, _ = run(capsys, "inventory")
+    assert set(next(c for c in d["containers"] if c["category"] == "storage")) == {
+        "category", "owner", "grid", "is_current", "capacity", "used", "at_cap", "built"}
+    assert nms.main(["inventory", "storage", "--save", str(chest_save)]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert "Storage 3 (no container built) — 1/50" in out and "Storage 0 — 0/50" in out
+
+
 def test_catalog_names_carried_base_parts_and_modular_parts(nms_root, capsys):
     chest = {"ValidSlotIndices": [{}] * 50, "Slots": [
         slot("^BUILD_REFINER1", 1, 5, "Product"), slot("^FOS_HEAD_BH", 1, 1, "Product")]}

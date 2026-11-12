@@ -38,6 +38,10 @@ _Avoid_: Stash, Cargo, Items
 One grid of Inventory Slots with a single owner (the exosuit, a ship, a multi-tool, the freighter, a storage chest, an exocraft, or a single-purpose store such as the Grave). One owner may have several, kept apart as general, cargo and technology grids.
 _Avoid_: Inventory, Bag, Chest (for anything but storage chests)
 
+**Storage Chest**:
+One of the ten numbered chests the player can build at a Base. Every chest built with the same number shares one Container, and its contents stay after the chest is removed.
+_Avoid_: Storage Container, Chest (alone)
+
 **Category**:
 A named group of Containers that a query can target, such as suit, ship, storage or grave.
 _Avoid_: Type, Kind, Section

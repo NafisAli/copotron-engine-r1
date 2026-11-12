@@ -184,7 +184,13 @@ def container_json(c: Container, slots: list[Slot] | None = None) -> dict:
         "capacity": c.capacity, "used": len(c.slots),
         "at_cap": sum(1 for x in c.slots if x.at_cap),
         **({"name": c.name, "fuel_pct": c.fuel_pct} if c.category == "refiner" else {}),
+        **({"built": c.built} if c.category == "storage" else {}),
     }
+
+
+def shown_label(c: Container) -> str:
+    """The text label, with the state a Container's category marks (--json carries it as a field)."""
+    return c.label + (" (no container built)" if c.built is False else "")
 
 
 def slot_filter(args):
@@ -241,7 +247,7 @@ def cmd_inventory(args) -> int:
             continue
         cap = sum(1 for x in c.slots if x.at_cap)
         cur = "" if c.is_current or c.category not in ("ship", "multitool") else "  (stored)"
-        rows.append(f"{c.category:<16} {c.label:<28} {len(c.slots):>3}/{c.capacity:<3}"
+        rows.append(f"{c.category:<16} {shown_label(c):<28} {len(c.slots):>3}/{c.capacity:<3}"
                     + (f"  Fuel {c.fuel_pct}%" if c.fuel_pct is not None else "")
                     + (f"  {cap} at cap" if cap else "") + (f"  {len(sel)} match" if filtered else "") + cur)
         data_rows.append({**container_json(c), **({"matching": len(sel)} if filtered else {})})
@@ -261,7 +267,7 @@ def inventory_list(args, cs, keep, base, notes) -> int:
             text.append(f"{c.label} — Fuel {'-' if c.fuel_pct is None else f'{c.fuel_pct}%'}")
             text += [f"  {x.role.capitalize()}: {x.display} ×{x.amount}" for x in sel] or ["  (empty)"]
             continue
-        text.append(f"{c.label} — {len(c.slots)}/{c.capacity}" + ("" if c.is_current else " (stored)"))
+        text.append(f"{shown_label(c)} — {len(c.slots)}/{c.capacity}" + ("" if c.is_current else " (stored)"))
         for section, items in (("cargo", [x for x in sel if not x.is_tech]), ("tech", [x for x in sel if x.is_tech])):
             if not items:
                 continue

@@ -9,6 +9,7 @@ Handles three save layouts seen in the wild:
 from __future__ import annotations
 
 import collections
+import re
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -235,9 +236,11 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
     if freighter_owned or any(c.slots for c in fr):
         out += fr
 
-    for n in range(1, 11):
-        c = _grid("storage", f"Storage {n - 1}", "general", ps.get(f"Chest{n}Inventory"))
-        if c and c.slots:
+    built = _built_chests(ps.get("PersistentPlayerBases") or [])
+    for n in range(10):  # Storage n is Chest{n+1}Inventory; contents outlive the chest
+        c = _grid("storage", f"Storage {n}", "general", ps.get(f"Chest{n + 1}Inventory"))
+        if c and (n in built or c.slots):
+            c.built = n in built
             out.append(c)
     for key, category, label in SINGLE_GRIDS:
         c = _grid(category, label, "general", ps.get(key))
@@ -249,6 +252,25 @@ def _containers(ps: dict, ships: list[Ship]) -> list[Container]:
         grids = _owner_grids("exocraft", label, v, ("Inventory", "Inventory_Cargo", "Inventory_TechOnly"))
         if any(c.slots for c in grids if c.grid != "tech"):  # every exocraft ships default tech
             out += grids
+    return out
+
+
+CHEST_PART = re.compile(r"\^?(?:CONTAINER|FRE_ROOM_STORE|S_CONTAINER)(\d)")
+
+
+def _built_chests(bases: list) -> set[int]:
+    """Storage chest numbers that stand at one of the player's Bases.
+
+    Every chest built with the same number shares one inventory: planetary
+    CONTAINERn, the freighter's FRE_ROOM_STOREn and legacy S_CONTAINERn (#27).
+    """
+    out = set()
+    for b in bases:
+        if _is_my_base(b):
+            for o in b.get("Objects") or []:
+                m = CHEST_PART.fullmatch(o.get("ObjectID") or "")
+                if m:
+                    out.add(int(m.group(1)))
     return out
 
 
