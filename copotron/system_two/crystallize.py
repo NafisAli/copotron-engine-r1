@@ -282,7 +282,9 @@ def update_memory_node(
         final_persona = _validated_persona(vault_dir, persona)
     else:
         final_persona = existing_schema.persona
-    final_date = node_date if node_date else datetime.now().strftime("%Y-%m-%d")
+    # date is the event or creation date, so an update keeps it unless this
+    # write supplies one.
+    final_date = node_date if node_date else existing_schema.date
 
     # Body update logic with section splicing
     if body is not None and body.strip():
@@ -542,7 +544,7 @@ def main():
     parser.add_argument("--parent", "--parents", action="append", dest="parents", default=[], help="Parent 8-character node ID (can specify multiple).")
     parser.add_argument("--tag", action="append", dest="tags", default=[], help="Semantic tag (can specify multiple).")
     parser.add_argument("--status", choices=["active", "completed", "archived", "none"], default="active", help="Lifecycle status.")
-    parser.add_argument("--date", default=None, help="Date in YYYY-MM-DD format (defaults to today).")
+    parser.add_argument("--date", default=None, help="Date in YYYY-MM-DD format (a new memory defaults to today; an update keeps the existing date).")
     parser.add_argument("--id", default=None, help="Explicit 8-character ID (defaults to auto-generated).")
     parser.add_argument("--persona", default=None, help="Persona identifier.")
     parser.add_argument("--auto-parent", action="store_true", help="Auto-resolve parent node via semantic search.")
