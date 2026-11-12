@@ -25,6 +25,28 @@ def items() -> dict[str, dict]:
     return _catalog()["items"]
 
 
+@lru_cache(maxsize=1)
+def _groups() -> dict[str, list[str]]:
+    out: dict[str, list[str]] = {}
+    for item_id, meta in sorted(items().items()):
+        out.setdefault(meta["name"].lower(), []).append(item_id)
+    return out
+
+
+def group(name: str) -> list[str]:
+    """The name group: every catalog id with this name (case-insensitive), sorted.
+
+    Many ids share a name (9 are "Hyperdrive": ship tech, corvette part and
+    upgrade modules), so a name stands for all of them, never one picked at random.
+    """
+    return _groups().get(name.lower(), [])
+
+
+def names() -> list[str]:
+    """Every distinct item name in the catalog."""
+    return [items()[ids[0]]["name"] for ids in _groups().values()]
+
+
 def snapshot() -> dict:
     """Provenance header: MBINCompiler tag, libMBIN version, game build, save base version, ..."""
     return _catalog()["snapshot"]

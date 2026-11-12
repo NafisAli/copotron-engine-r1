@@ -255,38 +255,73 @@ def aggregate(cs, keep) -> dict[str, dict]:
     return totals
 
 
+def by_name(totals: dict[str, dict]) -> list[dict]:
+    """Per-id totals -> one row per name group (an unnamed id stays its own row)."""
+    rows: dict[str, dict] = {}
+    for t in totals.values():
+        r = rows.setdefault(t["name"] or t["id"], {"ids": [], "name": t["name"], "types": set(), "total": 0,
+                                                   "locations": collections.Counter()})
+        r["ids"].append(t["id"])
+        r["types"].add(t["type"])
+        r["total"] += t["total"]
+        r["locations"].update(t["locations"])
+    return [{"ids": sorted(r["ids"]), "name": r["name"],
+             "type": r["types"].pop() if len(r["types"]) == 1 else "Mixed",
+             "total": r["total"], "locations": r["locations"]} for r in rows.values()]
+
+
 def fmt_item(t: dict) -> str:
     where = ", ".join(f"{k} {v}" for k, v in t["locations"].most_common())
-    return f"{t['name'] or t['id']} ×{t['total']} ({where})"
+    ids = f"  [{', '.join(t['ids'])}]" if len(t["ids"]) > 1 else ""
+    return f"{t['name'] or t['ids'][0]} ×{t['total']} ({where}){ids}"
 
 
 def inventory_search(args, cs, keep, base) -> int:
     q = args.search.lower()
-    hits = [t for t in aggregate(cs, keep).values()
-            if q in t["id"].lower() or (t["name"] and q in t["name"].lower())]
-    hits.sort(key=lambda t: (t["name"] or t["id"]).lower())
+    hits = [t for t in by_name(aggregate(cs, keep))
+            if any(q in i.lower() for i in t["ids"]) or (t["name"] and q in t["name"].lower())]
+    hits.sort(key=lambda t: (t["name"] or t["ids"][0]).lower())
     data = {**base, "mode": "search", "query": args.search,
-            "items": [{**t, "locations": dict(t["locations"])} for t in hits]}
+            "items": [{**t, "locations": dict(t["locations"].most_common())} for t in hits]}
     emit(args, data, [fmt_item(t) for t in hits] or [f"no items match {args.search!r}"], "inventory")
     return 0
 
 
-def resolve_item(query: str, totals: dict[str, dict]) -> tuple[str | None, str | None]:
-    """Item query -> (id, name). Exact id or name first, then a unique substring."""
-    ql = query.lower().lstrip("^")
-    for item_id, meta in catalog.items().items():
-        if item_id.lower() == ql or meta["name"].lower() == ql:
-            return item_id, meta["name"]
+def resolve_item(query: str, totals: dict[str, dict]) -> tuple[list[str], str | None]:
+    """Item query -> (ids, name); ([], None) when nothing matches.
+
+    An exact id resolves to that one id. Ids are upper-case and may equal a name
+    (`HYPERDRIVE`), so the id must match case-sensitively; an exact name, in any
+    case, resolves to its whole name group. An id in another case comes next.
+    A substring is ambiguous only when it matches more than one distinct name;
+    otherwise it resolves to that name's group.
+    """
+    q = query.lstrip("^")
+    known = [*catalog.items(), *totals]
+    if q in known:
+        return [q], catalog.name_for(q)
+    if catalog.group(q):
+        ids = catalog.group(q)
+        return ids, catalog.name_for(ids[0])
+    ql = q.lower()
+    for item_id in known:
+        if item_id.lower() == ql:
+            return [item_id], catalog.name_for(item_id)
+    hits = sorted(n for n in catalog.names() if ql in n.lower())
+    if len(hits) > 1:
+        raise Fail(f"{query!r} is ambiguous: {', '.join(hits[:8])}" + (" ..." if len(hits) > 8 else ""))
+    return (catalog.group(hits[0]), hits[0]) if hits else ([], None)
+
+
+def stacks_of(ids: list[str], totals: dict[str, dict]) -> tuple[int, collections.Counter]:
+    """Total and per-location amounts of every stack whose id, or base id, is in `ids`."""
+    want = set(ids)
+    total, where = 0, collections.Counter()
     for t in totals.values():
-        if t["id"].lower() == ql:
-            return t["id"], t["name"]
-    cands = {i: m["name"] for i, m in catalog.items().items() if ql in m["name"].lower()}
-    if len(cands) == 1:
-        return next(iter(cands.items()))
-    if len(cands) > 1:
-        names = sorted(set(cands.values()))
-        raise Fail(f"{query!r} is ambiguous: {', '.join(names[:8])}" + (" ..." if len(names) > 8 else ""))
-    return None, None
+        if t["id"] in want or catalog.base_id(t["id"]) in want:
+            total += t["total"]
+            where.update(t["locations"])
+    return total, where
 
 
 def inventory_have(args, s, cs, keep, base) -> int:
@@ -297,17 +332,15 @@ def inventory_have(args, s, cs, keep, base) -> int:
         if not sep or not n.isdigit() or not item:
             raise Fail(f"--have expects ITEM:N, got {spec!r}")
         need = int(n)
-        item_id, name = resolve_item(item, totals)
-        if item_id is None:
+        ids, name = resolve_item(item, totals)
+        if not ids:
             raise Fail(f"unknown item {item!r} (not in catalog or inventory)")
-        t = totals.get(item_id)
-        have = t["total"] if t else 0
+        have, where_n = stacks_of(ids, totals)
         met = have >= need
-        reqs.append({"query": item, "id": item_id, "name": name, "need": need, "have": have,
-                     "met": met, "short": max(0, need - have),
-                     "locations": dict(t["locations"]) if t else {}})
-        where = ", ".join(f"{k} {v}" for k, v in t["locations"].most_common()) if t else "none"
-        text.append(f"{'ok   ' if met else 'SHORT'} {name or item_id}: {have}/{need}"
+        reqs.append({"query": item, "ids": ids, "name": name, "need": need, "have": have,
+                     "met": met, "short": max(0, need - have), "locations": dict(where_n)})
+        where = ", ".join(f"{k} {v}" for k, v in where_n.most_common()) or "none"
+        text.append(f"{'ok   ' if met else 'SHORT'} {name or ids[0]}: {have}/{need}"
                     + ("" if met else f" (need {need - have} more)") + f"  [{where}]")
     all_met = all(r["met"] for r in reqs)
     emit(args, {**base, "mode": "have", "all_met": all_met, "requirements": reqs}, text, "inventory")
@@ -504,8 +537,9 @@ def parser() -> argparse.ArgumentParser:
     inv = sub.add_parser("inventory", parents=[common, pick], help="queryable inventory")
     inv.add_argument("category", nargs="?", choices=CATEGORIES)
     inv.add_argument("--name", help="filter owners by name (ships, multitool, storage, exocraft)")
-    inv.add_argument("--search", metavar="TEXT", help="match item name or id, totalled per item")
-    inv.add_argument("--have", nargs="+", metavar="ITEM:N", help="requisition check; exit 1 if short")
+    inv.add_argument("--search", metavar="TEXT", help="match item name or id, totalled per name")
+    inv.add_argument("--have", nargs="+", metavar="ITEM:N",
+                     help="requisition check by name (every id with that name) or exact id; exit 1 if short")
     inv.add_argument("--tech", action="store_true", help="technology only")
     inv.add_argument("--cargo", action="store_true", help="non-technology only")
     inv.add_argument("--near-cap", action="store_true", help="stacks at >= 90%% of max")

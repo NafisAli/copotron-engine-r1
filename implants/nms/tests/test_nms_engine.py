@@ -196,7 +196,7 @@ def test_inventory_category_schema(save_path, capsys):
 
 def test_inventory_search_totals_per_item(save_path, capsys):
     _, d, _ = run(capsys, "inventory", "--search", "copper")
-    assert d["items"] == [{"id": "YELLOW2", "name": "Copper", "type": "Substance", "total": 659,
+    assert d["items"] == [{"ids": ["YELLOW2"], "name": "Copper", "type": "Substance", "total": 659,
                            "locations": {"Exosuit": 643, "Storage 3": 9, "Shuttle #0": 7}}]
 
 
@@ -205,7 +205,52 @@ def test_inventory_have_exit_code(save_path, capsys):
     assert code == 0 and d["all_met"]
     code, d, _ = run(capsys, "inventory", "--have", "Copper:700")
     assert code == 1 and d["requirements"][0]["short"] == 41
-    assert set(d["requirements"][0]) == {"query", "id", "name", "need", "have", "met", "short", "locations"}
+    assert set(d["requirements"][0]) == {"query", "ids", "name", "need", "have", "met", "short", "locations"}
+
+
+# ---- name groups: every id sharing a name counts as that item (#25) ------------
+@pytest.fixture
+def group_save(nms_root):
+    # Hyperdrive is a name shared by 9 catalog ids (ship tech, corvette part, upgrade modules).
+    chest = {"ValidSlotIndices": [{}] * 50, "Slots": [
+        slot("^HYPERDRIVE", 1, 1, "Technology"), slot("^CV_HYP2", 2, 5, "Product"),
+        slot("^UP_HYP1#4242", 1, 1, "Product"), slot("^CHEST", 3, 10, "Product")]}
+    return write_save(nms_root / "save.hg", save_doc(Chest1Inventory=chest), 1000)
+
+
+def test_have_by_name_totals_every_id_that_shares_the_name(group_save, capsys):
+    code, d, _ = run(capsys, "inventory", "--have", "Hyperdrive:4")
+    r = d["requirements"][0]
+    assert code == 0 and (r["have"], r["name"]) == (4, "Hyperdrive")
+    assert r["ids"] == ["CV_HYP2", "CV_HYP3", "HYPERDRIVE", "UP_HYP0", "UP_HYP1", "UP_HYP2", "UP_HYP3",
+                        "UP_HYP4", "UP_HYPX"]
+    assert r["locations"] == {"Storage 0": 4}
+
+
+def test_have_by_exact_id_counts_only_that_id(group_save, capsys):
+    _, d, _ = run(capsys, "inventory", "--have", "HYPERDRIVE:1", "UP_HYP1:1", "fuel1:1")
+    assert [(r["ids"], r["have"]) for r in d["requirements"]] == [
+        (["HYPERDRIVE"], 1),  # upper-case is the id; "Hyperdrive" is the name group
+        (["UP_HYP1"], 1),  # a seeded stack (UP_HYP1#4242) counts toward its base id
+        (["FUEL1"], 465)]  # an id in any case, when no name matches (Exosuit 460 + Nautilon 5)
+
+
+def test_a_substring_is_ambiguous_only_across_distinct_names(group_save, capsys):
+    _, d, _ = run(capsys, "inventory", "--have", "storage contain:3")  # 11 ids, one name
+    r = d["requirements"][0]
+    assert (r["name"], r["have"], len(r["ids"])) == ("Storage Container", 3, 11)
+    code, d, err = run(capsys, "inventory", "--have", "hyperdr:1")
+    assert code == 2 and "ambiguous" in err and "Freighter Hyperdrive" in err
+
+
+def test_search_totals_one_row_per_name(group_save, capsys):
+    _, d, _ = run(capsys, "inventory", "--search", "hyperdrive")
+    assert d["items"] == [{"ids": ["CV_HYP2", "HYPERDRIVE", "UP_HYP1#4242"], "name": "Hyperdrive",
+                           "type": "Mixed", "total": 4, "locations": {"Storage 0": 4}}]
+    assert nms.main(["inventory", "--search", "r", "--save", str(group_save)]) == 0
+    lines = capsys.readouterr().out.splitlines()
+    assert "Hyperdrive ×4 (Storage 0 4)  [CV_HYP2, HYPERDRIVE, UP_HYP1#4242]" in lines
+    assert "Copper ×659 (Exosuit 643, Storage 3 9, Shuttle #0 7)" in lines  # one id: none shown
 
 
 def test_every_inventory_mode_carries_the_inventory_schema(save_path, capsys):
