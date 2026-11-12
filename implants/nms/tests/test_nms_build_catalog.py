@@ -28,6 +28,18 @@ def test_release_mapping_is_laid_over_the_merged_mapping_without_dropping_keys()
     assert (out["mbincompiler_tag"], out["mapping_sha256"]) == ("v7.10.0-pre1", "ab" * 32)
 
 
+def test_a_key_the_release_hashes_to_two_names_keeps_both():
+    # 3-char hashes collide across classes: NE3 is GcPlayerStateData.ShipShield and
+    # GcSolarSystemAttributes.AllowedToBePurpleWithoutAccess. The first listed name is primary.
+    merged = {"libMBIN_version": "6.11.0.1", "keys": {"NE3": "ShipShield"}, "fixups": {}}
+    release = {"libMBIN_version": "7.10.0.1", "Mapping": [
+        {"Key": "NE3", "Value": "ShipShield"}, {"Key": "F2P", "Value": "Version"},
+        {"Key": "NE3", "Value": "AllowedToBePurpleWithoutAccess"}, {"Key": "F2P", "Value": "Version"}]}
+    out = bc.overlay_mapping(merged, release, tag="v7.10.0-pre1", sha256="ab" * 32)
+    assert out["keys"] == {"NE3": "ShipShield", "F2P": "Version"}
+    assert out["aliases"] == {"NE3": ["AllowedToBePurpleWithoutAccess"]}
+
+
 # ---- MBINCompiler gate -----------------------------------------------------------
 def test_a_mismatched_compiler_warning_refuses_the_write():
     ok = "Converting nms_reality_gcproducttable.MBIN\nConverted 2 files\n"

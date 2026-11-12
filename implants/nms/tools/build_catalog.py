@@ -165,8 +165,19 @@ def overlay_mapping(merged: dict, release: dict, tag: str, sha256: str) -> dict:
     The release wins on conflicts and no key is dropped: upstream has removed
     keys before (`bQN`, v6.40), and old saves still carry them. The savewizard
     fixups are kept as they are.
+
+    The release hashes field names to 3 chars, so two classes can share a key
+    (`NE3` is both GcPlayerStateData.ShipShield and a solar-system flag). The
+    name listed first (player state is hashed first) stays the key's name, and
+    the others become `aliases`, which the lazy lookup also resolves.
     """
-    keys = {**merged["keys"], **{e["Key"]: e["Value"] for e in release["Mapping"]}}
+    release_keys: dict[str, str] = {}
+    aliases = {k: list(v) for k, v in merged.get("aliases", {}).items()}
+    for e in release["Mapping"]:
+        key, name = e["Key"], e["Value"]
+        first = release_keys.setdefault(key, name)
+        if name != first and name not in aliases.setdefault(key, []):
+            aliases[key].append(name)
     return {
         "libMBIN_version": release["libMBIN_version"],
         "mbincompiler_tag": tag,
@@ -175,7 +186,8 @@ def overlay_mapping(merged: dict, release: dict, tag: str, sha256: str) -> dict:
             "keys": [f"MBINCompiler {tag} mapping.json", "previous merged mapping (keys the release lacks)"],
             "fixups": "mapping_savewizard.json (renames applied after lookup)",
         },
-        "keys": keys,
+        "keys": {**merged["keys"], **release_keys},
+        "aliases": {k: v for k, v in sorted(aliases.items()) if v},
         "fixups": merged["fixups"],
     }
 

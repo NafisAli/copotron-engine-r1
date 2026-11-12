@@ -188,7 +188,7 @@ def cmd_inventory(args) -> int:
     s = load(args)
     keep = slot_filter(args)
     cs = select_containers(s, args.category, args.name)
-    base = {"save": save_ref(s), "catalog": catalog.snapshot()["GameVersion"]}
+    base = {"save": save_ref(s), "catalog": catalog.snapshot()["libmbin_version"]}
 
     if args.have:
         return inventory_have(args, s, cs, keep, base)

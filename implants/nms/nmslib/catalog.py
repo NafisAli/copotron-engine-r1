@@ -1,7 +1,10 @@
-"""Item-name catalog: game id -> display name, from a bundled datamined snapshot.
+"""Item Catalog: game id -> display name, from the bundled Game Data Snapshot.
 
-Source: npm `assistantapps-nomanssky-info` (developerDetails GameId joined with
-json/en names). Unknown ids return None and print raw: names are never guessed.
+Built from the game's own files by `tools/build_catalog.py` (dev time only):
+the product, substance, technology, procedural-technology, base-part and modular
+customisation tables, joined with the English locale. Entries are `{name}`,
+plus `stale` for ids a later build no longer had. Unknown ids return None and
+print raw: names are never guessed.
 """
 
 from __future__ import annotations
@@ -23,14 +26,17 @@ def items() -> dict[str, dict]:
 
 
 def snapshot() -> dict:
-    c = _catalog()
-    return {"source": c["source"], **c["meta"]}
+    """Provenance header: MBINCompiler tag, libMBIN version, game build, save base version, ..."""
+    return _catalog()["snapshot"]
+
+
+def base_id(item_id: str) -> str:
+    """`^UP_SHLD4#35337` -> `UP_SHLD4`: no caret, no procedural seed."""
+    return item_id.lstrip("^").split("#", 1)[0]
 
 
 def name_for(item_id: str) -> str | None:
     """Exact id, else the base id of a seeded procedural item (`UP_SHLD4#35337`)."""
     item_id = item_id.lstrip("^")
-    hit = items().get(item_id)
-    if hit is None and "#" in item_id:
-        hit = items().get(item_id.split("#", 1)[0])
+    hit = items().get(item_id) or items().get(base_id(item_id))
     return hit["name"] if hit else None

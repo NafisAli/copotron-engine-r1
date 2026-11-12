@@ -44,6 +44,17 @@ def test_obfuscated_keys_resolve_through_objects_lists_and_fixups():
     assert ps.get("unmapped") == 1 and ps.get("Units") is None and "Multitools" in ps
 
 
+def test_a_key_hashed_to_two_names_is_read_by_either_name():
+    keys, _ = decode._mapping()
+    obf = {v: k for k, v in keys.items()}
+    doc = {"F2P": 4746, obf["PlayerStateData"]: {"V86": {obf["Slots"]: [7]}, "NE3": 200},
+           "attrs": {"NE3": True}}
+    root = decode.decode_bytes(json.dumps(doc).encode())
+    ps = root["PlayerStateData"]
+    assert ps["RocketLockerInventory"]["Slots"][0] == 7  # V86 is not FireteamSessionCount here
+    assert ps["ShipShield"] == 200 and root["attrs"]["AllowedToBePurpleWithoutAccess"] is True
+
+
 def test_lz4_blocks_decode():
     lz4 = pytest.importorskip("lz4.block")
     body = json.dumps({"Version": 1, "pad": "x" * 0x90000}).encode()
@@ -107,6 +118,15 @@ def test_single_grids_are_their_own_categories(nms_root, capsys):
     assert d["requirements"][0]["have"] == 664  # ingredients count toward requisitions
     _, d, _ = run(capsys, "inventory", "chest-magic", "--save", str(nms_root / "save.hg"))
     assert [c["owner"] for c in d["containers"]] == ["ChestMagic", "ChestMagic2"]
+
+
+def test_catalog_names_carried_base_parts_and_modular_parts(nms_root, capsys):
+    chest = {"ValidSlotIndices": [{}] * 50, "Slots": [
+        slot("^BUILD_REFINER1", 1, 5, "Product"), slot("^FOS_HEAD_BH", 1, 1, "Product")]}
+    path = write_save(nms_root / "save.hg", save_doc(Chest1Inventory=chest), 1000)
+    _, d, _ = run(capsys, "inventory", "storage", "--name", "Storage 0", "--save", str(path))
+    assert [(i["id"], i["name"]) for i in d["containers"][0]["items"]] == [
+        ("BUILD_REFINER1", "Portable Refiner"), ("FOS_HEAD_BH", "Longhorn Skull")]
 
 
 def test_refiner_is_not_a_category(save_path, capsys):

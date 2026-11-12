@@ -64,18 +64,28 @@ def decompress(raw: bytes) -> bytes:
 
 
 @lru_cache(maxsize=1)
+def _bundled() -> dict:
+    return json.loads(MAPPING_PATH.read_text(encoding="utf-8"))
+
+
 def _mapping() -> tuple[dict[str, str], dict[str, str]]:
     """(obfuscated -> readable keys, readable renames applied after lookup)."""
-    m = json.loads(MAPPING_PATH.read_text(encoding="utf-8"))
+    m = _bundled()
     return m["keys"], m["fixups"]
 
 
 @lru_cache(maxsize=1)
 def _names() -> tuple[dict[str, str], dict[str, str]]:
-    """(readable -> on-disk key, on-disk key -> readable), fixups applied."""
+    """(readable -> on-disk key, on-disk key -> readable), fixups applied.
+
+    A key the mapping hashes to several names (`aliases`) is found by any of
+    them; readable -> on-disk never collides, only the reverse does.
+    """
     keys, fixups = _mapping()
     readable = {o: fixups.get(r, r) for o, r in keys.items()}
-    return {r: o for o, r in readable.items()}, readable
+    lookup = {fixups.get(a, a): o for o, names in _bundled().get("aliases", {}).items() for a in names}
+    lookup.update({r: o for o, r in readable.items()})
+    return lookup, readable
 
 
 def _view(value):
