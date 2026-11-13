@@ -8,7 +8,8 @@
 
 Commands: status, inventory, bases, convert, saves, the Discovery Atlas's find,
 route and system, and watch. Text by default, one JSON document with --json;
-watch runs until it goes idle and prints one line per Save Update instead.
+watch runs until it goes idle and prints one line (one JSON object) per Save
+Update instead, carrying that slot's Save Delta.
 Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
 `notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
@@ -30,7 +31,7 @@ from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from nmslib import atlas, baseparts, catalog, decode, extract, locate, poll  # noqa: E402
+from nmslib import atlas, baseparts, catalog, decode, extract, locate, poll, watch  # noqa: E402
 from nmslib.inventory import aggregate, by_name  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
@@ -791,17 +792,78 @@ def update_label(f: locate.SaveFile, qualify: bool) -> str:
     return f"{f'slot {f.slot}' if f.slot else 'file'} ({name})"
 
 
+def places_text(kind: str, places: list[watch.NewPlace]) -> list[str]:
+    """`new system: Ekoxim`, `new planets: Glowball (Toxic), Ekoxim planet 2 (Lush) +3 more`."""
+    if not places:
+        return []
+    shown = [p.label + (f" ({p.biome})" if p.biome else "") for p in places[:3]]
+    more = f" +{len(places) - 3} more" if len(places) > 3 else ""
+    return [f"new {kind}{'s' if len(places) > 1 else ''}: {', '.join(shown)}{more}"]
+
+
+def base_text(b: watch.BaseChange) -> str:
+    what = [f"renamed from {b.renamed_from}"] if b.renamed_from else []
+    what += [f"{b.parts_change:+,} part{'' if abs(b.parts_change) == 1 else 's'}"] if b.parts_change else []
+    return (b.name or "(unnamed)") + (f" ({', '.join(what)})" if what else "")
+
+
+def delta_text(d: watch.SaveDelta) -> list[str]:
+    """The Save Delta as ` | `-joined segments of one line; `no changes` when empty."""
+    if d.empty:
+        return ["no changes"]
+    out = [f"{c.change:+,} {c.label} ({c.total:,})" for c in d.inventory]
+    out += [f"{c.change:+,} {c.currency.capitalize()}" for c in d.currencies]
+    out += places_text("system", d.systems) + places_text("planet", d.planets)
+    out += [f"base added: {base_text(b)}" for b in d.bases_added]
+    out += [f"base edited: {base_text(b)}" for b in d.bases_edited]
+    out += [f"base removed: {b.name or '(unnamed)'}" for b in d.bases_removed]
+    out += [f"moved to {d.location.label}"] if d.location else []
+    out += [f"game mode: {d.game_mode[0]} → {d.game_mode[1]}"] if d.game_mode else []
+    return out
+
+
+def baseline_key(f: locate.SaveFile) -> tuple:
+    """A slot's manual save and autosave share one baseline; accounts never do."""
+    return (f.account, f.slot) if f.slot else (f.account, str(f.path))
+
+
 def cmd_watch(args) -> int:
     poller = poll.Poller(lambda: locate.candidates(args.save, args.slot))
-    files = poller.start()
+    files = poller.start()  # newest first
     accounts = {f.account for f in files}
+    baselines: dict[tuple, Save] = {}  # the last decode of each slot, for this process only
+    newest = files[0]
+    try:
+        baselines[baseline_key(newest)] = extract.load(newest)
+        start = f"; baseline {update_label(newest, len(accounts) > 1)}"
+    except Exception as e:  # an unreadable save is a warning, never fatal
+        start = ""
+        say(f"warning: {update_label(newest, len(accounts) > 1)} unreadable, no baseline yet: {e}")
     say(f"watching {len(files)} save file{'' if len(files) == 1 else 's'} every {args.interval:g}s; "
-        f"stops after {args.idle_exit:g} min without a Save Update")
+        f"stops after {args.idle_exit:g} min without a Save Update{start}")
 
     def on_update(f: locate.SaveFile) -> None:
         accounts.add(f.account)
-        when = time.strftime("%H:%M:%S", time.localtime(f.modified))
-        print(f"[nms watch] Save updated: {update_label(f, len(accounts) > 1)} at {when}", flush=True)
+        label = update_label(f, len(accounts) > 1)
+        try:
+            after = extract.load(f)
+        except Exception as e:
+            say(f"warning: {label} unreadable: {e}")
+            return
+        before = baselines.get(baseline_key(f))
+        baselines[baseline_key(f)] = after
+        d = watch.save_delta(before, after) if before else None
+        notes = stale_notes(after)
+        if args.json:
+            line = json.dumps({"schema": f"nms.watch/{SCHEMA_VERSION}", "event": "save_updated", "slot": f.slot,
+                               "account": f.account, "kind": f.kind, "path": str(f.path),
+                               "modified": locate.iso(f.modified), "baseline": d is not None,
+                               "changes": d.to_json() if d else None, "notes": notes}, ensure_ascii=False)
+        else:
+            when = time.strftime("%H:%M:%S", time.localtime(f.modified))
+            line = " | ".join([f"[nms watch] Save updated: {label} at {when}",
+                               *(delta_text(d) if d else ["no baseline"]), *(f"Note: {n}" for n in notes)])
+        print(line, flush=True)
 
     try:
         poll.run(poller, on_update, interval=args.interval, idle_exit=args.idle_exit * 60,
@@ -894,7 +956,7 @@ def parser() -> argparse.ArgumentParser:
                     help="a Base, Star System, named planet, 12 glyphs or here (default: here)")
     sy.set_defaults(fn=cmd_system)
 
-    w = sub.add_parser("watch", parents=[pick], help="one line per Save Update until idle (every slot by default)")
+    w = sub.add_parser("watch", parents=[common, pick], help="one line per Save Update until idle (every slot by default)")
     w.add_argument("--interval", type=positive_float, default=5, metavar="SECONDS",
                    help="seconds between polls (default 5)")
     w.add_argument("--idle-exit", type=positive_float, default=60, metavar="MINUTES",
