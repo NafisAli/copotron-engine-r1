@@ -6,8 +6,8 @@
 
     uv run implants/nms/nms.py <command> [--json] [--save PATH | --slot N]
 
-Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find and
-route (system: not yet). Text by default, one JSON document with --json.
+Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find,
+route and system. Text by default, one JSON document with --json.
 Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
 `notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
@@ -766,9 +766,40 @@ def cmd_route(args) -> int:
     return 0
 
 
-def cmd_atlas(args) -> int:
-    raise Fail(f"'{args.command}' is not implemented yet: it ships with the Discovery Atlas "
-               "(copotron-engine-r1#14)")
+def cmd_system(args) -> int:
+    query = " ".join(args.name) or "here"
+    s = load(args)
+    match = resolve_place(s, query, args, "system")
+    a = match.address
+    home = Address(a.galaxy, a.x, a.y, a.z, a.system, 0)
+    found = s.system_at(a)
+    d = atlas.distance(s.player.location, home)
+    bases = [b for b in (s.bases if args.all else s.my_bases) if b.address.system_key == a.system_key]
+    notes = ([ESTIMATE_NOTE] if d and d.estimate else []) + stale_notes(s)
+    data = {"save": save_ref(s), "query": query, "match": place_json(match), "system": {
+        "address": home.to_json(), "name": found.name if found else None, "discovered": found is not None,
+        "discoverer": found.discoverer if found else None,
+        "discovered_at": locate.iso(found.discovered_at) if found else None,
+        "is_mine": found.is_mine if found else False,
+        "distance_ly": None if d is None else round(d.ly), "estimate": bool(d and d.estimate),
+        "planets": [{"index": p.index, "name": p.name, "biome": p.biome, "infested": p.infested,
+                     "discoverer": p.discoverer, "is_mine": p.is_mine} for p in (found.planets if found else [])],
+        "bases": [{"name": b.name, "kind": b.kind, "is_mine": b.is_mine, "planet_index": b.address.planet}
+                  for b in bases]}}
+    who = ("not discovered" if found is None else "discovered" + (
+        f" by {found.discoverer}" if found.discoverer else "") + (" (mine)" if found.is_mine else ""))
+    text = [f"System    {(found and found.name) or 'unnamed'} · {home.galaxy_name} (#{home.galaxy + 1}) · {who}",
+            f"Glyphs    {home.glyphs}  {home.glyph_emoji}",
+            f"Distance  {dist(d)} from you"]
+    for i, p in enumerate(found.planets if found else []):
+        desc = " · ".join(x for x in [p.name, p.biome or "?", "infested" if p.infested else ""] if x)
+        mark = "  ← match" if match.kind != "system" and a.planet == p.index else ""
+        text.append(f"{'Planets' if i == 0 else '':<10}{p.index:>2}  {desc}{mark}")
+    for i, b in enumerate(bases):
+        text.append(f"{'Bases' if i == 0 else '':<10}{b.name or '(unnamed)'} (planet {b.address.planet})"
+                    + ("" if b.is_mine else f" · {b.owner_name or '?'}"))
+    emit(args, data, text, "system", notes)
+    return 0
 
 
 # ---- argument parsing --------------------------------------------------------
@@ -847,10 +878,10 @@ def parser() -> argparse.ArgumentParser:
                    help=f"Biome Tour: the nearest N matching planets (default {TOUR_NEAREST})")
     r.set_defaults(fn=cmd_route)
 
-    for name in ("system",):
-        a = sub.add_parser(name, parents=[common, pick], help="(Discovery Atlas, not yet)")
-        a.add_argument("rest", nargs=argparse.REMAINDER)
-        a.set_defaults(fn=cmd_atlas)
+    sy = sub.add_parser("system", parents=[common, pick, places], help="one Star System and its planets")
+    sy.add_argument("name", nargs="*", metavar="NAME",
+                    help="a Base, Star System, named planet, 12 glyphs or here (default: here)")
+    sy.set_defaults(fn=cmd_system)
     return p
 
 

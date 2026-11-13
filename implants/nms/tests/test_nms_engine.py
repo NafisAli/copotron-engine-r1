@@ -594,8 +594,6 @@ def test_bench_reports_timings_and_counts(save_path, capsys):
 def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):
     code, d, err = run(capsys, "status")  # no saves in the account folder
     assert code == 2 and d is None and err.startswith("nms: ")
-    code, d, err = run(capsys, "system", "home")
-    assert code == 2 and "#14" in err
 
 
 # ---- Game Data Snapshot staleness (#26) ----------------------------------------
@@ -612,7 +610,8 @@ def test_a_save_newer_than_the_game_data_adds_one_note_to_every_save_command(nms
     note = (f"Game data built for save version {built}; this save is {built + 2}. Some items may show "
             "raw ids and some fields may be missing until the game data is refreshed.")
     for argv in (["status"], ["inventory"], ["inventory", "suit"], ["inventory", "--search", "copper"],
-                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"], ["find"], ["route", "here"]):
+                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"], ["find"], ["route", "here"],
+                 ["system"]):
         assert run(capsys, *argv)[1]["notes"] == [note], argv
     assert run(capsys, "convert", "0EA4:007D:05BD:005F")[1]["notes"] == []  # reads no Save
 
@@ -802,3 +801,58 @@ def test_a_biome_tour_routes_through_the_nearest_matching_planets(atlas_save, ca
 def test_route_usage_errors_exit_2(atlas_save, capsys, argv, error):
     code, _, err = run(capsys, "route", *argv)
     assert code == 2 and error in err
+
+
+def test_system_schema(atlas_save, capsys):
+    code, d, _ = run(capsys, "system")  # no name: the Star System the player is in
+    assert code == 0
+    assert set(d) == {"schema", "save", "query", "match", "system", "notes"} and d["schema"] == "nms.system/1"
+    assert d["query"] == "here" and set(d["match"]) == PLACE_KEYS and d["match"]["kind"] == "here"
+    sysj = d["system"]
+    assert set(sysj) == {"address", "name", "discovered", "discoverer", "discovered_at", "is_mine", "distance_ly",
+                         "estimate", "planets", "bases"}
+    assert set(sysj["address"]) == ADDRESS_KEYS and sysj["address"]["planet_index"] == 0
+    assert (sysj["name"], sysj["discovered"], sysj["discoverer"], sysj["is_mine"]) == (
+        "Testoria", True, "TrafficPolice", True)
+    assert (sysj["distance_ly"], sysj["estimate"], sysj["bases"]) == (0, False, [])
+    assert [set(p) for p in sysj["planets"]] == [{"index", "name", "biome", "infested", "discoverer", "is_mine"}] * 2
+    assert [(p["index"], p["name"], p["biome"], p["infested"]) for p in sysj["planets"]] == [
+        (2, None, "Scorched", False), (3, "Glowball", "Radioactive", True)]
+    assert d["notes"] == []
+
+
+def test_system_by_any_place_the_name_rule_finds(atlas_save, capsys):
+    d = run(capsys, "system", "glowball")[1]
+    assert (d["match"]["kind"], d["system"]["name"]) == ("planet", "Testoria")
+    d = run(capsys, "system", "lush", "outpost")[1]  # words join into one name
+    assert d["query"] == "lush outpost" and d["match"]["kind"] == "base"
+    assert (d["system"]["name"], d["system"]["discovered"], d["system"]["distance_ly"]) == (None, True, 400)
+    assert [p["index"] for p in d["system"]["planets"]] == [1, 2]
+    assert d["system"]["bases"] == [{"name": "Lush Outpost", "kind": "HomePlanetBase", "is_mine": True,
+                                     "planet_index": 1}]
+    d = run(capsys, "system", "nearby")[1]
+    assert (d["system"]["distance_ly"], d["system"]["estimate"], d["notes"]) == (265, True, [ESTIMATE_NOTE])
+    d = run(capsys, "system", "home")[1]  # another Galaxy has no distance
+    assert d["system"]["distance_ly"] is None and d["system"]["estimate"] is False
+
+
+def test_system_by_glyphs_of_an_undiscovered_star_system(atlas_save, capsys):
+    d = run(capsys, "system", "0123FEDBE6A5")[1]
+    assert d["match"]["kind"] == "glyphs" and d["system"]["address"]["system_index"] == 0x123
+    assert (d["system"]["discovered"], d["system"]["name"], d["system"]["planets"]) == (False, None, [])
+
+
+def test_system_lists_visited_bases_only_with_all(atlas_save, capsys):
+    code, _, err = run(capsys, "system", "bazaar")
+    assert code == 2 and "'Bazaar' is a Visited Base" in err
+    d = run(capsys, "system", "bazaar", "--all")[1]
+    assert [(b["name"], b["planet_index"]) for b in d["system"]["bases"]] == [("Bazaar", 1), ("Bazaar Annex", 2)]
+
+
+def test_system_text(atlas_save, capsys):
+    assert nms.main(["system", "glowball"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == "System    Testoria · Eissentam (#10) · discovered by TrafficPolice (mine)"
+    assert out[1].startswith("Glyphs    005FFEDBE6A5")
+    assert out[2] == "Distance  0 ly from you"
+    assert out[3:5] == ["Planets    2  Scorched", "           3  Glowball · Radioactive · infested  ← match"]
