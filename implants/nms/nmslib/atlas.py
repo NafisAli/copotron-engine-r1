@@ -257,12 +257,13 @@ def plan_route(start: Place, stops: list[Place], *, keep_order: bool = False, ro
     """Straight Legs from `start` through every Stop, all in one Galaxy.
 
     By default the Stops are ordered nearest-first, then untangled with 2-opt;
-    `keep_order` visits them exactly as listed. `round_trip` returns to `start`.
+    `keep_order` visits them exactly as listed, a repeated Stop included; otherwise a
+    Stop listed twice is visited once. `round_trip` returns to `start`.
     """
     seen, unique = set(), []
     for s in stops:
         key = (s.kind, s.name, s.address)
-        if key not in seen:
+        if keep_order or key not in seen:
             seen.add(key)
             unique.append(s)
     if not unique:

@@ -224,8 +224,12 @@ def test_same_region_legs_are_estimates_of_one_jump_and_mark_the_total():
     assert not atlas.plan_route(START, [far]).estimate
 
 
-def test_a_stop_listed_twice_is_visited_once():
-    assert visits(atlas.plan_route(START, [A, A, B], keep_order=True)) == ["A", "B"]
+def test_a_stop_listed_twice_is_visited_once_when_the_route_is_ordered():
+    assert sorted(visits(atlas.plan_route(START, [A, B, A]))) == ["A", "B"]
+
+
+def test_keep_order_visits_a_stop_listed_twice_each_time():
+    assert visits(atlas.plan_route(START, [A, B, A], keep_order=True)) == ["A", "B", "A"]
 
 
 def test_a_stop_in_another_galaxy_is_refused_with_the_reason():
