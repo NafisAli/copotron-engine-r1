@@ -113,7 +113,7 @@ uv run copotron implant run nms convert 005FFEDBE6A5 --galaxy Euclid
 ## Brief a Session
 
 - **Pre-session**: run `status` and `inventory --have` for the materials the current goal needs. Goals come from the session's context (the campaign and its roadmap, what the player has said). Say where the player is, what they hold toward the goal, and what is short.
-- **Post-session**: run the same two commands again and report what changed against the pre-session briefing: goals met or still short, currencies, location.
+- **Post-session**: run the same two commands again and report what changed against the pre-session briefing: goals met or still short, currencies, where the player is.
 
 ## Plan Travel
 
@@ -132,7 +132,7 @@ Galaxy-scale Legs run to hundreds of Warp Jumps (694,544 ly is 278 at a 2,500 ly
      ```powershell
      uv run copotron implant run nms watch | ForEach-Object { agentapi send-message <conversation-id> $_ }
      ```
-2. **Read each line.** Text reads `[nms watch] Save updated: slot 3 (save5.hg) at 14:02:11 | +120 Chromatic Metal (512) | -1,200 Units | moved to Ekoxim IV`. The segments after the first are the Save Delta: inventory gained or lost by name group with the new total, currencies, new Star Systems and planets, own Bases added, edited or removed, location, Game Mode. `no changes` is an empty Save Delta. `no baseline` is the first Save Update seen from that Save Slot, so nothing is compared. A Save Slot's manual save and autosave share a baseline, so the second of the pair usually reads `no changes`. With `--json`, each line is an `nms.watch/1` object with `slot`, `account`, `kind`, `path`, `modified`, `baseline`, `changes` (`null` without a baseline) and `notes`. Startup messages and unreadable-Save warnings go to stderr. Exit `0` on idle or stop, `2` when the save folder disappears.
+2. **Read each line.** Text reads `[nms watch] Save updated: slot 3 (save5.hg) at 14:02:11 | +120 Chromatic Metal (512) | -1,200 Units | moved to Ekoxim IV`. The segments after the first are the Save Delta: inventory gained or lost by name group with the new total, currencies, new Star Systems and planets, own Bases added, edited or removed, a move to another Star System or planet, Game Mode. `no changes` is an empty Save Delta. `no baseline` is the first Save Update seen from that Save Slot, so nothing is compared. A Save Slot's manual save and autosave share a baseline, so the second of the pair usually reads `no changes`. With `--json`, each line is an `nms.watch/1` object with `slot`, `account`, `kind`, `path`, `modified`, `baseline`, `changes` (`null` without a baseline) and `notes`. Startup messages and unreadable-Save warnings go to stderr. Exit `0` on idle or stop, `2` when the save folder disappears.
 3. **Respond** from the session's own context; goals are whatever the session already holds. Read the Save Delta first; running follow-up commands is your call.
    - **Goal speech**, with one concrete next step taken from the session's context ("Refine the 120 Chromatic Metal, then fabricate the Auto-Charger."), when a goal's condition is newly met, when a met condition is lost (crafting used up the materials), or when something notable happens without a goal: a Game Mode change, a Base removed, a `no baseline` line from a Save Slot the player isn't playing.
    - **Engagement**: one short line in the inherited Persona's voice, reacting to the change, on every other non-empty Save Delta. It carries no suggestion unless the player asks.
