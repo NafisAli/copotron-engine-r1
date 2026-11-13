@@ -116,6 +116,30 @@ _Avoid_: Solar System, System (alone, when ambiguous), Sector
 A record that someone first found a Star System, planet, creature, plant or mineral, carrying who found it and any name they uploaded.
 _Avoid_: Scan, Finding, Upload
 
+**Route**:
+An ordered trip from a starting point through one or more Stops, all in one Galaxy.
+_Avoid_: Path, Tour (except a Biome Tour), Itinerary
+
+**Stop**:
+A place a Route visits: a Base, a Star System, a named planet, or an Address given as Portal Glyphs.
+_Avoid_: Target, Waypoint, Destination
+
+**Leg**:
+The straight warp between two consecutive points of a Route.
+_Avoid_: Hop, Segment
+
+**Warp Range**:
+How far the player's hyperdrive reaches in one jump, in light-years.
+_Avoid_: Jump range, Hyperdrive range
+
+**Warp Jump**:
+One hyperdrive jump. A Leg takes as many as its length needs at the given Warp Range, one if it stays within a Region, none within a Star System.
+_Avoid_: Hop, Warp (as a count)
+
+**Biome Tour**:
+A Route whose Stops are the nearest discovered planets of a chosen biome.
+_Avoid_: Biome route, Survey
+
 ## Ownership
 
 **Mine**:
