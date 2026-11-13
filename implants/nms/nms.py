@@ -163,7 +163,7 @@ def cmd_status(args) -> int:
         f"Where     {p.save_summary or '-'}",
         f"Galaxy    {a.galaxy_name} (#{a.galaxy + 1}) · {place}",
         f"Glyphs    {a.glyphs}  {a.glyph_emoji}",
-        f"Booster   {a.signal_booster} · voxel {a.x},{a.y},{a.z} · {ly(a.distance_to_core_ly)} to core",
+        f"Booster   {a.signal_booster} · Region {a.x},{a.y},{a.z} · {ly(a.distance_to_core_ly)} to core",
         f"Wallet    {p.units:,} units · {p.nanites:,} nanites · {p.quicksilver:,} quicksilver",
         f"Ship      " + (f"{ship.name or 'unnamed'} ({ship.kind}, {ship.inventory_class}-class)" if ship else "-"),
     ]
@@ -421,7 +421,7 @@ def cmd_bases(args) -> int:
             + (f" {planet_name}" if planet_name else "") + (f" ({biome})" if biome else "")
             + (f" · system {sys_name}" if sys_name else ""),
             f"Glyphs    {a.glyphs}  {a.glyph_emoji}",
-            f"Booster   {a.signal_booster} · voxel {a.x},{a.y},{a.z}",
+            f"Booster   {a.signal_booster} · Region {a.x},{a.y},{a.z}",
             f"Distance  {ly(d)} from you",
             f"Parts     {b.part_count} · last update {local(b.last_update) if b.last_update else '-'}",
             *parts_text(parts),
@@ -465,7 +465,7 @@ def parse_location(value: str, galaxy: int, planet: int | None, system: int | No
     nums = v.replace(" ", "").split(",")
     if len(nums) == 3 and all(n.lstrip("-").isdigit() for n in nums):
         if system is None:
-            raise Fail("voxel input needs --system N (solar system index)")
+            raise Fail("Region input (x,y,z) needs --system N (the Star System index)")
         x, y, z = (int(n) for n in nums)
         return Address(galaxy, x, y, z, system, planet or 0)
     a = Address.from_glyphs(v, galaxy)
@@ -505,7 +505,7 @@ def cmd_convert(args) -> int:
         f"Glyphs    {a.glyphs}  {a.glyph_emoji}",
         f"Address   {a.galactic_address}",
         f"Booster   {a.signal_booster}",
-        f"Voxel     x={a.x} y={a.y} z={a.z} · system {a.system} (0x{a.system:03X}) · planet {a.planet}",
+        f"Region    x={a.x} y={a.y} z={a.z} · system {a.system} (0x{a.system:03X}) · planet {a.planet}",
         f"Core      {ly(a.distance_to_core_ly)}"
         + (" · black hole" if a.is_black_hole else "") + (" · Atlas Interface" if a.is_atlas_interface else ""),
     ]
@@ -903,11 +903,11 @@ def parser() -> argparse.ArgumentParser:
                    help="bases holding a part: name text (every match), exact id, or category key")
     b.set_defaults(fn=cmd_bases)
 
-    c = sub.add_parser("convert", parents=[common], help="glyphs / booster / address / voxel")
+    c = sub.add_parser("convert", parents=[common], help="glyphs / booster / address / Region")
     c.add_argument("value", help="12 glyphs (hex, emoji or names), 0x address, XXXX:YYYY:ZZZZ:SSSS, or x,y,z")
     c.add_argument("--galaxy", help="index (0-255), #N (1-based) or name; default Euclid")
-    c.add_argument("--planet", type=int, help="planet index (booster/voxel input, or override)")
-    c.add_argument("--system", type=int_auto, help="solar system index, for x,y,z input")
+    c.add_argument("--planet", type=int, help="planet index (booster/Region input, or override)")
+    c.add_argument("--system", type=int_auto, help="Star System index, for x,y,z (Region) input")
     c.set_defaults(fn=cmd_convert)
 
     sv = sub.add_parser("saves", parents=[common], help="accounts and slots")

@@ -574,6 +574,18 @@ def test_convert_schema(capsys):
     assert (d["glyphs"], d["galaxy"]) == ("105FFEDBE6A5", 9)
 
 
+def test_text_and_help_say_region_and_star_system_never_voxel_or_solar_system(save_path, capsys):
+    # implants/nms/GLOSSARY.md: Region avoids "Voxel", Star System avoids "Solar System"
+    for argv in (["status"], ["bases", "Home"], ["convert", "0EA4:007D:05BD:005F"], ["convert", "1,2,3"]):
+        nms.main(argv)
+    for argv in (["convert", "--help"], ["--help"]):
+        with pytest.raises(SystemExit):
+            nms.main(argv)
+    out = capsys.readouterr()
+    shown = (out.out + out.err).lower()
+    assert "region" in shown and "voxel" not in shown and "solar system" not in shown
+
+
 def test_saves_schema(save_path, capsys):
     _, d, _ = run(capsys, "saves")
     assert set(d) == {"schema", "root", "nms_save_path", "selected", "accounts", "notes"}
