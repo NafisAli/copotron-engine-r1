@@ -34,13 +34,21 @@ def _persona_label(record: dict) -> str:
     return f"  · persona: {title} [{reference}]"
 
 
+def _implants_label(record: dict) -> str:
+    """Text-output suffix listing a record's Inherited Implants by id, or nothing when it has none."""
+    implants = record.get("inherited_implants")
+    if not implants:
+        return ""
+    return f"  · implants: {', '.join(implants)}"
+
+
 def _print_memory_list(records: list[dict], empty_message: str) -> None:
     """Print retrieval results as text: one line per memory, summary indented below."""
     if not records:
         print(empty_message)
         return
     for r in records:
-        print(f"  [{r['id']}] ({r['type']}, {r['status']}) {r['title']}{_persona_label(r)}")
+        print(f"  [{r['id']}] ({r['type']}, {r['status']}) {r['title']}{_persona_label(r)}{_implants_label(r)}")
         if r.get("summary"):
             print(f"      {r['summary']}")
 

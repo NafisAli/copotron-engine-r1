@@ -8,10 +8,13 @@ from typing import Optional
 
 import pytest
 
+from copotron.cli import main
 from copotron.core.indexer import load_vault
+from copotron.core.navigate import navigate
 from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter
 from copotron.core.validate import validate_file
 from copotron.system_two.crystallize import update_memory_node
+from copotron.system_two.search import search_graph
 
 
 def _write_raw(vault_dir: Path, memory_id: str, frontmatter_tail: str, title: str = "Memory") -> Path:
@@ -269,3 +272,65 @@ def test_implant_link_dangles_once_its_instructions_lose_their_implant_id(implan
 
     assert graph["0000000c"]["inherited_implants"] == []
     assert graph["0000000e"]["inherited_implants"] == [HUE]
+
+
+# ---------------------------------------------------------
+# Retrieval: navigate and search
+# ---------------------------------------------------------
+
+def _by_id(results: list[dict]) -> dict[str, dict]:
+    return {r["id"]: r for r in results}
+
+
+def test_navigate_returns_inherited_implants_beside_inherited_persona(implant_vault):
+    load_vault(implant_vault, silent=True)
+
+    down = _by_id(navigate("0000000c", "down", print_output=False))
+    up = _by_id(navigate("0000000e", "up", print_output=False))
+
+    assert down["0000000e"]["inherited_implants"] == sorted([NMS, HUE])
+    assert down["0000000e"]["inherited_persona"] is None
+    assert up["0000000c"]["inherited_implants"] == [NMS]
+    assert up["0000000d"]["inherited_implants"] == [HUE]
+
+
+def test_search_returns_inherited_implants(implant_vault):
+    load_vault(implant_vault, silent=True)
+
+    by_id = _by_id(search_graph(query="0000000e 00000000", print_output=False))
+    by_text = _by_id(search_graph(query="Campaign", print_output=False))
+    by_filter = _by_id(search_graph(memory_type="declarative", print_output=False))
+
+    assert by_id["0000000e"]["inherited_implants"] == sorted([NMS, HUE])
+    assert by_id["00000000"]["inherited_implants"] == []
+    assert by_text["0000000c"]["inherited_implants"] == [NMS]
+    assert by_filter["0000000d"]["inherited_implants"] == [HUE]
+
+
+def test_retrieval_follows_an_attachment_added_to_an_ancestor(implant_vault):
+    load_vault(implant_vault, silent=True)
+    _write_memory(implant_vault, "00000000", "Root", [], implants=[HUE])
+
+    load_vault(implant_vault, silent=True)  # Campaign itself is unchanged
+
+    assert _by_id(navigate("0000000a", "down", print_output=False))["0000000c"]["inherited_implants"] == sorted([NMS, HUE])
+
+
+def test_text_output_names_inherited_implants(implant_vault, capsys):
+    load_vault(implant_vault, silent=True)
+
+    assert main(["navigate", "0000000c", "--direction", "down"]) == 0
+    navigate_out = capsys.readouterr().out
+    assert main(["search", "Lights"]) == 0
+    search_out = capsys.readouterr().out
+
+    assert f"[0000000e] (declarative, active) Shared Session  · implants: {NMS}, {HUE}" in navigate_out
+    assert f"[0000000d] (declarative, active) Lights  · implants: {HUE}" in search_out
+
+
+def test_text_output_omits_implants_when_none_are_inherited(implant_vault, capsys):
+    load_vault(implant_vault, silent=True)
+
+    assert main(["search", "00000000"]) == 0
+
+    assert "implants:" not in capsys.readouterr().out

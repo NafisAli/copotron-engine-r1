@@ -59,7 +59,7 @@ def search_graph(
     if id_tokens:
         placeholders = ",".join("?" for _ in id_tokens)
         sql_id = f"""
-        SELECT id, file_path, title, type, status, summary, inherited_persona
+        SELECT id, file_path, title, type, status, summary, inherited_persona, inherited_implants
         FROM memories
         WHERE lower(id) IN ({placeholders})
           AND (? IS NULL OR lower(type) = lower(?))
@@ -76,7 +76,7 @@ def search_graph(
 
     if fts_match:
         sql = """
-        SELECT m.id, m.file_path, m.title, m.type, m.status, m.summary, m.inherited_persona
+        SELECT m.id, m.file_path, m.title, m.type, m.status, m.summary, m.inherited_persona, m.inherited_implants
         FROM memories_fts f
         JOIN memories m ON f.id = m.id
         WHERE memories_fts MATCH ?
@@ -97,7 +97,7 @@ def search_graph(
             fts_rows = cur.fetchall()
     elif not id_tokens:
         sql = """
-        SELECT id, file_path, title, type, status, summary, inherited_persona
+        SELECT id, file_path, title, type, status, summary, inherited_persona, inherited_implants
         FROM memories
         WHERE (? IS NULL OR lower(type) = lower(?))
           AND (? IS NULL OR lower(status) = lower(?))
@@ -129,7 +129,8 @@ def search_graph(
             "type": row["type"],
             "status": row["status"],
             "summary": row["summary"],
-            "inherited_persona": row["inherited_persona"]
+            "inherited_persona": row["inherited_persona"],
+            "inherited_implants": json.loads(row["inherited_implants"]),
         })
 
     conn.close()

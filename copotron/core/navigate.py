@@ -26,7 +26,7 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
 
     if direction == "down":
         sql = """
-        SELECT m.id, m.file_path, m.title, m.summary, m.type, m.status, m.tags_json, m.inherited_persona
+        SELECT m.id, m.file_path, m.title, m.summary, m.type, m.status, m.tags_json, m.inherited_persona, m.inherited_implants
         FROM memories m
         JOIN memory_edges e ON m.id = e.child_id
         WHERE e.parent_id = ?
@@ -36,7 +36,7 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
         """
     else:
         sql = """
-        SELECT m.id, m.file_path, m.title, m.summary, m.type, m.status, m.tags_json, m.inherited_persona
+        SELECT m.id, m.file_path, m.title, m.summary, m.type, m.status, m.tags_json, m.inherited_persona, m.inherited_implants
         FROM memories m
         JOIN memory_edges e ON m.id = e.parent_id
         WHERE e.child_id = ?
@@ -62,7 +62,8 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
             "type": row["type"],
             "status": row["status"],
             "tags": tags,
-            "inherited_persona": row["inherited_persona"]
+            "inherited_persona": row["inherited_persona"],
+            "inherited_implants": json.loads(row["inherited_implants"]),
         })
 
     conn.close()
