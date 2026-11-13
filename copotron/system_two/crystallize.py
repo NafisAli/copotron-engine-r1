@@ -309,6 +309,7 @@ def update_memory_node(
         "parents": final_parents,
         "tags": final_tags,
         "persona": final_persona,
+        "implants": existing_schema.implants,
     }
     schema_data.update(merged_extra)
 
