@@ -16,6 +16,7 @@ Treat `copotron` strictly as a compiled binary tool.
 - **Crystallize**: `uv run copotron crystallize --manifest <path>` (atomic batch creation or in-place node updates).
 - **Validate & Index**: `uv run copotron validate [path]` and `uv run copotron index`.
 - **Persona**: When a result's `inherited_persona_title` is set, open the `inherited_persona` id and adopt its instructions. A null title means a Dangling Persona: proceed without one (see `vault-query`).
+- **Implants**: Each id in a result's `inherited_implants` is an Implant Instructions memory. Open it when the task involves that Implant and follow it (see `vault-query`).
 
 ## Progressive Memory Formation
 
