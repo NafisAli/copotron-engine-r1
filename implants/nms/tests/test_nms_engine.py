@@ -536,7 +536,7 @@ def test_has_an_exact_id_matches_only_that_id(parts_save, capsys):
 
 
 def test_has_a_category_key_matches_the_whole_category(parts_save, capsys):
-    _, d, _, found = has(capsys, "power", "--all")
+    _, _, _, found = has(capsys, "power", "--all")
     assert found == [("Home", [("Solar Panel", 3), ("Battery", 1)]), ("Visited", [("Solar Panel", 1)])]
     _, d, _, found = has(capsys, "storage")
     assert found == [("Freighter", [("Storage Room", 1)]), ("Home", [("Storage Container", 2)])]
@@ -544,7 +544,7 @@ def test_has_a_category_key_matches_the_whole_category(parts_save, capsys):
 
 
 def test_has_never_matches_collapsed_parts(parts_save, capsys):
-    code, d, _, found = has(capsys, "wall")  # Alloy Wall is structural
+    code, _, _, found = has(capsys, "wall")  # Alloy Wall is structural
     assert code == 0 and found == []
     assert has(capsys, "Electrical Wiring")[3] == []
 
