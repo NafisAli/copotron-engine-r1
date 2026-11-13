@@ -135,25 +135,30 @@ def env_save_path() -> str | None:
 
 
 def resolve(save: str | None = None, slot: int | None = None) -> SaveFile:
-    """Pick the file a command reads.
+    """Pick the file a command reads: the newest of `candidates`."""
+    return candidates(save, slot)[0]
+
+
+def candidates(save: str | None = None, slot: int | None = None) -> list[SaveFile]:
+    """Every file the selection rules allow, newest first; never empty.
 
     --save PATH wins. Otherwise the search root is NMS_SAVE_PATH (a file pins that
     file unless --slot is given; a folder replaces the default root), else the
-    platform default. --slot N takes the newest of that slot's manual/auto files
-    across all accounts; no flags takes the newest save overall.
+    platform default. --slot N keeps that slot's manual/auto files across all
+    accounts; no flags keeps every save under the root.
     """
     if save:
         p = Path(save).expanduser()
         if not p.is_file():
             raise LocateError(f"save file not found: {p}")
-        return save_file(p)
+        return [save_file(p)]
     root = default_root()
     env = env_save_path()
     if env:
         p = Path(env).expanduser()
         if p.is_file():
             if slot is None:
-                return save_file(p)
+                return [save_file(p)]
             root = p.parent
         elif p.is_dir():
             root = p
@@ -164,4 +169,4 @@ def resolve(save: str | None = None, slot: int | None = None) -> SaveFile:
         saves = [s for s in saves if s.slot == slot]
         if not saves:
             raise LocateError(f"no save in slot {slot} under {root}")
-    return saves[0]
+    return saves

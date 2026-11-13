@@ -6,8 +6,9 @@
 
     uv run implants/nms/nms.py <command> [--json] [--save PATH | --slot N]
 
-Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find,
-route and system. Text by default, one JSON document with --json.
+Commands: status, inventory, bases, convert, saves, the Discovery Atlas's find,
+route and system, and watch. Text by default, one JSON document with --json;
+watch runs until it goes idle and prints one line per Save Update instead.
 Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
 `notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
@@ -29,7 +30,7 @@ from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from nmslib import atlas, baseparts, catalog, decode, extract, locate  # noqa: E402
+from nmslib import atlas, baseparts, catalog, decode, extract, locate, poll  # noqa: E402
 from nmslib.inventory import aggregate, by_name  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
@@ -775,6 +776,43 @@ def cmd_system(args) -> int:
     return 0
 
 
+# ---- watch (#29) ---------------------------------------------------------------
+watch_clock, watch_sleep = time.monotonic, time.sleep  # the tests swap these to poll without real time
+
+
+def say(message: str) -> None:
+    """Startup, stop and warning messages: stderr, so they never reach the session."""
+    print(f"[nms watch] {message}", file=sys.stderr, flush=True)
+
+
+def update_label(f: locate.SaveFile, qualify: bool) -> str:
+    """`slot 3 (save5.hg)`; `qualify` names the account too, when several are watched."""
+    name = f"{f.account}/{f.path.name}" if qualify else f.path.name
+    return f"{f'slot {f.slot}' if f.slot else 'file'} ({name})"
+
+
+def cmd_watch(args) -> int:
+    poller = poll.Poller(lambda: locate.candidates(args.save, args.slot))
+    files = poller.start()
+    accounts = {f.account for f in files}
+    say(f"watching {len(files)} save file{'' if len(files) == 1 else 's'} every {args.interval:g}s; "
+        f"stops after {args.idle_exit:g} min without a Save Update")
+
+    def on_update(f: locate.SaveFile) -> None:
+        accounts.add(f.account)
+        when = time.strftime("%H:%M:%S", time.localtime(f.modified))
+        print(f"[nms watch] Save updated: {update_label(f, len(accounts) > 1)} at {when}", flush=True)
+
+    try:
+        poll.run(poller, on_update, interval=args.interval, idle_exit=args.idle_exit * 60,
+                 clock=watch_clock, sleep=watch_sleep)
+    except KeyboardInterrupt:
+        say("stopped")
+        return 0
+    say(f"no Save Update for {args.idle_exit:g} min; stopped")
+    return 0
+
+
 # ---- argument parsing --------------------------------------------------------
 def parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
@@ -855,6 +893,13 @@ def parser() -> argparse.ArgumentParser:
     sy.add_argument("name", nargs="*", metavar="NAME",
                     help="a Base, Star System, named planet, 12 glyphs or here (default: here)")
     sy.set_defaults(fn=cmd_system)
+
+    w = sub.add_parser("watch", parents=[pick], help="one line per Save Update until idle (every slot by default)")
+    w.add_argument("--interval", type=positive_float, default=5, metavar="SECONDS",
+                   help="seconds between polls (default 5)")
+    w.add_argument("--idle-exit", type=positive_float, default=60, metavar="MINUTES",
+                   help="stop after this many minutes without a Save Update (default 60)")
+    w.set_defaults(fn=cmd_watch)
     return p
 
 
