@@ -61,7 +61,7 @@ Where the player is and what they have: Save name and file, Game Mode, Active Co
 - **Personal Refiner** (`refiner`): only the exosuit's Refiner (owner `Exosuit`, name `Personal Refiner`), shown even when empty. Fuel is a Container value, `Fuel 40%` in text and `fuel_pct` in `--json`. Each stack has a `role` of `output` or `input`; refining progress isn't shown. Its output and inputs count toward `--search` and `--have`. `inventory refiner` always carries a note that the Save doesn't reveal Refiners in Bases, on the freighter, in Exocraft or on the corvette, and that refining continues when the game loads. With no Personal Refiner installed, the Category is empty and the note starts `No Personal Refiner installed.`
 - **Storage Chest** (`storage`, labelled `Storage 0` … `Storage 9`): shown when built at one of the player's Bases or holding items; `built` in `--json`. An unbuilt one that holds items reads `(no container built)`.
 - **Exocraft** (`exocraft`): shown when Deployed, or when not Deployed but holding cargo, marked `(not deployed)`; `type` and `deployed` in `--json`.
-- **Base Salvage Capsule** (`salvage`): what was left when a Base was destroyed.
+- **Base Salvage Capsule** (`salvage`): what was left when a Base was destroyed. Shown only when it holds items, like the other single-purpose stores (`grave`, `ingredients`, …).
 
 ```bash
 uv run copotron implant run nms inventory --search carbon
