@@ -584,6 +584,18 @@ def test_saves_schema(save_path, capsys):
     assert slot["slot"] == 2 and slot["selected"] and slot["mode"] == "Survival"
 
 
+def test_saves_refuses_an_nms_save_path_that_does_not_exist(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("NMS_SAVE_PATH", str(tmp_path / "gone"))
+    code, d, err = run(capsys, "saves")
+    assert code == 2 and d is None and "NMS_SAVE_PATH does not exist" in err
+
+
+def test_saves_lists_the_folder_of_an_nms_save_path_file(save_path, monkeypatch, capsys):
+    monkeypatch.setenv("NMS_SAVE_PATH", str(save_path))
+    _, d, _ = run(capsys, "saves")
+    assert d["root"] == str(save_path.parent) and d["selected"] == str(save_path)
+
+
 def test_bench_reports_timings_and_counts(save_path, capsys):
     code, d, _ = run(capsys, "bench")
     assert code == 0

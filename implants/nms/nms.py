@@ -515,12 +515,8 @@ def cmd_convert(args) -> int:
 
 # ---- saves -------------------------------------------------------------------
 def cmd_saves(args) -> int:
-    root = locate.default_root()
+    root = locate.search_root()
     env = locate.env_save_path()
-    if env and Path(env).expanduser().is_dir():
-        root = Path(env).expanduser()
-    elif env and Path(env).expanduser().is_file():
-        root = Path(env).expanduser().parent
     try:
         selected = locate.resolve(None, None).path
     except locate.LocateError:

@@ -134,6 +134,20 @@ def env_save_path() -> str | None:
     return None
 
 
+def search_root() -> Path:
+    """The folder the selection rules search: NMS_SAVE_PATH (its folder, when it names a
+    file), else the platform default. An NMS_SAVE_PATH that does not exist is an error."""
+    env = env_save_path()
+    if not env:
+        return default_root()
+    p = Path(env).expanduser()
+    if p.is_file():
+        return p.parent
+    if p.is_dir():
+        return p
+    raise LocateError(f"NMS_SAVE_PATH does not exist: {p}")
+
+
 def resolve(save: str | None = None, slot: int | None = None) -> SaveFile:
     """Pick the file a command reads: the newest of `candidates`."""
     return candidates(save, slot)[0]
@@ -152,18 +166,10 @@ def candidates(save: str | None = None, slot: int | None = None) -> list[SaveFil
         if not p.is_file():
             raise LocateError(f"save file not found: {p}")
         return [save_file(p)]
-    root = default_root()
     env = env_save_path()
-    if env:
-        p = Path(env).expanduser()
-        if p.is_file():
-            if slot is None:
-                return [save_file(p)]
-            root = p.parent
-        elif p.is_dir():
-            root = p
-        else:
-            raise LocateError(f"NMS_SAVE_PATH does not exist: {p}")
+    if env and slot is None and Path(env).expanduser().is_file():
+        return [save_file(Path(env).expanduser())]
+    root = search_root()
     saves = all_saves(root)
     if slot is not None:
         saves = [s for s in saves if s.slot == slot]
