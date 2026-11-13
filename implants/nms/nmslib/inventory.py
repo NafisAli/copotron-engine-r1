@@ -12,8 +12,12 @@ from collections.abc import Callable, Iterable
 from .model import Container, Slot
 
 
-def aggregate(cs: Iterable[Container], keep: Callable[[Slot], bool]) -> dict[str, dict]:
-    """Per-id totals of the kept stacks, with the amount held in each Container."""
+def aggregate(cs: Iterable[Container], keep: Callable[[Slot], bool],
+              count: Callable[[Slot], int] = lambda sl: sl.amount) -> dict[str, dict]:
+    """Per-id totals of the kept stacks, with the amount held in each Container.
+
+    `count` is what one stack adds: its amount by default.
+    """
     totals: dict[str, dict] = {}
     for c in cs:
         for x in c.slots:
@@ -21,8 +25,8 @@ def aggregate(cs: Iterable[Container], keep: Callable[[Slot], bool]) -> dict[str
                 continue
             t = totals.setdefault(x.id, {"id": x.id, "name": x.name, "type": x.item_type,
                                          "total": 0, "locations": collections.Counter()})
-            t["total"] += x.amount
-            t["locations"][c.label] += x.amount
+            t["total"] += count(x)
+            t["locations"][c.label] += count(x)
     return totals
 
 
