@@ -158,7 +158,7 @@ def cmd_status(args) -> int:
         + (f" ({biome})" if biome else ""),
     ] if x)
     text = [
-        f"Save      {file_line(s)}",
+        "Save      " + (f"{p.save_name} · " if p.save_name else "") + file_line(s),
         f"Mode      {p.game_mode} · {p.context} context · played {hours(p.play_time_s)}",
         f"Where     {p.save_summary or '-'}",
         f"Galaxy    {a.galaxy_name} (#{a.galaxy + 1}) · {place}",

@@ -574,6 +574,15 @@ def test_convert_schema(capsys):
     assert (d["glyphs"], d["galaxy"]) == ("105FFEDBE6A5", 9)
 
 
+def test_status_text_names_the_save(nms_root, capsys):
+    doc = save_doc()
+    doc["CommonStateData"]["SaveName"] = "Wanderers Rest"
+    path = write_save(nms_root / "save3.hg", doc, 1000)
+    nms.main(["status", "--save", str(path)])
+    save_line = next(r for r in capsys.readouterr().out.splitlines() if r.startswith("Save "))
+    assert "Wanderers Rest" in save_line
+
+
 def test_text_and_help_say_region_and_star_system_never_voxel_or_solar_system(save_path, capsys):
     # implants/nms/GLOSSARY.md: Region avoids "Voxel", Star System avoids "Solar System"
     for argv in (["status"], ["bases", "Home"], ["convert", "0EA4:007D:05BD:005F"], ["convert", "1,2,3"]):
