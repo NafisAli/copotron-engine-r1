@@ -29,7 +29,7 @@ from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from nmslib import catalog, decode, extract, locate  # noqa: E402
+from nmslib import baseparts, catalog, decode, extract, locate  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
 from nmslib.model import Container, Save, Slot  # noqa: E402
@@ -393,6 +393,28 @@ def inventory_have(args, cs, keep, base, notes) -> int:
 
 
 # ---- bases -------------------------------------------------------------------
+PART_LABELS = {"power": "Power", "storage": "Storage", "refining": "Refining", "farming": "Farming",
+               "extraction": "Extraction", "travel": "Travel", "terminals": "Terminals", "utility": "Utility",
+               "base_computer": "Computer", "corvette_modules": "Corvette"}
+
+
+def fmt_part(g: dict) -> str:
+    """`Solar Panel ×9`, `Landing Pad`, `Storage Container ×2 (Storage 0, Storage 2)`."""
+    chests = f" ({', '.join(f'Storage {n}' for n in g['chests'])})" if g.get("chests") else ""
+    return g["name"] + (f" ×{g['count']}" if g["count"] > 1 else "") + chests
+
+
+def parts_text(parts: dict) -> list[str]:
+    """One line per category in the fixed order, then one count line for everything collapsed."""
+    by_cat: dict[str, list[dict]] = {}
+    for g in parts["groups"]:
+        by_cat.setdefault(g["category"], []).append(g)
+    lines = [f"{PART_LABELS[c]:<11}" + ", ".join(fmt_part(g) for g in gs) for c, gs in by_cat.items()]
+    if parts["structural"]:
+        lines.append(f"+ {parts['structural']} structural and decor parts")
+    return lines
+
+
 def cmd_bases(args) -> int:
     s = load(args)
     here = s.player.location
@@ -411,8 +433,9 @@ def cmd_bases(args) -> int:
         a = b.address
         d = here.distance_ly(a)
         sys_name, planet_name, biome = planet_label(s, a)
+        parts = baseparts.listing(b.parts)
         data = {"save": save_ref(s), "base": {**b.to_json(), "distance_ly": None if d is None else round(d),
-                "system_name": sys_name, "planet_name": planet_name, "planet_biome": biome}}
+                "system_name": sys_name, "planet_name": planet_name, "planet_biome": biome, "parts": parts}}
         text = [
             f"{b.name or '(unnamed)'} — {b.kind}" + ("" if b.is_mine else f" · owner {b.owner_name or b.owner_uid}"),
             f"Galaxy    {a.galaxy_name} (#{a.galaxy + 1}) · planet {a.planet}"
@@ -422,6 +445,7 @@ def cmd_bases(args) -> int:
             f"Booster   {a.signal_booster} · voxel {a.x},{a.y},{a.z}",
             f"Distance  {ly(d)} from you",
             f"Parts     {b.part_count} · last update {local(b.last_update) if b.last_update else '-'}",
+            *parts_text(parts),
         ]
         emit(args, data, text, "bases", stale_notes(s))
         return 0

@@ -444,6 +444,65 @@ def test_bases_schema(save_path, capsys):
     assert d["base"]["name"] == "Home"
 
 
+# ---- a Base's placed Base Parts, curated (#30) -----------------------------------
+def placed(*ids):
+    return [{"ObjectID": f"^{i}", "Position": [0.0, 0.0, 0.0], "Timestamp": 1793449091} for i in ids]
+
+
+@pytest.fixture
+def parts_save(nms_root):
+    home = base("Home", "HomePlanetBase", "0x105F09FEDBE6B0", UID)  # the player's system, 11 voxels away
+    home["Objects"] = placed(
+        "BASE_FLAG", "U_SOLAR_S", "U_SOLAR_S", "U_SOLAR_S", "U_BATTERY_S", "CONTAINER2", "CONTAINER0",
+        "BUILD_REFINER2", "BUILD_REFINER2", "BUILD_REFINER1",
+        "U_POWERLINE", "U_POWERLINE", "U_POWERLINE", "U_POWERLINE",  # wires
+        "F_WALL", "F_WALL", "F_WALL", "F_WALL", "F_WALL",  # structural
+        "FREIGHTER_CORE", "NOT_A_PART")  # the catalog can't name them
+    freighter = base("Freighter", "FreighterBase", "0x205F09FEDBE6A5", UID)  # the player's own system
+    freighter["Objects"] = placed("FREIGHTER_CORE", "FRE_ROOM_STORE1", "FRE_ROOM_REFINE", "BUILD_REFINER1")
+    visited = base("Visited", "ExternalPlanetBase", "0x40050003AB8C07", "999")  # another galaxy
+    visited["Objects"] = placed("BUILD_REFINER3", "U_SOLAR_S")
+    return write_save(nms_root / "save.hg", save_doc(PersistentPlayerBases=[home, freighter, visited]), 1000)
+
+
+HOME_PARTS = {"structural": 11, "groups": [
+    {"category": "power", "name": "Solar Panel", "ids": ["U_SOLAR_S"], "count": 3},
+    {"category": "power", "name": "Battery", "ids": ["U_BATTERY_S"], "count": 1},
+    {"category": "storage", "name": "Storage Container", "ids": ["CONTAINER0", "CONTAINER2"], "count": 2,
+     "chests": [0, 2]},
+    {"category": "refining", "name": "Medium Refiner", "ids": ["BUILD_REFINER2"], "count": 2},
+    {"category": "refining", "name": "Portable Refiner", "ids": ["BUILD_REFINER1"], "count": 1},
+    {"category": "base_computer", "name": "Base Computer", "ids": ["BASE_FLAG"], "count": 1},
+]}
+
+
+def test_base_detail_json_lists_named_parts_by_category_and_counts_the_rest(parts_save, capsys):
+    code, d, _ = run(capsys, "bases", "home")
+    assert code == 0 and d["schema"] == "nms.bases/1" and d["notes"] == []
+    b = d["base"]
+    assert b["part_count"] == 21 and b["parts"] == HOME_PARTS
+    assert b["parts"]["structural"] + sum(g["count"] for g in b["parts"]["groups"]) == b["part_count"]
+
+
+def test_base_detail_text_shows_the_listing_and_one_structural_line(parts_save, capsys):
+    assert nms.main(["bases", "home", "--save", str(parts_save)]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[-5:] == [
+        "Power      Solar Panel ×3, Battery",
+        "Storage    Storage Container ×2 (Storage 0, Storage 2)",  # the inventory's chest labels
+        "Refining   Medium Refiner ×2, Portable Refiner",
+        "Computer   Base Computer",
+        "+ 11 structural and decor parts",
+    ]
+    assert not any("Position" in line or "0.0" in line for line in out)
+
+
+def test_the_all_bases_list_shows_no_listing(parts_save, capsys):
+    _, d, _ = run(capsys, "bases", "--all")
+    assert all("parts" not in b for b in d["bases"])
+    assert [b["part_count"] for b in d["bases"]] == [4, 21, 2]
+
+
 def test_convert_schema(capsys):
     code, d, _ = run(capsys, "convert", "0EA4:007D:05BD:005F", "--galaxy", "Eissentam", "--planet", "1")
     assert code == 0

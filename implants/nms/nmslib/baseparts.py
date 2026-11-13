@@ -10,9 +10,11 @@ presentation detail, not domain vocabulary; names still come from the catalog.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from functools import lru_cache
 from pathlib import Path
 
+from . import catalog
 from .extract import CHEST_PART
 
 PATH = Path(__file__).parent / "data" / "base_parts.json"
@@ -88,3 +90,33 @@ def category(part_id: str) -> str | None:
     """A placed part's category from the bundled group map (`^` ignored); None means structural."""
     part_id = part_id.lstrip("^")
     return category_of(part_id, _groups().get(part_id, []))
+
+
+def listing(parts: Iterable[str]) -> dict:
+    """A Base's placed part ids -> {"structural": n, "groups": [{category, name, ids, count, chests?}]}.
+
+    One group per name in a category (every id sharing the name counts), ordered
+    by category, then most placed. A part the catalog can't name is never given
+    a guessed one: it counts as structural, with walls, decor, wires and pipes.
+    Storage groups of numbered chests carry `chests`, the n of the inventory's
+    `Storage n` (Chest{n+1}Inventory). `structural` plus every `count` is the part count.
+    """
+    groups: dict[tuple[str, str], dict] = {}
+    structural = 0
+    for part_id in parts:
+        name = catalog.name_for(part_id)
+        kind = category(part_id) if name else None
+        if kind is None:
+            structural += 1
+            continue
+        g = groups.setdefault((kind, name), {"category": kind, "name": name, "ids": set(), "count": 0})
+        g["ids"].add(part_id.lstrip("^"))
+        g["count"] += 1
+    out = []
+    for g in sorted(groups.values(), key=lambda g: (CATEGORIES.index(g["category"]), -g["count"], g["name"].lower())):
+        entry = {**g, "ids": sorted(g["ids"])}
+        chests = sorted({int(m.group(1)) for i in g["ids"] if (m := CHEST_PART.fullmatch(i))})
+        if g["category"] == "storage" and chests:
+            entry["chests"] = chests
+        out.append(entry)
+    return {"structural": structural, "groups": out}
