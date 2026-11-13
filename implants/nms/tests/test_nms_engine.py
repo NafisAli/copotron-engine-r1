@@ -594,7 +594,7 @@ def test_bench_reports_timings_and_counts(save_path, capsys):
 def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):
     code, d, err = run(capsys, "status")  # no saves in the account folder
     assert code == 2 and d is None and err.startswith("nms: ")
-    code, d, err = run(capsys, "route", "home")
+    code, d, err = run(capsys, "system", "home")
     assert code == 2 and "#14" in err
 
 
@@ -612,7 +612,7 @@ def test_a_save_newer_than_the_game_data_adds_one_note_to_every_save_command(nms
     note = (f"Game data built for save version {built}; this save is {built + 2}. Some items may show "
             "raw ids and some fields may be missing until the game data is refreshed.")
     for argv in (["status"], ["inventory"], ["inventory", "suit"], ["inventory", "--search", "copper"],
-                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"], ["find"]):
+                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"], ["find"], ["route", "here"]):
         assert run(capsys, *argv)[1]["notes"] == [note], argv
     assert run(capsys, "convert", "0EA4:007D:05BD:005F")[1]["notes"] == []  # reads no Save
 
@@ -722,3 +722,83 @@ def test_find_refuses_an_unknown_biome_and_a_bad_from(atlas_save, capsys):
     code, _, err = run(capsys, "find", "--from", "bazaar")
     assert code == 2 and "'Bazaar' is a Visited Base" in err and "--all" in err
     assert run(capsys, "find", "--from", "bazaar a", "--all")[0] == 0
+
+
+LEG_KEYS = {"from", "to", "distance_ly", "estimate", "jumps"}
+
+
+def test_route_schema(atlas_save, capsys):
+    code, d, _ = run(capsys, "route", "lush outpost", "verdant", "--warp-range", "500")
+    assert code == 0
+    assert set(d) == {"schema", "save", "from", "tour", "order", "round_trip", "warp_range_ly", "legs",
+                      "total_ly", "total_estimate", "total_jumps", "notes"}
+    assert d["schema"] == "nms.route/1" and set(d["from"]) == PLACE_KEYS and d["tour"] is None
+    assert (d["order"], d["round_trip"], d["warp_range_ly"]) == ("nearest_2opt", False, 500)
+    assert all(set(leg) == LEG_KEYS and set(leg["to"]) == PLACE_KEYS for leg in d["legs"])
+    assert [(leg["from"], leg["to"]["label"], leg["distance_ly"], leg["estimate"], leg["jumps"])
+            for leg in d["legs"]] == [("here", "Verdant", 265, True, 1), ("Verdant", "Lush Outpost", 400, False, 1)]
+    assert (d["total_ly"], d["total_estimate"], d["total_jumps"]) == (665, True, 2)
+    assert d["notes"] == [ESTIMATE_NOTE]
+
+
+def test_route_counts_warp_jumps_only_with_a_warp_range(atlas_save, capsys):
+    d = run(capsys, "route", "lush outpost")[1]
+    assert d["warp_range_ly"] is None and d["total_jumps"] is None and d["legs"][0]["jumps"] is None
+    assert d["notes"] == [] and d["total_estimate"] is False
+    assert run(capsys, "route", "lush outpost", "--warp-range", "150")[1]["total_jumps"] == 3
+
+
+def test_route_keep_order_and_round_trip(atlas_save, capsys):
+    def visits(*argv):
+        return [leg["to"]["label"] for leg in run(capsys, "route", *argv)[1]["legs"]]
+    assert visits("lush outpost", "verdant", "--keep-order") == ["Lush Outpost", "Verdant"]
+    assert visits("lush outpost", "verdant", "--round-trip") == ["Verdant", "Lush Outpost", "here"]
+    d = run(capsys, "route", "verdant", "--keep-order", "--round-trip", "--from", "lush outpost")[1]
+    assert d["order"] == "keep_order" and d["round_trip"] and d["from"]["label"] == "Lush Outpost"
+    assert [leg["to"]["label"] for leg in d["legs"]] == ["Verdant", "Lush Outpost"]
+
+
+def test_route_text_marks_estimates_and_their_total(atlas_save, capsys):
+    assert nms.main(["route", "lush outpost", "verdant", "--warp-range", "500"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0] == ("Route     from here (Testoria) · 2 Stops · nearest first, then 2-opt · "
+                      "Warp Range 500 ly · Eissentam")
+    assert "Verdant" in out[1] and "≈265 ly" in out[1] and "1 jump" in out[1]
+    assert out[3] == "Total     ≈665 ly · 2 Warp Jumps"
+    assert nms.main(["route", "lush outpost"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[-1] == "Total     400 ly" and "jump" not in out[1]
+
+
+def test_route_refuses_ambiguous_names_visited_bases_and_other_galaxies(atlas_save, capsys):
+    code, d, err = run(capsys, "route", "ba", "--all")
+    assert code == 2 and d is None
+    assert err.splitlines()[0] == "nms: Stop 'ba': 'ba' matches 2 places"
+    assert [line.split(" (")[0].strip() for line in err.splitlines()[1:]] == ["Bazaar", "Bazaar Annex"]
+    code, _, err = run(capsys, "route", "bazaar")
+    assert code == 2 and "'Bazaar' is a Visited Base" in err and "pass --all" in err
+    assert run(capsys, "route", "bazaar", "--all")[0] == 0
+    code, _, err = run(capsys, "route", "verdant", "home")
+    assert code == 2 and "A Route stays in one Galaxy: it starts in Eissentam, but Home is in Euclid" in err
+
+
+def test_a_biome_tour_routes_through_the_nearest_matching_planets(atlas_save, capsys):
+    code, d, _ = run(capsys, "route", "--biome", "lush", "--nearest", "2", "--warp-range", "1000")
+    assert code == 0 and d["schema"] == "nms.route/1"
+    assert d["tour"] == {"filters": {"biome": "Lush", "infested": None, "named": False, "discoverer": None},
+                         "nearest": 2}
+    assert [(leg["to"]["kind"], leg["to"]["label"]) for leg in d["legs"]] == [
+        ("planet", "Verdant"), ("planet", f"system {extract_glyphs(9, 1702, -2, -578, 10)} planet 1")]
+    assert run(capsys, "route", "--biome", "toxic", "--infested")[1]["legs"][0]["distance_ly"] == 1200
+    assert len(run(capsys, "route", "--biome", "lush")[1]["legs"]) == 2  # the nearest 5, of 2 in Eissentam
+
+
+@pytest.mark.parametrize(("argv", "error"), [
+    ([], "a Route needs at least one Stop, or --biome for a Biome Tour"),
+    (["verdant", "--biome", "lush"], "Stops and --biome are exclusive"),
+    (["verdant", "--named"], "--infested, --not-infested, --named, --discoverer and --nearest build a Biome Tour"),
+    (["--biome", "lava"], "No discovered planet in Eissentam matches those filters"),
+])
+def test_route_usage_errors_exit_2(atlas_save, capsys, argv, error):
+    code, _, err = run(capsys, "route", *argv)
+    assert code == 2 and error in err

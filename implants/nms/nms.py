@@ -6,8 +6,8 @@
 
     uv run implants/nms/nms.py <command> [--json] [--save PATH | --slot N]
 
-Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find
-(route, system: not yet). Text by default, one JSON document with --json.
+Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find and
+route (system: not yet). Text by default, one JSON document with --json.
 Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
 `notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
@@ -37,6 +37,7 @@ from nmslib.model import BIOMES, Container, Save, Slot  # noqa: E402
 T_IMPORTED = time.perf_counter()
 
 FIND_NEAREST = 10  # find lists this many planets unless --nearest or --within says otherwise
+TOUR_NEAREST = 5  # a Biome Tour visits this many planets unless --nearest says otherwise
 SCHEMA_VERSION = 1  # every --json shape is pinned by the tests; a breaking change bumps it
 
 CATEGORIES = [
@@ -718,6 +719,53 @@ def cmd_find(args) -> int:
     return 0
 
 
+TOUR_FLAGS = "--infested, --not-infested, --named, --discoverer and --nearest build a Biome Tour"
+
+
+def cmd_route(args) -> int:
+    tour = args.biome is not None
+    if tour and args.stops:
+        raise Fail("Stops and --biome are exclusive: name the Stops, or let --biome pick them for a Biome Tour")
+    if not tour and (args.infested is not None or args.named or args.discoverer or args.nearest):
+        raise Fail(f"{TOUR_FLAGS}; add --biome")
+    if not tour and not args.stops:
+        raise Fail("a Route needs at least one Stop, or --biome for a Biome Tour")
+    flt = planet_filter(args) if tour else None
+    s = load(args)
+    start = resolve_place(s, args.origin, args, "--from")
+    opts = {"keep_order": args.keep_order, "round_trip": args.round_trip, "warp_range": args.warp_range}
+    try:
+        if tour:
+            route = atlas.biome_tour(s, start, flt, args.nearest or TOUR_NEAREST, **opts)
+        else:
+            route = atlas.plan_route(start, [resolve_place(s, t, args, f"Stop {t!r}") for t in args.stops], **opts)
+    except atlas.RouteError as e:
+        raise Fail(str(e)) from None
+    notes = ([ESTIMATE_NOTE] if route.estimate else []) + stale_notes(s)
+    data = {"save": save_ref(s), "from": place_json(start),
+            "tour": {"filters": filter_json(flt), "nearest": args.nearest or TOUR_NEAREST} if tour else None,
+            "order": "keep_order" if args.keep_order else "nearest_2opt", "round_trip": args.round_trip,
+            "warp_range_ly": args.warp_range,
+            "legs": [{"from": atlas.label(leg.start), "to": place_json(leg.end), "distance_ly": round(leg.distance.ly),
+                      "estimate": leg.distance.estimate, "jumps": leg.jumps} for leg in route.legs],
+            "total_ly": round(route.total_ly), "total_estimate": route.estimate, "total_jumps": route.jumps}
+    stops = len(route.legs) - args.round_trip
+    what = (f"Biome Tour of the nearest {args.nearest or TOUR_NEAREST} {filter_words(flt)}" if tour
+            else f"{stops} Stop{'' if stops == 1 else 's'}")
+    text = [" · ".join(x for x in [
+        f"Route     from {place_text(start)}", what,
+        "as listed" if args.keep_order else "nearest first, then 2-opt", "round trip" if args.round_trip else "",
+        f"Warp Range {args.warp_range:,.0f} ly" if args.warp_range else "", start.address.galaxy_name] if x)]
+    for i, leg in enumerate(route.legs, 1):
+        jumps = "" if leg.jumps is None else f"{leg.jumps:>6,} jump{'' if leg.jumps == 1 else 's'}"
+        text.append(f"  {i:>2}  {atlas.label(leg.end)[:40]:<40} {dist(leg.distance):>13}{jumps:<12}  "
+                    f"{leg.end.address.glyphs}")
+    text.append(f"Total     {dist(atlas.Distance(route.total_ly, route.estimate))}"
+                + ("" if route.jumps is None else f" · {route.jumps:,} Warp Jump{'' if route.jumps == 1 else 's'}"))
+    emit(args, data, text, "route", notes)
+    return 0
+
+
 def cmd_atlas(args) -> int:
     raise Fail(f"'{args.command}' is not implemented yet: it ships with the Discovery Atlas "
                "(copotron-engine-r1#14)")
@@ -788,7 +836,18 @@ def parser() -> argparse.ArgumentParser:
     lim.add_argument("--within", type=positive_float, metavar="LY", help="every match within LY light-years")
     f.set_defaults(fn=cmd_find)
 
-    for name in ("route", "system"):
+    r = sub.add_parser("route", parents=[common, pick, places, origin, planets],
+                       help="a Route through Stops, or a Biome Tour (--biome)")
+    r.add_argument("stops", nargs="*", metavar="STOP",
+                   help="a Base, Star System, named planet, 12 glyphs or here (quote names with spaces)")
+    r.add_argument("--keep-order", action="store_true", help="visit the Stops exactly as listed")
+    r.add_argument("--round-trip", action="store_true", help="end back at the starting point")
+    r.add_argument("--warp-range", type=positive_float, metavar="LY", help="count Warp Jumps at this range")
+    r.add_argument("--nearest", type=positive_int, metavar="N",
+                   help=f"Biome Tour: the nearest N matching planets (default {TOUR_NEAREST})")
+    r.set_defaults(fn=cmd_route)
+
+    for name in ("system",):
         a = sub.add_parser(name, parents=[common, pick], help="(Discovery Atlas, not yet)")
         a.add_argument("rest", nargs=argparse.REMAINDER)
         a.set_defaults(fn=cmd_atlas)
