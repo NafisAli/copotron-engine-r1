@@ -330,3 +330,10 @@ def test_watch_json_carries_the_staleness_note(nms_root, fake_time, capsys):
     fake_time({2: touch(save, 2000, stale)})
     (d,) = json_lines(capsys)
     assert len(d["notes"]) == 1 and d["notes"][0].startswith("Game data built for save version")
+
+
+def test_watch_help_says_json_is_one_object_per_line(capsys):
+    with pytest.raises(SystemExit):
+        nms.main(["watch", "--help"])
+    help_text = " ".join(capsys.readouterr().out.split())
+    assert "one JSON object per line" in help_text and "one JSON document" not in help_text

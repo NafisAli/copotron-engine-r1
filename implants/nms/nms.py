@@ -952,7 +952,8 @@ def parser() -> argparse.ArgumentParser:
                     help="a Base, Star System, named planet, 12 glyphs or here (default: here)")
     sy.set_defaults(fn=cmd_system)
 
-    w = sub.add_parser("watch", parents=[common, pick], help="one line per Save Update until idle (every slot by default)")
+    w = sub.add_parser("watch", parents=[pick], help="one line per Save Update until idle (every slot by default)")
+    w.add_argument("--json", action="store_true", help="one JSON object per line on stdout")
     w.add_argument("--interval", type=positive_float, default=5, metavar="SECONDS",
                    help="seconds between polls (default 5)")
     w.add_argument("--idle-exit", type=positive_float, default=60, metavar="MINUTES",
