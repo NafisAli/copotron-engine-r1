@@ -86,7 +86,7 @@ uv run copotron implant run nms bases --has teleport --all
 
 These three resolve a place (a `route` Stop, `--from PLACE`, `system NAME`) by one name rule:
 
-- `here` (the default) is the player's location; 12 Portal Glyphs are that Address in the player's current Galaxy.
+- `here` is the player's Address and the default for `--from` and `system`; `route` has no default Stop; 12 Portal Glyphs are that Address in the player's current Galaxy.
 - A name is matched exact, then prefix, then substring (any case), across own Bases, Star Systems, named planets, then Visited Bases. Visited Bases need `--all`; without it the command names the Visited Base and suggests `--all`.
 - Several matches exit `2` with up to 5 candidates. Pick one with the player, then re-run with the fuller name or its Portal Glyphs.
 
