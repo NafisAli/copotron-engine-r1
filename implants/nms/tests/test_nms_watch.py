@@ -283,6 +283,12 @@ def test_the_text_line_reads_every_kind_of_change():
         "moved to Ekoxim IV", "game mode: Normal → Survival"]
 
 
+def test_naming_an_unnamed_base_reads_renamed_from_unnamed():
+    a = Address(0, 1, 2, 3, 4, 2)
+    d = w.SaveDelta(bases_edited=[w.BaseChange("Lakeside", "HomePlanetBase", a, 3, 0, "")])
+    assert nms.delta_text(d) == ["base edited: Lakeside (renamed from (unnamed))"]
+
+
 # ---- --json: nms.watch/1 --------------------------------------------------------------------
 CHANGES = {"inventory", "currencies", "discoveries", "bases", "location", "game_mode"}
 

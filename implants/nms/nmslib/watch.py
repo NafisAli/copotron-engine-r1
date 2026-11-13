@@ -62,7 +62,7 @@ class BaseChange:
     address: Address
     part_count: int  # after the Save Update; before it, for a removed Base
     parts_change: int
-    renamed_from: str | None  # edited only
+    renamed_from: str | None  # edited and renamed only; "" when it had no name
 
 
 @dataclass(frozen=True, slots=True)

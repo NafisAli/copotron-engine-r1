@@ -802,7 +802,7 @@ def places_text(kind: str, places: list[watch.NewPlace]) -> list[str]:
 
 
 def base_text(b: watch.BaseChange) -> str:
-    what = [f"renamed from {b.renamed_from}"] if b.renamed_from else []
+    what = [f"renamed from {b.renamed_from or '(unnamed)'}"] if b.renamed_from is not None else []
     what += [f"{b.parts_change:+,} part{'' if abs(b.parts_change) == 1 else 's'}"] if b.parts_change else []
     return (b.name or "(unnamed)") + (f" ({', '.join(what)})" if what else "")
 
