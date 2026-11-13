@@ -1,0 +1,1285 @@
+{
+"source": "nms-copilot crates/nms-core/src/galaxy.rs",
+"galaxies": [
+{
+"index": 0,
+"name": "Euclid",
+"type": "Normal"
+},
+{
+"index": 1,
+"name": "Hilbert Dimension",
+"type": "Normal"
+},
+{
+"index": 2,
+"name": "Calypso",
+"type": "Harsh"
+},
+{
+"index": 3,
+"name": "Hesperius Dimension",
+"type": "Normal"
+},
+{
+"index": 4,
+"name": "Hyades",
+"type": "Normal"
+},
+{
+"index": 5,
+"name": "Ickjamatew",
+"type": "Normal"
+},
+{
+"index": 6,
+"name": "Budullangr",
+"type": "Empty"
+},
+{
+"index": 7,
+"name": "Kikolgallr",
+"type": "Normal"
+},
+{
+"index": 8,
+"name": "Eltiensleen",
+"type": "Normal"
+},
+{
+"index": 9,
+"name": "Eissentam",
+"type": "Lush"
+},
+{
+"index": 10,
+"name": "Elkupalos",
+"type": "Normal"
+},
+{
+"index": 11,
+"name": "Aptarkaba",
+"type": "Empty"
+},
+{
+"index": 12,
+"name": "Ontiniangp",
+"type": "Normal"
+},
+{
+"index": 13,
+"name": "Odiwagiri",
+"type": "Normal"
+},
+{
+"index": 14,
+"name": "Ogtialabi",
+"type": "Harsh"
+},
+{
+"index": 15,
+"name": "Muhacksonto",
+"type": "Normal"
+},
+{
+"index": 16,
+"name": "Hitonskyer",
+"type": "Normal"
+},
+{
+"index": 17,
+"name": "Rerasmutul",
+"type": "Normal"
+},
+{
+"index": 18,
+"name": "Isdoraijung",
+"type": "Lush"
+},
+{
+"index": 19,
+"name": "Doctinawyra",
+"type": "Normal"
+},
+{
+"index": 20,
+"name": "Loychazinq",
+"type": "Normal"
+},
+{
+"index": 21,
+"name": "Zukasizawa",
+"type": "Normal"
+},
+{
+"index": 22,
+"name": "Ekwathore",
+"type": "Harsh"
+},
+{
+"index": 23,
+"name": "Yeberhahne",
+"type": "Normal"
+},
+{
+"index": 24,
+"name": "Twerbetek",
+"type": "Normal"
+},
+{
+"index": 25,
+"name": "Sivarates",
+"type": "Normal"
+},
+{
+"index": 26,
+"name": "Eajerandal",
+"type": "Empty"
+},
+{
+"index": 27,
+"name": "Aldukesci",
+"type": "Normal"
+},
+{
+"index": 28,
+"name": "Wotyarogii",
+"type": "Normal"
+},
+{
+"index": 29,
+"name": "Sudzerbal",
+"type": "Lush"
+},
+{
+"index": 30,
+"name": "Maupenzhay",
+"type": "Normal"
+},
+{
+"index": 31,
+"name": "Sugueziume",
+"type": "Empty"
+},
+{
+"index": 32,
+"name": "Brogoweldian",
+"type": "Normal"
+},
+{
+"index": 33,
+"name": "Ehbogdenbu",
+"type": "Normal"
+},
+{
+"index": 34,
+"name": "Ijsenufryos",
+"type": "Harsh"
+},
+{
+"index": 35,
+"name": "Nipikulha",
+"type": "Normal"
+},
+{
+"index": 36,
+"name": "Autsurabin",
+"type": "Normal"
+},
+{
+"index": 37,
+"name": "Lusontrygiamh",
+"type": "Normal"
+},
+{
+"index": 38,
+"name": "Rewmanawa",
+"type": "Lush"
+},
+{
+"index": 39,
+"name": "Ethiophodhe",
+"type": "Normal"
+},
+{
+"index": 40,
+"name": "Urastrykle",
+"type": "Normal"
+},
+{
+"index": 41,
+"name": "Xobeurindj",
+"type": "Normal"
+},
+{
+"index": 42,
+"name": "Oniijialdu",
+"type": "Harsh"
+},
+{
+"index": 43,
+"name": "Wucetosucc",
+"type": "Normal"
+},
+{
+"index": 44,
+"name": "Ebyeloof",
+"type": "Normal"
+},
+{
+"index": 45,
+"name": "Odyavanta",
+"type": "Normal"
+},
+{
+"index": 46,
+"name": "Milekistri",
+"type": "Empty"
+},
+{
+"index": 47,
+"name": "Waferganh",
+"type": "Normal"
+},
+{
+"index": 48,
+"name": "Agnusopwit",
+"type": "Normal"
+},
+{
+"index": 49,
+"name": "Teyaypilny",
+"type": "Lush"
+},
+{
+"index": 50,
+"name": "Zalienkosm",
+"type": "Normal"
+},
+{
+"index": 51,
+"name": "Ladgudiraf",
+"type": "Empty"
+},
+{
+"index": 52,
+"name": "Mushonponte",
+"type": "Normal"
+},
+{
+"index": 53,
+"name": "Amsentisz",
+"type": "Normal"
+},
+{
+"index": 54,
+"name": "Fladiselm",
+"type": "Harsh"
+},
+{
+"index": 55,
+"name": "Laanawemb",
+"type": "Normal"
+},
+{
+"index": 56,
+"name": "Ilkerloor",
+"type": "Normal"
+},
+{
+"index": 57,
+"name": "Davanossi",
+"type": "Normal"
+},
+{
+"index": 58,
+"name": "Ploehrliou",
+"type": "Lush"
+},
+{
+"index": 59,
+"name": "Corpinyaya",
+"type": "Normal"
+},
+{
+"index": 60,
+"name": "Leckandmeram",
+"type": "Normal"
+},
+{
+"index": 61,
+"name": "Quulngais",
+"type": "Normal"
+},
+{
+"index": 62,
+"name": "Nokokipsechl",
+"type": "Harsh"
+},
+{
+"index": 63,
+"name": "Rinblodesa",
+"type": "Normal"
+},
+{
+"index": 64,
+"name": "Loydporpen",
+"type": "Normal"
+},
+{
+"index": 65,
+"name": "Ibtrevskip",
+"type": "Normal"
+},
+{
+"index": 66,
+"name": "Elkowaldb",
+"type": "Empty"
+},
+{
+"index": 67,
+"name": "Heholhofsko",
+"type": "Normal"
+},
+{
+"index": 68,
+"name": "Yebrilowisod",
+"type": "Normal"
+},
+{
+"index": 69,
+"name": "Husalvangewi",
+"type": "Lush"
+},
+{
+"index": 70,
+"name": "Ovna'uesed",
+"type": "Normal"
+},
+{
+"index": 71,
+"name": "Bahibusey",
+"type": "Empty"
+},
+{
+"index": 72,
+"name": "Nuybeliaure",
+"type": "Normal"
+},
+{
+"index": 73,
+"name": "Doshawchuc",
+"type": "Normal"
+},
+{
+"index": 74,
+"name": "Ruckinarkh",
+"type": "Harsh"
+},
+{
+"index": 75,
+"name": "Thorettac",
+"type": "Normal"
+},
+{
+"index": 76,
+"name": "Nuponoparau",
+"type": "Normal"
+},
+{
+"index": 77,
+"name": "Moglaschil",
+"type": "Normal"
+},
+{
+"index": 78,
+"name": "Uiweupose",
+"type": "Lush"
+},
+{
+"index": 79,
+"name": "Nasmilete",
+"type": "Normal"
+},
+{
+"index": 80,
+"name": "Ekdaluskin",
+"type": "Normal"
+},
+{
+"index": 81,
+"name": "Hakapanasy",
+"type": "Normal"
+},
+{
+"index": 82,
+"name": "Dimonimba",
+"type": "Harsh"
+},
+{
+"index": 83,
+"name": "Cajaccari",
+"type": "Normal"
+},
+{
+"index": 84,
+"name": "Olonerovo",
+"type": "Normal"
+},
+{
+"index": 85,
+"name": "Umlanswick",
+"type": "Normal"
+},
+{
+"index": 86,
+"name": "Henayliszm",
+"type": "Empty"
+},
+{
+"index": 87,
+"name": "Utzenmate",
+"type": "Normal"
+},
+{
+"index": 88,
+"name": "Umirpaiya",
+"type": "Normal"
+},
+{
+"index": 89,
+"name": "Paholiang",
+"type": "Lush"
+},
+{
+"index": 90,
+"name": "Iaereznika",
+"type": "Normal"
+},
+{
+"index": 91,
+"name": "Yudukagath",
+"type": "Empty"
+},
+{
+"index": 92,
+"name": "Boealalosnj",
+"type": "Normal"
+},
+{
+"index": 93,
+"name": "Yaevarcko",
+"type": "Normal"
+},
+{
+"index": 94,
+"name": "Coellosipp",
+"type": "Harsh"
+},
+{
+"index": 95,
+"name": "Wayndohalou",
+"type": "Normal"
+},
+{
+"index": 96,
+"name": "Smoduraykl",
+"type": "Normal"
+},
+{
+"index": 97,
+"name": "Apmaneessu",
+"type": "Normal"
+},
+{
+"index": 98,
+"name": "Hicanpaav",
+"type": "Lush"
+},
+{
+"index": 99,
+"name": "Akvasanta",
+"type": "Normal"
+},
+{
+"index": 100,
+"name": "Tuychelisaor",
+"type": "Normal"
+},
+{
+"index": 101,
+"name": "Rivskimbe",
+"type": "Normal"
+},
+{
+"index": 102,
+"name": "Daksanquix",
+"type": "Harsh"
+},
+{
+"index": 103,
+"name": "Kissonlin",
+"type": "Normal"
+},
+{
+"index": 104,
+"name": "Aediabiel",
+"type": "Normal"
+},
+{
+"index": 105,
+"name": "Ulosaginyik",
+"type": "Normal"
+},
+{
+"index": 106,
+"name": "Roclaytonycar",
+"type": "Empty"
+},
+{
+"index": 107,
+"name": "Kichiaroa",
+"type": "Normal"
+},
+{
+"index": 108,
+"name": "Irceauffey",
+"type": "Normal"
+},
+{
+"index": 109,
+"name": "Nudquathsenfe",
+"type": "Lush"
+},
+{
+"index": 110,
+"name": "Getaizakaal",
+"type": "Normal"
+},
+{
+"index": 111,
+"name": "Hansolmien",
+"type": "Empty"
+},
+{
+"index": 112,
+"name": "Bloytisagra",
+"type": "Normal"
+},
+{
+"index": 113,
+"name": "Ladsenlay",
+"type": "Normal"
+},
+{
+"index": 114,
+"name": "Luyugoslasr",
+"type": "Harsh"
+},
+{
+"index": 115,
+"name": "Ubredhatk",
+"type": "Normal"
+},
+{
+"index": 116,
+"name": "Cidoniana",
+"type": "Normal"
+},
+{
+"index": 117,
+"name": "Jasinessa",
+"type": "Normal"
+},
+{
+"index": 118,
+"name": "Torweierf",
+"type": "Lush"
+},
+{
+"index": 119,
+"name": "Saffneckm",
+"type": "Normal"
+},
+{
+"index": 120,
+"name": "Thnistner",
+"type": "Normal"
+},
+{
+"index": 121,
+"name": "Dotusingg",
+"type": "Normal"
+},
+{
+"index": 122,
+"name": "Luleukous",
+"type": "Harsh"
+},
+{
+"index": 123,
+"name": "Jelmandan",
+"type": "Normal"
+},
+{
+"index": 124,
+"name": "Otimanaso",
+"type": "Normal"
+},
+{
+"index": 125,
+"name": "Enjaxusanto",
+"type": "Normal"
+},
+{
+"index": 126,
+"name": "Sezviktorew",
+"type": "Empty"
+},
+{
+"index": 127,
+"name": "Zikehpm",
+"type": "Normal"
+},
+{
+"index": 128,
+"name": "Bephembah",
+"type": "Normal"
+},
+{
+"index": 129,
+"name": "Broomerrai",
+"type": "Lush"
+},
+{
+"index": 130,
+"name": "Meximicka",
+"type": "Normal"
+},
+{
+"index": 131,
+"name": "Venessika",
+"type": "Empty"
+},
+{
+"index": 132,
+"name": "Gaiteseling",
+"type": "Normal"
+},
+{
+"index": 133,
+"name": "Zosakasiro",
+"type": "Normal"
+},
+{
+"index": 134,
+"name": "Drajayanes",
+"type": "Harsh"
+},
+{
+"index": 135,
+"name": "Ooibekuar",
+"type": "Normal"
+},
+{
+"index": 136,
+"name": "Urckiansi",
+"type": "Normal"
+},
+{
+"index": 137,
+"name": "Dozivadido",
+"type": "Normal"
+},
+{
+"index": 138,
+"name": "Emiekereks",
+"type": "Lush"
+},
+{
+"index": 139,
+"name": "Meykinunukur",
+"type": "Normal"
+},
+{
+"index": 140,
+"name": "Kimycuristh",
+"type": "Normal"
+},
+{
+"index": 141,
+"name": "Roansfien",
+"type": "Normal"
+},
+{
+"index": 142,
+"name": "Isgarmeso",
+"type": "Harsh"
+},
+{
+"index": 143,
+"name": "Daitibeli",
+"type": "Normal"
+},
+{
+"index": 144,
+"name": "Gucuttarik",
+"type": "Normal"
+},
+{
+"index": 145,
+"name": "Enlaythie",
+"type": "Normal"
+},
+{
+"index": 146,
+"name": "Drewweste",
+"type": "Empty"
+},
+{
+"index": 147,
+"name": "Akbulkabi",
+"type": "Normal"
+},
+{
+"index": 148,
+"name": "Homskiw",
+"type": "Normal"
+},
+{
+"index": 149,
+"name": "Zavainlani",
+"type": "Lush"
+},
+{
+"index": 150,
+"name": "Jewijkmas",
+"type": "Normal"
+},
+{
+"index": 151,
+"name": "Itlhotagra",
+"type": "Empty"
+},
+{
+"index": 152,
+"name": "Podalicess",
+"type": "Normal"
+},
+{
+"index": 153,
+"name": "Hiviusauer",
+"type": "Normal"
+},
+{
+"index": 154,
+"name": "Halsebenk",
+"type": "Harsh"
+},
+{
+"index": 155,
+"name": "Puikitoac",
+"type": "Normal"
+},
+{
+"index": 156,
+"name": "Gaybakuaria",
+"type": "Normal"
+},
+{
+"index": 157,
+"name": "Grbodubhe",
+"type": "Normal"
+},
+{
+"index": 158,
+"name": "Rycempler",
+"type": "Lush"
+},
+{
+"index": 159,
+"name": "Indjalala",
+"type": "Normal"
+},
+{
+"index": 160,
+"name": "Fontenikk",
+"type": "Normal"
+},
+{
+"index": 161,
+"name": "Pasycihelwhee",
+"type": "Normal"
+},
+{
+"index": 162,
+"name": "Ikbaksmit",
+"type": "Harsh"
+},
+{
+"index": 163,
+"name": "Telicianses",
+"type": "Normal"
+},
+{
+"index": 164,
+"name": "Oyleyzhan",
+"type": "Normal"
+},
+{
+"index": 165,
+"name": "Uagerosat",
+"type": "Normal"
+},
+{
+"index": 166,
+"name": "Impoxectin",
+"type": "Empty"
+},
+{
+"index": 167,
+"name": "Twoodmand",
+"type": "Normal"
+},
+{
+"index": 168,
+"name": "Hilfsesorbs",
+"type": "Normal"
+},
+{
+"index": 169,
+"name": "Ezdaranit",
+"type": "Lush"
+},
+{
+"index": 170,
+"name": "Wiensanshe",
+"type": "Normal"
+},
+{
+"index": 171,
+"name": "Ewheelonc",
+"type": "Empty"
+},
+{
+"index": 172,
+"name": "Litzmantufa",
+"type": "Normal"
+},
+{
+"index": 173,
+"name": "Emarmatosi",
+"type": "Normal"
+},
+{
+"index": 174,
+"name": "Mufimbomacvi",
+"type": "Harsh"
+},
+{
+"index": 175,
+"name": "Wongquarum",
+"type": "Normal"
+},
+{
+"index": 176,
+"name": "Hapirajua",
+"type": "Normal"
+},
+{
+"index": 177,
+"name": "Igbinduina",
+"type": "Normal"
+},
+{
+"index": 178,
+"name": "Wepaitvas",
+"type": "Lush"
+},
+{
+"index": 179,
+"name": "Sthatigudi",
+"type": "Normal"
+},
+{
+"index": 180,
+"name": "Yekathsebehn",
+"type": "Normal"
+},
+{
+"index": 181,
+"name": "Ebedeagurst",
+"type": "Normal"
+},
+{
+"index": 182,
+"name": "Nolisonia",
+"type": "Harsh"
+},
+{
+"index": 183,
+"name": "Ulexovitab",
+"type": "Normal"
+},
+{
+"index": 184,
+"name": "Iodhinxois",
+"type": "Normal"
+},
+{
+"index": 185,
+"name": "Irroswitzs",
+"type": "Normal"
+},
+{
+"index": 186,
+"name": "Bifredait",
+"type": "Empty"
+},
+{
+"index": 187,
+"name": "Beiraghedwe",
+"type": "Normal"
+},
+{
+"index": 188,
+"name": "Yeonatlak",
+"type": "Normal"
+},
+{
+"index": 189,
+"name": "Cugnatachh",
+"type": "Lush"
+},
+{
+"index": 190,
+"name": "Nozoryenki",
+"type": "Normal"
+},
+{
+"index": 191,
+"name": "Ebralduri",
+"type": "Empty"
+},
+{
+"index": 192,
+"name": "Evcickcandj",
+"type": "Normal"
+},
+{
+"index": 193,
+"name": "Ziybosswin",
+"type": "Normal"
+},
+{
+"index": 194,
+"name": "Heperclait",
+"type": "Harsh"
+},
+{
+"index": 195,
+"name": "Sugiuniam",
+"type": "Normal"
+},
+{
+"index": 196,
+"name": "Aaseertush",
+"type": "Normal"
+},
+{
+"index": 197,
+"name": "Uglyestemaa",
+"type": "Normal"
+},
+{
+"index": 198,
+"name": "Horeroedsh",
+"type": "Lush"
+},
+{
+"index": 199,
+"name": "Drundemiso",
+"type": "Normal"
+},
+{
+"index": 200,
+"name": "Ityanianat",
+"type": "Normal"
+},
+{
+"index": 201,
+"name": "Purneyrine",
+"type": "Normal"
+},
+{
+"index": 202,
+"name": "Dokiessmat",
+"type": "Harsh"
+},
+{
+"index": 203,
+"name": "Nupiacheh",
+"type": "Normal"
+},
+{
+"index": 204,
+"name": "Dihewsonj",
+"type": "Normal"
+},
+{
+"index": 205,
+"name": "Rudrailhik",
+"type": "Normal"
+},
+{
+"index": 206,
+"name": "Tweretnort",
+"type": "Empty"
+},
+{
+"index": 207,
+"name": "Snatreetze",
+"type": "Normal"
+},
+{
+"index": 208,
+"name": "Iwundaracos",
+"type": "Normal"
+},
+{
+"index": 209,
+"name": "Digarlewena",
+"type": "Lush"
+},
+{
+"index": 210,
+"name": "Erquagsta",
+"type": "Normal"
+},
+{
+"index": 211,
+"name": "Logovoloin",
+"type": "Empty"
+},
+{
+"index": 212,
+"name": "Boyaghosganh",
+"type": "Normal"
+},
+{
+"index": 213,
+"name": "Kuolungau",
+"type": "Normal"
+},
+{
+"index": 214,
+"name": "Pehneldept",
+"type": "Harsh"
+},
+{
+"index": 215,
+"name": "Yevettiiqidcon",
+"type": "Normal"
+},
+{
+"index": 216,
+"name": "Sahliacabru",
+"type": "Normal"
+},
+{
+"index": 217,
+"name": "Noggalterpor",
+"type": "Normal"
+},
+{
+"index": 218,
+"name": "Chmageaki",
+"type": "Lush"
+},
+{
+"index": 219,
+"name": "Veticueca",
+"type": "Normal"
+},
+{
+"index": 220,
+"name": "Vittesbursul",
+"type": "Normal"
+},
+{
+"index": 221,
+"name": "Nootanore",
+"type": "Normal"
+},
+{
+"index": 222,
+"name": "Innebdjerah",
+"type": "Harsh"
+},
+{
+"index": 223,
+"name": "Kisvarcini",
+"type": "Normal"
+},
+{
+"index": 224,
+"name": "Cuzcogipper",
+"type": "Normal"
+},
+{
+"index": 225,
+"name": "Pamanhermonsu",
+"type": "Normal"
+},
+{
+"index": 226,
+"name": "Brotoghek",
+"type": "Empty"
+},
+{
+"index": 227,
+"name": "Mibittara",
+"type": "Normal"
+},
+{
+"index": 228,
+"name": "Huruahili",
+"type": "Normal"
+},
+{
+"index": 229,
+"name": "Raldwicarn",
+"type": "Lush"
+},
+{
+"index": 230,
+"name": "Ezdartlic",
+"type": "Normal"
+},
+{
+"index": 231,
+"name": "Badesclema",
+"type": "Empty"
+},
+{
+"index": 232,
+"name": "Isenkeyan",
+"type": "Normal"
+},
+{
+"index": 233,
+"name": "Iadoitesu",
+"type": "Normal"
+},
+{
+"index": 234,
+"name": "Yagrovoisi",
+"type": "Harsh"
+},
+{
+"index": 235,
+"name": "Ewcomechio",
+"type": "Normal"
+},
+{
+"index": 236,
+"name": "Inunnunnoda",
+"type": "Normal"
+},
+{
+"index": 237,
+"name": "Dischiutun",
+"type": "Normal"
+},
+{
+"index": 238,
+"name": "Yuwarugha",
+"type": "Lush"
+},
+{
+"index": 239,
+"name": "Ialmendra",
+"type": "Normal"
+},
+{
+"index": 240,
+"name": "Reponudrle",
+"type": "Normal"
+},
+{
+"index": 241,
+"name": "Rinjanagrbo",
+"type": "Normal"
+},
+{
+"index": 242,
+"name": "Zeziceloh",
+"type": "Harsh"
+},
+{
+"index": 243,
+"name": "Oeileutasc",
+"type": "Normal"
+},
+{
+"index": 244,
+"name": "Zicniijinis",
+"type": "Normal"
+},
+{
+"index": 245,
+"name": "Dugnowarilda",
+"type": "Normal"
+},
+{
+"index": 246,
+"name": "Neuxoisan",
+"type": "Empty"
+},
+{
+"index": 247,
+"name": "Ilmenhorn",
+"type": "Normal"
+},
+{
+"index": 248,
+"name": "Rukwatsuku",
+"type": "Normal"
+},
+{
+"index": 249,
+"name": "Nepitzaspru",
+"type": "Lush"
+},
+{
+"index": 250,
+"name": "Chcehoemig",
+"type": "Normal"
+},
+{
+"index": 251,
+"name": "Haffneyrin",
+"type": "Empty"
+},
+{
+"index": 252,
+"name": "Uliciawai",
+"type": "Normal"
+},
+{
+"index": 253,
+"name": "Tuhgrespod",
+"type": "Normal"
+},
+{
+"index": 254,
+"name": "Iousongola",
+"type": "Harsh"
+},
+{
+"index": 255,
+"name": "Odyalutai",
+"type": "Normal"
+}
+]
+}

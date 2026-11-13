@@ -1,0 +1,14468 @@
+{
+"snapshot": {
+"built": "2026-11-13",
+"source": "game PAKs via hgpaktool + MBINCompiler",
+"mbincompiler_tag": "v7.10.0-pre1",
+"mbincompiler_sha256": "035c5645753be3cced709b9f1bdcd73d25ea9c5e2f06a438dba45a38d11f9b41",
+"table": "basebuildingobjectstable",
+"count": 2340,
+"kept": 0
+},
+"parts": {
+"ABAND_BARREL": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_BENCH": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_CASE": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_CRATE_L": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_CRATE_M": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_CRATE_XL": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"ABAND_SHELF": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"AIRLCKCONNECTOR": [],
+"AM_EXOCRAFTTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"AM_SHIPTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"AM_SUITTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"AM_WEAPONTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"ARCHIVE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"BARRENPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"BASECAPSULE": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"BASE_AQUARIUM": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_BARNACLE": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_BEAMSTONE": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_BONEGARDEN": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_BUBBLECLUS": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_BUBPIPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BASE_CAVE1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_CAVE2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_CAVE3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_CAVE4": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_CAVE5": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_COLDPLANT1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_COLDPLANT2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_COLDPLANT3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_CONTOURPOD": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_DUST01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST05": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST06": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST07": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST08": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST09": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST10": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST11": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST12": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUST13": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUSTPLANT1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUSTPLANT2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_DUSTPLANT3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_ENGINEORB": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_FLAG": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BASE_FLORAL01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLORAL02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLORAL03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLORAL04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLOWER1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLOWER2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLOWER3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FLYINGFERN": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_FOXGLOVE01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS4": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS5": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS6": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_GRASS7": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT05": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT06": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT07": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOTPLANT08": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOUDINI1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOUDINI2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HOUDINI3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_HYDROPOD": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_INFEST1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_INFEST2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_INFEST3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_JUNGLE01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_JUNGLE02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_JUNGLE03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_JUNGLE04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_LAVA1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_LAVA2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_LAVA3": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BASE_MEDGEOMETR": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_MEDPLANT01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_MEDPLANT02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_MEDPLANT03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_NEXUS1": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_NEXUS2": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_NEXUS3": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_PEACOCK01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_PEACOCK02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_PEACOCK03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_RADPLANT01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_RADPLANT02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_RADPLANT03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_RADPLANT04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_ROBOTOY": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_ROCK01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_ROCK02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_ROCK03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_ROOT": [],
+"BASE_SHARD": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_SHELLWHITE": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_SPRIGBUSH": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_STARJOINT": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_SUBZPLANT1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT4": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT5": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT6": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT7": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT8": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SUBZPLANT9": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SWAMP1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SWAMP2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_SWAMP3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TERRARIUM": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_TOXPLANT01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TOXPLANT02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TOXPLANT03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TOXPLANT04": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TOYCORE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_TOYCUBE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_TOYJELLY": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"BASE_TOYSPHERE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BASE_TREE01": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TREE02": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_TREE03": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WEIRDCUBE": [
+[
+"EXOTICS",
+"DECOGLITCHES"
+]
+],
+"BASE_WPLANT1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT2": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT3": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT4": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT5": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT6": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT7": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BASE_WPLANT8": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BIGGSCONNECTOR": [],
+"BILLBOARD": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"BIOROOM": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"BLDWALLUNIT": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_BUGHEAD1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUGHEAD2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUGHEAD3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUGHEAD4": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUGHEAD5": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUI_HAND": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUI_HEAD": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_BUI_TENT": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_COVCRATE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_COVSILOS": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_CRANE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_CRYS_DRONE": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BLD_CRYS_SENT0": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BLD_CRYS_SENT1": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"BLD_DATASIGN": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_EXPD_BASE01": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_FIREPIT": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_FLYJAR": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"BLD_HOLOGEK": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_MAPTUBE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_MINI_BIOFRI": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_PLANET_HOLO": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BLD_RUINS_01": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_02": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_03": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_04": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_05": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_06": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_07": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_08": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_09": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_10": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_11": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_RUINS_12": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SHIPBREAK1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SHIPBREAK2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SHIPBREAK3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SHIPBREAK4": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SHIPBREAK5": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BLD_SKULL": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BOXEDSCREEN": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BP_ANALYSER": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"BRIDGECONNECTOR": [],
+"BUILDAMCRATE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDANTIMATTER": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"BUILDBEACON": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BUILDBED": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDCANRACK": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"BUILDCHAIR": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDCHAIR2": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDCHAIR3": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDCHAIR4": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDDECAL": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECAL2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNMS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM0": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM3": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM4": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM5": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM6": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM7": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM8": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALNUM9": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALSIMP1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALSIMP2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALSIMP3": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALSIMP4": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALVIS1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALVIS2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALVIS3": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALVIS4": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDECALVIS5": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"BUILDDOOR": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"BUILDDOOR_WATER": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"BUILDFLATPANEL": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BUILDGASHARVEST": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BUILDHARVESTER": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BUILDHCABINET": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BUILDLABLAMP": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"BUILDLADDER": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"BUILDLANDINGPAD": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"BUILDLCRATE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDLIGHT": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"BUILDLIGHT2": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"BUILDLIGHT3": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"BUILDLIGHTTABLE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BUILDLOCKER": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDLOCKER_ABA": [],
+"BUILDPAVING": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BUILDPAVINGTALL": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BUILDPAVING_BIG": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"BUILDRAMP": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"BUILDSAVE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"BUILDSEAHARVEST": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BUILDSIDEPANEL": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"BUILDSIGNAL": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"BUILDSIMPLEDESK": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDSOFA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDSOFA2": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDSOFA2L": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDTABLE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDTABLE2": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDTABLE3": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILDTERMINAL": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"BUILDWINDOW": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"BUILDWORKTOP": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"BUILD_REFINER1": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"BUILD_REFINER2": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"BUILD_REFINER3": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"BYTEBEAT": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"BYTEBEATSWITCH": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"B_ALK_A": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_B": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_C": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_D": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_Z_A": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_Z_B": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_Z_C": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ALK_Z_D": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_ANTENNA0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_ANTENNA1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_ANTENNA2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_ANTENNA3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_ARCH": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHB": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHB_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHM": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHM_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHT": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCHT_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_ARCH_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CANOPY_WALL0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_CANOPY_WALL1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_CANOPY_WALL2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_CARRIAGEWHEEL": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_CHEV_DOOR": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CHEV_WALL": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CHEV_WALL_H_C": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CHEV_WIN0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CHEV_WIN1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_CHEV_WIN2": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_COK_A": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_B": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C1": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C2": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C3": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C4": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C5": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C6": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C7": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C8": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_C9": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_D": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_COK_E": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_CON2_0": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON2_1": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON2_2": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON2_3": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_10": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_11": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_12": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_13": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_14": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_15": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_16": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_4": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_5": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_6": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_7": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_8": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_9": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_L_0": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_L_1": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_L_2": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_L_3": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_R_0": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_R_1": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_R_2": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_CON_R_3": [
+[
+"BIGGS_EXT",
+"BIGGS_CONNECTOR"
+]
+],
+"B_DECO_A": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_B": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_C": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_D": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_E": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_F": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_G": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_H": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_I": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_DECO_J": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_K": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_L": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_M": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_N_0": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_N_1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_O": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_P": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_Q_0": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_Q_1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_R": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_S": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_T": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_U": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_DECO_V_0": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_V_1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DECO_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_DOOR": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOOR0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+]
+],
+"B_DOOR1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORB0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORB0_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORB1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORM0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORM0_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORM1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORT0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORT0_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORT1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORWINB0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORWINDOW": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORWINM0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOORWINT0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_DOOR_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_FLOOR": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_FLOOR_Q": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_GDOOR": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_GDOORB0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_GDOORM0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_GDOORT0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_GEN_0": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_1": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_2": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_3": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_4": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_5": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_6": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GEN_6_1": [
+[
+"BIGGS_CORE",
+"BIGGS_GENERATOR"
+]
+],
+"B_GFLOOR": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_HAB1_A": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB1_B": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB1_C": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB1_D": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB_A": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB_B": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB_C": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HAB_D": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_HOP_A": [
+[
+"BIGGS_CORE",
+"BIGGS_HAB"
+]
+],
+"B_LAN_B": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_LARGETRYE0": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"B_LND_A": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_LND_B": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_LND_C": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_LND_D": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_MAG_1X1": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_MAG_1X2": [
+[
+"BIGGS_EXTDECOR",
+"BIGGS_DECO"
+]
+],
+"B_PALLET_BRICK": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"B_RAMP": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_RAMP_H": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_RAMP_Q_TOP": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_ROBOTARM": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"B_ROOF0": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF1": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF2": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF3": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF4": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF5": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF6": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF7": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF8": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_C": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_E_CAP": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_E_Q": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_IC": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_M": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_M_CAP": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_M_Q": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_ROOF_M_WIN": [
+[
+"BASIC_B",
+"B_ROOFS"
+]
+],
+"B_SAIL0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_SAIL1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_SAIL2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_SAIL3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_SCISSORLIFT": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"B_SHL_A": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_SHL_B": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_SHL_C": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_SHL_D": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_SHL_E": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_STAIRS0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+]
+],
+"B_STREETLAMP0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"B_STR_AA_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AA_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AB_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AC_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AD_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AE_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AF_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AG_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AH_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AI_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AJ_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AK_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AM_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AN_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AO_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_AP_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_A_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_B_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_C_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_D_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_E_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_F_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_G_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_H_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_I_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_J_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_K_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_L_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_M_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NE": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NE1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NE2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NE3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NW": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NW1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NW2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_NW3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_N_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_O_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_P_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Q_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_R_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_Y_E": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_Y_N": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_Y_S": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_S_Y_W": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_T_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_U_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_V_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_W_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_X_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Y_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NETB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NETB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NETB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NETB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NWTB": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NWTB1": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NWTB2": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_STR_Z_NWTB3": [
+[
+"BIGGS_EXT",
+"BIGGS_STRUCT"
+]
+],
+"B_TOWER": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"B_TOWER_B": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"B_TOWER_C": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"B_TRIFLOOR": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_TRIFLOOR_Q": [
+[
+"BASIC_B",
+"B_FLOORS"
+]
+],
+"B_TRU_A": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_B": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_C": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_D": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_E": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_F": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_G": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_H": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_I": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TRU_J": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_TUR_A": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_B": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_C": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_D": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_E": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_F": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_TUR_G": [
+[
+"BIGGS_CORE",
+"BIGGS_GUNS"
+]
+],
+"B_WALL": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_DIAGONA": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_WIN0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_WIN1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_WIN2": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLB_WIN3": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLDIAGONAL": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLHANGING1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_WALLHANGING2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_WALLHANGING3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_WALLM": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_DIAGONA": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_WIN0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_WIN1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_WIN2": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLM_WIN3": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_DIAGONA": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_WIN0": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_WIN1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_WIN2": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALLT_WIN3": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_BUNK0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_CANT0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_CARG0": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG1": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG2": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG3": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG4": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG5": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG6": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG7": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG8": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_CARG9": [
+[
+"BIGGS_INT",
+"BIGGS_IN_STOR"
+]
+],
+"B_WALL_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_KITC0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_MED0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_PLAN0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_Q": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_Q1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_Q_H": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_Q_H1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_SUPPORTS": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"B_WALL_TECH0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_TECH1": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_TOIL0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_DEC"
+]
+],
+"B_WALL_WIN1": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_WIN2": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_WIN3": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WALL_WIND0": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+],
+[
+"BIGGS_EXTDECOR",
+"BIGGS_WINDOW"
+]
+],
+"B_WALL_WIND1": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+],
+[
+"BIGGS_EXTDECOR",
+"BIGGS_WINDOW"
+]
+],
+"B_WALL_WIND2": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+],
+[
+"BIGGS_EXTDECOR",
+"BIGGS_WINDOW"
+]
+],
+"B_WALL_WIND3": [
+[
+"BIGGS_INT",
+"BIGGS_INT_STR"
+],
+[
+"BIGGS_EXTDECOR",
+"BIGGS_WINDOW"
+]
+],
+"B_WALL_WINDOW": [
+[
+"BASIC_B",
+"B_WALLS"
+]
+],
+"B_WATERTOWER": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"B_WNG_A": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_A_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_B": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_WNG_B_R": [
+[
+"BIGGS_CORE",
+"BIGGS_EXTRA"
+]
+],
+"B_WNG_C": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_C_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_D": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_D_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_E": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_E_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_F": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_F_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_G": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_G_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_H": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_H_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_I": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_I_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_J": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_J_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_K": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_K_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_L": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_L_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_M": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_M_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_N": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_N_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_O_0": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_O_0_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_O_1": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_O_1_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_O_2": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_O_2_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_P": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_P_B": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_P_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_P_T": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_Q": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_Q_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_R_B": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_R_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_R_T": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_S": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_S_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_T": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_T_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_U": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_U_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_V": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_V_R": [
+[
+"BIGGS_EXT",
+"BIGGS_WINGS"
+]
+],
+"B_WNG_W": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_W_B": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_W_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_W_T": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_X": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_X_B": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_X_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_X_T": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_Y": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_Y_B": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_Y_R": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"B_WNG_Y_T": [
+[
+"BIGGS_CORE",
+"BIGGS_ENGINES"
+]
+],
+"CARBONPLANTER": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+]
+],
+"CEILINGLIGHT": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"CHECKPOINT": [],
+"CONTAINER0": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER1": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER2": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER3": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER4": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER5": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER6": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER7": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER8": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONTAINER9": [
+[
+"BASE_TECH",
+"TECHSTORAGE"
+]
+],
+"CONT_S": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"COOKER": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"CORNERPOST": [],
+"CORRIDOR": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORC": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORL": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORL_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CORRIDORL_WATER": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORT": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORT_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CORRIDORT_WATER": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORV_WATER": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORX": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDORX_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CORRIDORX_WATER": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORRIDOR_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CORRIDOR_WATER": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"CORSTAIRS_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CRATEFRAME": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"CRATELCYLINDER": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"CRATELRARE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"CREATUREPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"CREATURE_FARM": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"CREATURE_FEED": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"CUBEFLOOR": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEFOUND": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEFOUND4": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEFRAME": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEGLASS": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEINNERDOOR": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEROOF": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEROOM": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEROOMB_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CUBEROOMCURVED": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEROOMC_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CUBEROOM_SPACE": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"CUBESHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"CUBESOLID": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBESTAIRS": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEWALL": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CUBEWINDOW": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"CUBEWINDOWOVAL": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"CUBEWINDOWSMALL": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"CURVEDCUBEROOF": [
+[
+"ROOMS",
+"ROOMSCUBE"
+]
+],
+"CURVEDDESK": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"CURVEPIPESHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"CYLINDERSHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"C_ARCH": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_ARCH_H": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_DOOR": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_DOORWINDOW": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_DOOR_H": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_FLOOR": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_FLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_GDOOR": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_GFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_RAMP": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_RAMP_H": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_ROOF": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_ROOF_C": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_ROOF_IC": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_ROOF_M": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_TRIFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_TRIFLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALL": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALLDIAGONAL": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALL_H": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALL_Q": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALL_Q_H": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"C_WALL_WINDOW": [
+[
+"BASIC_LEGACY",
+"BASICCONCRETE"
+]
+],
+"DECALPATH": [],
+"DECAL_AF": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_AGT": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_AMINO": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_BIOME3": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_BLUESYS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_BONEJUDGE": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_BONESOUP": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_CAFE": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_CPLANET1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_CREBEETLE": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_CREFLY": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_CREPAWS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_EXTINCT": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_FPLANET2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_GALCORE": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_HAZARD": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_HORROR": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_JELLY": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_NEXUSM": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_NMSCORD": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_NMS_FR": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_OOGC": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_PEEP": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_PIRATESYS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_QIT": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_RSS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_RUINMECH": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_SCAN": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_SHIP1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_SKULL": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_SPOOKATL": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_STARTSHIP": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_TOSTARS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_UFT": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_UN42": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_UWTREAS": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_WORM_P1": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_WORM_P2": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_WORM_P3": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_WORM_P4": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DECAL_WORM_P5": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"DOOR2": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"DRAWS": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"DRESSING_TABLE": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"EXPD_CUBE_06": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"EXPD_DECAL01": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL02": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL03": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL04": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL05": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL06": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL07": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL08": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL09": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL10": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL11": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL12": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL13": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL14": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL15": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL16": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL17": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL18": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL19": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL20": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL21": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL22": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_DECAL23": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"EXPD_FIREWORK01": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"EXPD_FIREWORK02": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"EXPD_FIREWORK03": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"EXPD_FIREWORK04": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"EXPD_FLAG_06A": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"EXPD_FLAG_06B": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"EXPD_FLAG_06C": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"EXPD_FLAG_06D": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"EXPD_FLAG_06E": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"EXPD_POSTER05A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER05B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER05C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER06A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER06B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER06C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER07A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER07B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER07C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER08A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER08B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER08C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER09A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER09B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER09C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER10A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER10B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER10C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER11A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER11B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER11C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER12A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER12B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER12C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER13A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER13B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER13C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER14A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER14B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER14C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER15A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER15B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER15C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER16A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER16B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER16C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER17A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER17B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER17C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER18A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER18B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER18C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER19A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER19B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER19C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER20A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER20B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER20C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER21A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER21B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER21C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER22A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER22B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER22C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23A": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23B": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23C": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23D": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23E": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23F": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23G": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23H": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"EXPD_POSTER23I": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"FLAG1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"FLAG2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"FLAG3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"FLAG4": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"FLOORMAT1": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"FOORLIGHT": [
+[
+"DECORATION",
+"DECOLIGHTS"
+],
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"FOOTLOCKER": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"FOS_BI": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_BIRD": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_BIRD_DIS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_BI_DIS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_BODY": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_BODY_DISP": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_BODY_MNT": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_GRUN": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_GRUN_DIS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_LIMBS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_LIMBS_DISP": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_LIMBS_MNT": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_QUAD": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_QUAD_DIS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_SKULL": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_SKULL_DISP": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_SKULL_MNT": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_TAIL": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_TAIL_DISP": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_TAIL_MNT": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETBONES"
+]
+],
+"FOS_WORM": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOS_WORM_DIS": [
+[
+"DECORATION",
+"DECOFOSSILS"
+],
+[
+"PLANET_TECH",
+"PLANETFOSSILS"
+]
+],
+"FOUNDATION": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"FREIGHTER_CORE": [],
+"FRE_CORR_A": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_A_GLAS": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_A_L": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_A_STR": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_A_T": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_B": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_B_L": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_B_STR": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_B_T": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_GLA_L": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_GLA_ST": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_GLA_T": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_G_STA": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_STA": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_CORR_STA_B": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_EXT_PLATFOR": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_EXT_WALKWAY": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_EXT_W_STA": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_FACE_DOOR_A": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_FACE_WALL": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_FACE_WINDOW": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_ROOM_B": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_ROOM_BIO": [
+[
+"FREIGHTER_BIO",
+"FRE_BIO_SUB"
+],
+[
+"SPACE",
+"SPACE_BIO_SUB"
+]
+],
+"FRE_ROOM_COOK": [
+[
+"FREIGHTER_BIO",
+"FRE_BIO_SUB"
+],
+[
+"SPACE",
+"SPACE_BIO_SUB"
+]
+],
+"FRE_ROOM_DRESS": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_EXTR": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_FLEET": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_IND": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_IND1": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_LADDER": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"FRE_ROOM_NPCBUI": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_NPCFAR": [
+[
+"FREIGHTER_BIO",
+"FRE_BIO_SUB"
+],
+[
+"SPACE",
+"SPACE_BIO_SUB"
+]
+],
+"FRE_ROOM_NPCSCI": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_NPCVEH": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_NPCWEA": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_PLANT0": [
+[
+"FREIGHTER_BIO",
+"FRE_BIO_SUB"
+],
+[
+"SPACE",
+"SPACE_BIO_SUB"
+]
+],
+"FRE_ROOM_PLANT1": [
+[
+"FREIGHTER_BIO",
+"FRE_BIO_SUB"
+],
+[
+"SPACE",
+"SPACE_BIO_SUB"
+]
+],
+"FRE_ROOM_REFINE": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_ROCLOC": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_SCAN": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_SHOP": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_STORE0": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE1": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE2": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE3": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE4": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE5": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE6": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE7": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE8": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_STORE9": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"FRE_ROOM_TECH": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_TELEPO": [
+[
+"FREIGHTER_TECH",
+"FRE_TECH_SUB"
+],
+[
+"SPACE",
+"SPACE_TECH_SUB"
+]
+],
+"FRE_ROOM_VEHICL": [
+[
+"FREIGHTER_IND",
+"FRE_IND_SUB"
+],
+[
+"SPACE",
+"SPACE_IND_SUB"
+]
+],
+"F_ARCH": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHB": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHB_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHM": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHM_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHT": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCHT_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_ARCH_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_DOOR": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_WALL": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_WALL_H_C": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_WIN0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_WIN1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_CHEV_WIN2": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOOR": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOOR1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORB0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORB0_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORB1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORM0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORM0_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORM1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORT0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORT0_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORT1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORWINB0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORWINDOW": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORWINM0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOORWINT0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_DOOR_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_FLOOR": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_FLOOR_Q": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_GDOOR": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_GDOORB0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_GDOORM0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_GDOORT0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_GFLOOR": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_RAMP": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_RAMP_H": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_RAMP_Q_TOP": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_ROOF0": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF1": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF2": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF3": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF4": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF5": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF6": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF7": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF8": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_C": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_E_CAP": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_E_Q": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_IC": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_M": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_M_CAP": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_M_Q": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_ROOF_M_WIN": [
+[
+"BASIC_F",
+"F_ROOFS"
+]
+],
+"F_TRIFLOOR": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_TRIFLOOR_Q": [
+[
+"BASIC_F",
+"F_FLOORS"
+]
+],
+"F_WALL": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_DIAGONA": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_WIN0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_WIN1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_WIN2": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLB_WIN3": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLDIAGONAL": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_DIAGONA": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_WIN0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_WIN1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_WIN2": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLM_WIN3": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_DIAGONA": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_WIN0": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_WIN1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_WIN2": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALLT_WIN3": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_Q": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_Q1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_Q_H": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_Q_H1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_WIN1": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_WIN2": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_WIN3": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"F_WALL_WINDOW": [
+[
+"BASIC_F",
+"F_WALLS"
+]
+],
+"GAMETABLE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"GARAGE_B": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_FLOAT": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_FREIGHT": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"GARAGE_L": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_M": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_MECH": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_S": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GARAGE_SUB": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"GLASSCORRIDOR": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"GRAVPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"GRAV_FLOOR": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"GRAV_RAMP": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"GRAV_WALL": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"HEALTHSTATION": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"HEATER": [
+[
+"DECORATION",
+"DECOLIGHTS"
+],
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"HOLOFILES": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_DISCO_0": [
+[
+"FURNITURE",
+"FURNDECOR"
+],
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"HOLO_EXP": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_MED1": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_MED2": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_SMALL1": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_SMALL2": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_SMALL3": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_TRA": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"HOLO_WAR": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"LARGEDESK": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"LIGHTBOX": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"LIGHTFRAME": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"LIGHT_PLINTH": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"LIGHT_TALL": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"LIGHT_VERT": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"LOCKER2": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"LUSHPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"L_FLOOR_Q": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"MAINROOM": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"MAINROOMCUBE": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"MAINROOMCUBE_W": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"MAINROOMFRAME": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"MAINROOM_WATER": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"MAPTABLE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"MEDTUBE": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"MESSAGE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"MESSAGEMODULE": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"MONITORDESK": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"MOONPOOL": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"M_ARCH": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_ARCH_H": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_DOOR": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_DOORWINDOW": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_DOOR_H": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_FLOOR": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_FLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_GDOOR": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_GFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_RAMP": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_RAMP_H": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_ROOF": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_ROOF_C": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_ROOF_IC": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_ROOF_M": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_TRIFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_TRIFLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALL": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALLDIAGONAL": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALL_H": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALL_Q": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALL_Q_H": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"M_WALL_WINDOW": [
+[
+"BASIC_LEGACY",
+"BASICMETAL"
+]
+],
+"NIPPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"NOISEBOX": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"NPCBUILDERTERM": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"NPCFARMTERM": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"NPCFRIGTERM": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"NPCSCIENCETERM": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"NPCVEHICLETERM": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"NPCWEAPONTERM": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"O2_HARVESTER": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"OCTACABINET": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"PALLET": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"PANEL_GLASS": [
+[
+"ROOMS",
+"ROOMSMAIN"
+]
+],
+"PEARLPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"PIPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"PIPESHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"PLANTBOX": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"PLANTER": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTERMEGA": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTER_S": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"PLANTPOT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTPOT1": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTPOT2": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTPOT3": [
+[
+"BASE_TECH",
+"TECHFARMING"
+]
+],
+"PLANTPOT4": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"PLANTTUBE": [
+[
+"FURNITURE",
+"FURNDERELICTS"
+]
+],
+"POOPPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"POWERBOX": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"POWERLINE_HIDER": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"PYRAMIDSHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"RACE_BOOSTER": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"RACE_RAMP": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"RACE_START": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"RADIOPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"ROBOTICARM": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"ROOFMONITOR": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"ROOMFLOOR": [],
+"S16_HEATER": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+],
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"S9_BUILDERTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"S9_EXOCRAFTTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"S9_SHIPTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"S9_SUITTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"S9_WEAPONTREE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"SACVENOMPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"SB_BEACON": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"SCORCHEDPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"SERVERBOX1": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"SERVERBOX2": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"SERVERSTACK": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"SET_BYTEBEAT": [],
+"SET_B_MONU": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_B_MONU_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_CLASS_A": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_CLASS_B": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_CLASS_S": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_CONSTRUCT": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_FISHPOND": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_F_MONU": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_F_MONU_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_GROUNDDECAL": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_INT_SHIPSAL": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_INT_SUMMARY": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_LZ": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"SET_LZ_SHIPBUIL": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"SET_MAYORTERM": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_MONUMENT": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_MONUMENT_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_SFXCONST_S0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_STAFFBUILD": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_T_MONU": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_T_MONU_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SET_WEAPONBOX": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"SHELFPANEL": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"SHIELDSTATION": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"SHIPARMS": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"SLIME_MED": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"SMALLLIGHT": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"SNOWPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"SPAWNER_BALL": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"SPEC_DECAL01": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL02": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL03": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL04": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL05": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL06": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL07": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_DECAL08": [
+[
+"WALL_ART",
+"WALLDECALS"
+]
+],
+"SPEC_FIREWORK01": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK02": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK03": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK04": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK05": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK06": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK07": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK08": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK09": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK10": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK11": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPEC_FIREWORK12": [
+[
+"PLANET_TECH",
+"PLANETFIREWORKS"
+]
+],
+"SPHERESHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SPOOKY_PLANT": [
+[
+"EXOTICS",
+"DECOFOLIAGE"
+]
+],
+"STACONNECT": [],
+"STANDINGSIGN": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATIONCRATE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_CORE": [
+[
+"FREIGHTER",
+"FRE_CORE"
+],
+[
+"SPACE",
+"SPACE_CORE"
+]
+],
+"STATION_HCRATE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_LCASE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_LCRATE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_LSHELVE": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_SERVR": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATION_SOFA": [
+[
+"FURNITURE",
+"FURNSTATION"
+]
+],
+"STATUE_ASTRO_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ASTRO_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ASTRO_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ASTRO_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ATLAS_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ATLAS_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ATLAS_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_ATLAS_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_BLOB_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_BLOB_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_BLOB_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_BLOB_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_DIP_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_DIP_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_DIP_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_DIP_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_GEK_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_GEK_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_GEK_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_GEK_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_SHIP_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_SHIP_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_SHIP_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_SHIP_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_WALK_B": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_WALK_G": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_WALK_I": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STATUE_WALK_S": [
+[
+"EXOTICS",
+"DECOSTATUES"
+]
+],
+"STA_00": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_01": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_02": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_03": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_04": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_05": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_06": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_07": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_08": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_09": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_10": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_11": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_12": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_13": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_14": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_15": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_16": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_17": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_18": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_19": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_20": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_21": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_22": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_23": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_24": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_25": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_26": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_27": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_28": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_29": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_30": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_31": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_32": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_33": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_34": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_35": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_36": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_37": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_38": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_39": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_40": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_41": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_42": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_43": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_44": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_45": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_46": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_47": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_48": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_49": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_50": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_51": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_52": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_53": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_54": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_55": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_56": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_57": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_58": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_59": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_60": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_61": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_62": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_63": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_64": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_65": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_66": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_67": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_68": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_69": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_70": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_71": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_72": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_73": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_74": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_75": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_76": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_77": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_78": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_79": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_BUILDINGL": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_DRAPE": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLO3D": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOAST": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOBUI": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOGEK": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOKORV": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOMED": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOSMALL": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_HOLOVYK": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_REFUEL": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLAST": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLBUI": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLGEK": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLKOR": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLSIGN": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_SMALLVYK": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_STATUEMED": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STA_STATUESMALL": [
+[
+"STATION_EXT",
+"STATION_EXT_DEC"
+]
+],
+"STORAGEPANEL": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"SUMMON_GARAGE": [
+[
+"PLANET_TECH",
+"PLANETEXOCRAFT"
+]
+],
+"SWARM_FLAG_B1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_B2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_B3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_G1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_G2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_G3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_R1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_R2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_FLAG_R3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"SWARM_TROPHY_B": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_ANTENNA0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_ANTENNA1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_ANTENNA2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_ANTENNA3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_ARCH": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHB": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHB_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHM": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHM_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHT": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCHT_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_ARCH_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_BAR": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BARREL1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_BARRIER": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_BARSTOOL0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BARTABLE0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BARTAPS0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BAR_C": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BAR_H": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_BRICKSWRAPPED": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_BUCKET_M": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_BUCKET_S": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_BURNER0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CANISTER0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CANISTER1": [
+[
+"FURNITURE",
+"FURNDECOR"
+],
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CANOPY_WALL0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CANOPY_WALL1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CANOPY_WALL2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CARRIAGE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CARRIAGEWHEEL": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CEMENTBAG": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_CEMENTMIXER": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_CHAIR0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CHEV_DOOR": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_CHEV_WALL": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_CHEV_WALL_H_C": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_CHEV_WIN0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_CHEV_WIN1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_CHEV_WIN2": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_COMPOSTBIN": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_CONTAINER0": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER1": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER2": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER3": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER4": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER5": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER6": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER7": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER8": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CONTAINER9": [
+[
+"FREIGHT_LEGACY",
+"FREIGHTERLEGACY"
+]
+],
+"S_CRATE0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE1": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE2": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE3": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE3OPEN": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE4": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CRATE4OPEN": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CUP0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_CURTAIN0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_DOOR": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOOR1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORB0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORB0_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORB1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORM0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORM0_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORM1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORT0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORT0_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORT1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORWINB0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORWINDOW": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORWINM0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOORWINT0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DOOR_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_DRAPE0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_EXCBUCKET": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_FABROLL0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_FABROLLPILE0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_FENCE0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FENCE1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FENCE2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FENCE3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FLAG5": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FLAG6": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_FLOOR": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_FLOOR_Q": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_FURNACE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_GAZEBO0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_GDOOR": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_GDOORB0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_GDOORM0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_GDOORT0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_GENERATOR": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_GFLOOR": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_GLOWGLOBE": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"S_HANGLAMP0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_HANGLAMP1": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_HANGLAMP2": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_HANGLAMP3": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_LANDINGZONE": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"S_LARGETRYE0": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_LIGHTSTRIP0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_MACHINE0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_MILKBOTTLE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_MILKCRATE": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_PALLET": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_PALLET_BRICK": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_PAN0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_PLANTER_M": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_POSTER0": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER1": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER10": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER11": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER12": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER13": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER14": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER15": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER16": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER17": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER18": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER19": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER2": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER20": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER21": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER22": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER23": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER24": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER25": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER26": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER27": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER28": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER29": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER3": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER30": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER31": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER4": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER5": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER6": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER7": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER8": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POSTER9": [
+[
+"WALL_ART",
+"WALLPOSTERS"
+]
+],
+"S_POT0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_PUMP": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_RAMP": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_RAMP_H": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_RAMP_Q_TOP": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_ROOF0": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF1": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF2": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF3": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF4": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF5": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_C": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_E_CAP": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_E_Q": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_IC": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_M": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_M_CAP": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_M_Q": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_ROOF_M_WIN": [
+[
+"BASIC_S",
+"S_ROOFS"
+]
+],
+"S_RSJSTACK": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_RUG0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_RUG1": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_SAIL0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_SAIL1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_SAIL2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_SAIL3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_SCAFFOLD_L": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_SCAFFOLD_M": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_SCISSORLIFT": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_SHELVINGUNIT0": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"S_SHOVEL": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_SIGN_BAR0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_SIGN_BAR1": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_SIGN_BAR2": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_SIGN_BAR3": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_SPARKPLUG": [
+[
+"FURNITURE",
+"FURNDECOR"
+],
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_STEPLADDER": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"S_STREETLAMP0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_TABLELAMP0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_TABLEPOT0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TOWER": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TOWER_B": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TOWER_B_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TOWER_C": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TOWER_FA": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TRAY0": [
+[
+"FURNITURE",
+"FURNINTERIOR"
+]
+],
+"S_TRIFLOOR": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_TRIFLOOR_Q": [
+[
+"BASIC_S",
+"S_FLOORS"
+]
+],
+"S_TROUGH0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WALL": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_DIAGONA": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_WIN0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_WIN1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_WIN2": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLB_WIN3": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLDIAGONAL": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLHANGING1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WALLHANGING2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WALLHANGING3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WALLLIGHT0": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"S_WALLM": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_DIAGONA": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_WIN0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_WIN1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_WIN2": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLM_WIN3": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_DIAGONA": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_WIN0": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_WIN1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_WIN2": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALLT_WIN3": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_Q": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_Q1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_Q_H": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_Q_H1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_SUPPORTS": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_WIN1": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_WIN2": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_WIN3": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WALL_WINDOW": [
+[
+"BASIC_S",
+"S_WALLS"
+]
+],
+"S_WATERTOWER": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WATERVALVE0": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"S_WHEELBARROW": [
+[
+"DECORATION",
+"DECOCONSTRUCT"
+]
+],
+"TECHPANEL": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"TELEPORTER": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"TELEPORTER_F": [
+[
+"BASE_TECH",
+"TECHTEMINALS"
+]
+],
+"TOXICPLANT": [
+[
+"BASE_TECH",
+"TECHFARMING"
+],
+[
+"FREIGHTER_BIO",
+"FRE_PLANTS"
+],
+[
+"BIGGS_LOW_PERF",
+"BIGGSFARMING"
+]
+],
+"TURRET_ABAND": [],
+"T_ARCH": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHB": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHB_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHM": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHM_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHT": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCHT_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_ARCH_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_DOOR": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_WALL": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_WALL_H_C": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_WIN0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_WIN1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_CHEV_WIN2": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOOR": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOOR1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORB0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORB0_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORB1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORM0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORM0_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORM1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORT0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORT0_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORT1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORWINB0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORWINDOW": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORWINM0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOORWINT0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_DOOR_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_FLOOR": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_FLOOR_Q": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_GDOOR": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_GDOORB0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_GDOORM0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_GDOORT0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_GFLOOR": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_RAMP": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_RAMP_H": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_RAMP_Q_TOP": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_ROOF0": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF1": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF2": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF3": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF4": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF5": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF6": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF7": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_C": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_E_CAP": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_E_Q": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_IC": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_M": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_M_CAP": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_M_Q": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_ROOF_M_WIN": [
+[
+"BASIC_T",
+"T_ROOFS"
+]
+],
+"T_TRIFLOOR": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_TRIFLOOR_Q": [
+[
+"BASIC_T",
+"T_FLOORS"
+]
+],
+"T_WALL": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_DIAGONA": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_WIN0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_WIN1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_WIN2": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLB_WIN3": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLDIAGONAL": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_DIAGONA": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_WIN0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_WIN1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_WIN2": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLM_WIN3": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_DIAGONA": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_WIN0": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_WIN1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_WIN2": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALLT_WIN3": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_Q": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_Q1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_Q_H": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_Q_H1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_WIN1": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_WIN2": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_WIN3": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"T_WALL_WINDOW": [
+[
+"BASIC_T",
+"T_WALLS"
+]
+],
+"U_BATTERY_S": [
+[
+"POWER",
+"POWERPOWER"
+]
+],
+"U_BIOGENERATOR": [
+[
+"POWER",
+"POWERPOWER"
+]
+],
+"U_BYTEBEATLINE": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"U_EXTRACTOR_S": [
+[
+"POWER",
+"POWERINDUSTRY"
+]
+],
+"U_GASEXTRACTOR": [
+[
+"POWER",
+"POWERINDUSTRY"
+]
+],
+"U_GENERATOR_S": [
+[
+"POWER",
+"POWERPOWER"
+]
+],
+"U_MINIPORTAL": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"U_MINIPORTAL_CV": [
+[
+"BASE_TECH",
+"TECHTECH"
+]
+],
+"U_PARAGON": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"U_PIPELINE": [
+[
+"POWER",
+"POWERINDUSTRY"
+]
+],
+"U_PORTALLINE": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FREIGHTER_TECH",
+"FRE_TECH_OTHER"
+]
+],
+"U_POWERLINE": [
+[
+"POWER",
+"POWERPOWER"
+]
+],
+"U_SILO_S": [
+[
+"POWER",
+"POWERINDUSTRY"
+]
+],
+"U_SOLAR_S": [
+[
+"POWER",
+"POWERPOWER"
+]
+],
+"U_SWITCHBUTTON": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"U_SWITCHPRESS": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"U_SWITCHPROX": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"U_SWITCHWALL": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"U_TRANSISTOR1": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"U_TRANSISTOR2": [
+[
+"POWER",
+"POWERSWITCHES"
+]
+],
+"VIEWSPHERE": [
+[
+"ROOMS",
+"ROOMSCORRIDORS"
+]
+],
+"WALL": [],
+"WALLCURVED": [],
+"WALLDOOR": [],
+"WALLFAN": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"WALLFLAG1": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"WALLFLAG2": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"WALLFLAG3": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"WALLFLOORLADDER": [
+[
+"ROOMS",
+"ROOMSDOORS"
+]
+],
+"WALLLIGHTBLUE": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLLIGHTGREEN": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLLIGHTPINK": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLLIGHTRED": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLLIGHTWHITE": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLLIGHTYELLOW": [
+[
+"DECORATION",
+"DECOLIGHTS"
+]
+],
+"WALLSCREEN": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"WALLSCREENB": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"WALLSCREENB2": [
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"WALLTALL": [],
+"WATERBUBBLE": [
+[
+"PLANET_TECH",
+"PLANETPORTABLE"
+]
+],
+"WEAPONRACK": [
+[
+"BASE_TECH",
+"TECHTECH"
+],
+[
+"FURNITURE",
+"FURNDECOR"
+]
+],
+"WEDGESHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"WEDGESMALLSHAPE": [
+[
+"DECORATION",
+"DECOEXTERIOR"
+]
+],
+"W_ARCH": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_ARCH_H": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_DOOR": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_DOORWINDOW": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_DOOR_H": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_FLOOR": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_FLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_GDOOR": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_GFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_RAMP": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_RAMP_H": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_ROOF": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_ROOF_C": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_ROOF_IC": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_ROOF_M": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_TRIFLOOR": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_TRIFLOOR_Q": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALL": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALLDIAGONAL": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALL_H": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALL_Q": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALL_Q_H": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+],
+"W_WALL_WINDOW": [
+[
+"BASIC_LEGACY",
+"BASICWOOD"
+]
+]
+}
+}
