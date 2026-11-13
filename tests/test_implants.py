@@ -235,3 +235,37 @@ def test_memories_in_and_below_a_cycle_inherit_the_union_of_their_ancestors(tmp_
     assert graph["0000000f"]["inherited_implants"] == sorted([NMS, HUE])
     assert graph["00000010"]["inherited_implants"] == sorted([NMS, HUE])
     assert graph["00000011"]["inherited_implants"] == sorted([NMS, HUE])
+
+
+# ---------------------------------------------------------
+# Dangling implant links
+# ---------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "reference",
+    [
+        "nms",  # a name, not an id
+        "deadbeef",  # no such memory
+        "0000000c",  # a memory that is not Implant Instructions (declarative)
+        "00000020",  # procedural, but carries no implant_id
+    ],
+)
+def test_dangling_implant_links_are_left_out_of_inheritance(implant_vault, reference):
+    _write_memory(implant_vault, "00000020", "Plain Procedure", ["00000000"], memory_type="procedural")
+    _write_memory(implant_vault, "0000000a", "Gaming", ["00000000"], implants=[NMS, reference])
+
+    graph = load_vault(implant_vault, silent=True)
+
+    assert graph["0000000a"]["implants"] == [NMS, reference]  # the field itself is kept as written
+    assert graph["0000000a"]["inherited_implants"] == [NMS]
+    assert graph["0000000c"]["inherited_implants"] == [NMS]
+
+
+def test_implant_link_dangles_once_its_instructions_lose_their_implant_id(implant_vault):
+    load_vault(implant_vault, silent=True)
+    _write_memory(implant_vault, NMS, "NMS Instructions", ["0000000a"], memory_type="procedural")
+
+    graph = load_vault(implant_vault, silent=True)  # only the instructions changed
+
+    assert graph["0000000c"]["inherited_implants"] == []
+    assert graph["0000000e"]["inherited_implants"] == [HUE]

@@ -8,6 +8,7 @@ from pathlib import Path
 from copotron.core.schema import parse_frontmatter_and_body, _read_frontmatter_stream
 from copotron.core.vault import get_vault_path
 from copotron.core.db import get_db_path, init_db
+from copotron.core.implants import attached_implants, is_implant_instructions
 
 def compute_frontmatter_hash(frontmatter_text: str) -> str:
     """Normalize line endings to LF and return SHA-256 hex digest."""
@@ -54,6 +55,14 @@ def _json_list(text: str | None) -> list:
         return []
     return value if isinstance(value, list) else []
 
+def _json_dict(text: str | None) -> dict:
+    """Decode a JSON object column, treating anything else as empty."""
+    try:
+        value = json.loads(text) if text else {}
+    except Exception:
+        return {}
+    return value if isinstance(value, dict) else {}
+
 def _node_from_cached_row(cached: dict) -> dict:
     """Rebuild a graph node from its index row, for a memory whose frontmatter is unchanged."""
     return {
@@ -71,6 +80,7 @@ def _node_from_cached_row(cached: dict) -> dict:
         "children": [],
         "inherited_persona": cached["inherited_persona"],
         "inherited_implants": _json_list(cached.get("inherited_implants")),
+        "open_tail": _json_dict(cached.get("open_tail_json")),
     }
 
 def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
@@ -85,19 +95,20 @@ def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
             return graph[parent_id]["inherited_persona"]
     return None
 
-def _resolve_inherited_implants(node: dict, graph: dict) -> list[str]:
+def _resolve_inherited_implants(node: dict, graph: dict, instructions_ids: set[str]) -> list[str]:
     """
     Resolve a node's Inherited Implants once its parents are resolved: the
-    union of its own implants and every parent's (present in graph) Inherited
-    Implants. Unlike persona there is no override, so every ancestor counts.
+    union of its own attached implants and every parent's (present in graph)
+    Inherited Implants. Unlike persona there is no override, so every ancestor
+    counts. Dangling implant links (not in instructions_ids) are left out.
     """
-    inherited = set(node.get("implants", []))
+    inherited = set(attached_implants(node.get("implants", []), instructions_ids))
     for parent_id in node.get("parents", []):
         if parent_id in graph:
             inherited.update(graph[parent_id].get("inherited_implants", []))
     return sorted(inherited)
 
-def _union_implants_over_ancestors(node_id: str, graph: dict) -> list[str]:
+def _union_implants_over_ancestors(node_id: str, graph: dict, instructions_ids: set[str]) -> list[str]:
     """
     Inherited Implants for a node in or below a cycle, whose parents never all
     resolve first: the union over every ancestor reachable through parents in graph.
@@ -107,7 +118,7 @@ def _union_implants_over_ancestors(node_id: str, graph: dict) -> list[str]:
     stack = [node_id]
     while stack:
         current = graph[stack.pop()]
-        inherited.update(current.get("implants", []))
+        inherited.update(attached_implants(current.get("implants", []), instructions_ids))
         for parent_id in current.get("parents", []):
             if parent_id in graph and parent_id not in seen:
                 seen.add(parent_id)
@@ -222,6 +233,11 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         for node_id, node_data in graph.items()
     }
 
+    instructions_ids = {
+        node_id for node_id, node_data in graph.items()
+        if is_implant_instructions(node_data["type"], node_data["open_tail"])
+    }
+
     queue = [node_id for node_id, deg in in_degree.items() if deg == 0]
     heapq.heapify(queue)
     processed_count = 0
@@ -231,7 +247,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         processed_count += 1
         node = graph[u]
         node["inherited_persona"] = _resolve_inherited_persona(node, graph)
-        node["inherited_implants"] = _resolve_inherited_implants(node, graph)
+        node["inherited_implants"] = _resolve_inherited_implants(node, graph, instructions_ids)
 
         for child_id in node.get("children", []):
             if child_id in in_degree:
@@ -245,7 +261,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         for node_id in cyclic_nodes:
             node = graph[node_id]
             node["inherited_persona"] = _resolve_inherited_persona(node, graph)
-            node["inherited_implants"] = _union_implants_over_ancestors(node_id, graph)
+            node["inherited_implants"] = _union_implants_over_ancestors(node_id, graph, instructions_ids)
 
     # -------------------------------------------------------------------------
     # Phase 3: Atomic Batch Commit (Single SQLite Transaction)
