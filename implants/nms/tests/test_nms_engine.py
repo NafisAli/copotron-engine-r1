@@ -5,7 +5,7 @@ import struct
 
 import nms
 import pytest
-from conftest import UID, base, refiner_state, save_doc, slot, write_save
+from conftest import UID, base, record, refiner_state, save_doc, slot, write_save
 from nmslib import catalog, decode, extract
 
 
@@ -594,7 +594,7 @@ def test_bench_reports_timings_and_counts(save_path, capsys):
 def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):
     code, d, err = run(capsys, "status")  # no saves in the account folder
     assert code == 2 and d is None and err.startswith("nms: ")
-    code, d, err = run(capsys, "find", "lush")
+    code, d, err = run(capsys, "route", "home")
     assert code == 2 and "#14" in err
 
 
@@ -612,7 +612,7 @@ def test_a_save_newer_than_the_game_data_adds_one_note_to_every_save_command(nms
     note = (f"Game data built for save version {built}; this save is {built + 2}. Some items may show "
             "raw ids and some fields may be missing until the game data is refreshed.")
     for argv in (["status"], ["inventory"], ["inventory", "suit"], ["inventory", "--search", "copper"],
-                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"]):
+                 ["inventory", "--have", "Copper:1"], ["bases"], ["bases", "home"], ["find"]):
         assert run(capsys, *argv)[1]["notes"] == [note], argv
     assert run(capsys, "convert", "0EA4:007D:05BD:005F")[1]["notes"] == []  # reads no Save
 
@@ -634,3 +634,91 @@ def test_saves_lists_the_slots_ahead_of_the_game_data_unless_quick(nms_root, cap
     assert d["notes"] == [f"Game data built for save version {built}; slots 2, 5 are newer. Some items "
                           "may show raw ids and some fields may be missing until the game data is refreshed."]
     assert run(capsys, "saves", "--quick")[1]["notes"] == []  # decodes nothing
+
+
+# ---- Discovery Atlas: find, route, system (#14) ----------------------------------
+def ua(galaxy, x, y, z, system, planet=0) -> str:
+    """A packed 56-bit save address, as discovery records and bases store it."""
+    return hex(planet << 52 | system << 40 | galaxy << 32 | (y & 0xFF) << 24 | (z & 0xFFF) << 12 | (x & 0xFFF))
+
+
+LUSH, FROZEN, INFESTED_TOXIC = ["0x1", 0], ["0x1", 4], ["0x1", (1 << 16) | 1]
+
+
+@pytest.fixture
+def atlas_save(nms_root):
+    """The player stands in Testoria (Eissentam, voxel 1701,-2,-578, system 95)."""
+    doc = save_doc()
+    doc["BaseContext"]["PlayerStateData"]["PersistentPlayerBases"] += [
+        base("Lush Outpost", "HomePlanetBase", ua(9, 1702, -2, -578, 10, 1), UID),
+        base("Bazaar", "ExternalPlanetBase", ua(9, 1705, -2, -578, 5, 1), "999"),
+        base("Bazaar Annex", "ExternalPlanetBase", ua(9, 1705, -2, -578, 5, 2), "999"),
+    ]
+    doc["DiscoveryManagerData"]["DiscoveryData-v1"]["Store"]["Record"] += [
+        record("SolarSystem", ua(9, 1701, -2, -578, 96), name="Nearby"),  # same Region as the player
+        record("Planet", ua(9, 1701, -2, -578, 96, 1), vp=LUSH, name="Verdant", uid="42", usn="other"),
+        record("Planet", ua(9, 1702, -2, -578, 10, 1), vp=LUSH),  # one Region over: 400 ly
+        record("Planet", ua(9, 1702, -2, -578, 10, 2), vp=FROZEN),
+        record("Planet", ua(9, 1704, -2, -578, 3, 1), vp=INFESTED_TOXIC),  # 1,200 ly
+        record("Planet", ua(0, 1, 2, 3, 4, 1), vp=LUSH),  # Euclid: another Galaxy
+    ]
+    return write_save(nms_root / "save3.hg", doc, 1000)
+
+
+PLACE_KEYS = {"kind", "name", "label", "system_name", "address"}
+
+
+def test_find_schema(atlas_save, capsys):
+    code, d, _ = run(capsys, "find", "--biome", "lush")
+    assert code == 0
+    assert set(d) == {"schema", "save", "from", "filters", "limit", "matched", "other_galaxy", "planets", "notes"}
+    assert d["schema"] == "nms.find/1" and set(d["save"]) == SAVE_KEYS
+    assert set(d["from"]) == PLACE_KEYS and d["from"]["kind"] == "here" and d["from"]["system_name"] == "Testoria"
+    assert d["filters"] == {"biome": "Lush", "infested": None, "named": False, "discoverer": None}
+    assert d["limit"] == {"nearest": 10, "within_ly": None}
+    row = d["planets"][0]
+    assert set(row) == {"name", "label", "system_name", "biome", "infested", "discoverer", "is_mine", "address",
+                        "distance_ly", "estimate"}
+    assert set(row["address"]) == ADDRESS_KEYS
+    assert [(p["label"], p["distance_ly"], p["estimate"]) for p in d["planets"]] == [
+        ("Verdant", 265, True), (f"system {extract_glyphs(9, 1702, -2, -578, 10)} planet 1", 400, False)]
+    assert (d["matched"], d["other_galaxy"]) == (2, 1)  # the Euclid planet is left out, and counted
+    assert d["notes"] == [ESTIMATE_NOTE]
+
+
+def extract_glyphs(galaxy, x, y, z, system):
+    from nmslib.coords import Address
+    return Address(galaxy, x, y, z, system).glyphs
+
+
+ESTIMATE_NOTE = ("≈ marks a distance between two Star Systems in one Region: the save stores only the Region, "
+                 "so 265 ly is an average, and the order among places in one Region is arbitrary.")
+
+
+def test_find_filters_and_limits(atlas_save, capsys):
+    def labels(*argv):
+        return [p["label"].split(" planet")[0] for p in run(capsys, "find", *argv)[1]["planets"]]
+    assert labels("--infested") == ["Glowball", f"system {extract_glyphs(9, 1704, -2, -578, 3)}"]
+    assert labels("--not-infested", "--nearest", "2") == ["Testoria", "Verdant"]
+    assert labels("--named") == ["Glowball", "Verdant"]  # a named planet reads by its uploaded name
+    assert labels("--discoverer", "others") == ["Verdant"]
+    assert len(labels("--within", "400")) == 5 and len(labels("--within", "1200")) == 6
+    assert labels("--from", "lush outpost", "--biome", "Frozen") == [
+        f"system {extract_glyphs(9, 1702, -2, -578, 10)}"]
+
+
+def test_find_text_marks_estimates_and_reports_the_planets_left_out(atlas_save, capsys):
+    assert nms.main(["find", "--biome", "Lush"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0].startswith("Find      Lush planets · nearest 10 from here (Testoria) · Eissentam")
+    assert out[1].lstrip().startswith("≈265 ly") and "Verdant" in out[1]
+    assert "Matched   2 in Eissentam · 1 left out in other Galaxies" in out
+    assert out[-1] == f"Note      {ESTIMATE_NOTE}"
+
+
+def test_find_refuses_an_unknown_biome_and_a_bad_from(atlas_save, capsys):
+    code, _, err = run(capsys, "find", "--biome", "Jungle")
+    assert code == 2 and "unknown biome 'Jungle'" in err and "Lush" in err
+    code, _, err = run(capsys, "find", "--from", "bazaar")
+    assert code == 2 and "'Bazaar' is a Visited Base" in err and "--all" in err
+    assert run(capsys, "find", "--from", "bazaar a", "--all")[0] == 0

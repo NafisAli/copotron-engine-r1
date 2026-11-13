@@ -6,8 +6,8 @@
 
     uv run implants/nms/nms.py <command> [--json] [--save PATH | --slot N]
 
-Commands: status, inventory, bases, convert, saves (find, route, system: see the
-Discovery Atlas ticket). Text by default, one JSON document with --json.
+Commands: status, inventory, bases, convert, saves, and the Discovery Atlas's find
+(route, system: not yet). Text by default, one JSON document with --json.
 Each JSON document names its shape in `schema` (nms.<command>/1) and carries a
 `notes` array of advice (`[]` when none; final `Note` lines in text). Errors go to
 stderr. Exit codes: 0 ok, 1 requisition short (inventory --have),
@@ -29,13 +29,14 @@ from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from nmslib import baseparts, catalog, decode, extract, locate  # noqa: E402
+from nmslib import atlas, baseparts, catalog, decode, extract, locate  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
-from nmslib.model import Container, Save, Slot  # noqa: E402
+from nmslib.model import BIOMES, Container, Save, Slot  # noqa: E402
 
 T_IMPORTED = time.perf_counter()
 
+FIND_NEAREST = 10  # find lists this many planets unless --nearest or --within says otherwise
 SCHEMA_VERSION = 1  # every --json shape is pinned by the tests; a breaking change bumps it
 
 CATEGORIES = [
@@ -497,6 +498,20 @@ def parse_location(value: str, galaxy: int, planet: int | None, system: int | No
     return a
 
 
+def positive_int(text: str) -> int:
+    v = int(text)
+    if v <= 0:
+        raise argparse.ArgumentTypeError(f"expected a positive number, got {text}")
+    return v
+
+
+def positive_float(text: str) -> float:
+    v = float(text)
+    if not v > 0:
+        raise argparse.ArgumentTypeError(f"expected a positive number, got {text}")
+    return v
+
+
 def int_auto(text: str) -> int:
     return int(text, 0)
 
@@ -611,7 +626,98 @@ def cmd_bench(args) -> int:
     return 0
 
 
-# ---- atlas commands (separate ticket) ---------------------------------------
+# ---- Discovery Atlas: find, route, system (#14) ------------------------------
+ESTIMATE_NOTE = ("≈ marks a distance between two Star Systems in one Region: the save stores only the Region, "
+                 "so 265 ly is an average, and the order among places in one Region is arbitrary.")
+
+
+def dist(d: atlas.Distance | None) -> str:
+    """`1,234 ly`, or `≈265 ly` for a same-Region estimate."""
+    if d is None:
+        return "other galaxy"
+    return f"{'≈' if d.estimate else ''}{d.ly:,.0f} ly"
+
+
+def place_json(p: atlas.Place) -> dict:
+    return {"kind": p.kind, "name": p.name, "label": atlas.label(p),
+            "system_name": p.system.name if p.system else None, "address": p.address.to_json()}
+
+
+def place_text(p: atlas.Place) -> str:
+    """`here (Testoria)`, `Lush Outpost`: a place as the header lines name it."""
+    if p.kind == "here" and p.system and p.system.name:
+        return f"here ({p.system.name})"
+    return atlas.label(p)
+
+
+def resolve_place(s: Save, text: str, args, what: str) -> atlas.Place:
+    """The name rule (#14), its refusals turned into exit-2 errors that list the candidates."""
+    try:
+        return atlas.resolve(s, text, include_visited=args.all)
+    except atlas.Unresolved as e:
+        lines = [f"{what}: {e}"]
+        lines += [f"  {atlas.label(c)} ({c.kind.replace('_', ' ')}, {c.address.glyphs})" for c in e.candidates]
+        raise Fail("\n".join(lines)) from None
+
+
+def biome(text: str | None) -> str | None:
+    if text is None:
+        return None
+    for b in BIOMES:
+        if b and b.lower() == text.strip().lower():
+            return b
+    raise Fail(f"unknown biome {text!r}; one of: {', '.join(b for b in BIOMES if b)}")
+
+
+def planet_filter(args) -> atlas.PlanetFilter:
+    return atlas.PlanetFilter(biome=biome(args.biome), infested=args.infested, named=args.named,
+                              discoverer=args.discoverer)
+
+
+def filter_json(f: atlas.PlanetFilter) -> dict:
+    return {"biome": f.biome, "infested": f.infested, "named": f.named, "discoverer": f.discoverer}
+
+
+def filter_words(f: atlas.PlanetFilter) -> str:
+    """`infested Lush named planets discovered by you`: what a filter selects, in words."""
+    words = [{True: "infested", False: "uninfested", None: ""}[f.infested], f.biome or "",
+             "named" if f.named else "", "planets"]
+    by = {"mine": " discovered by you", "others": " discovered by others", None: ""}[f.discoverer]
+    return " ".join(w for w in words if w) + by
+
+
+def cmd_find(args) -> int:
+    flt = planet_filter(args)
+    s = load(args)
+    origin = resolve_place(s, args.origin, args, "--from")
+    nearest = None if args.within is not None else (args.nearest or FIND_NEAREST)
+    r = atlas.find_planets(s, origin.address, flt, nearest=nearest, within=args.within)
+    notes = ([ESTIMATE_NOTE] if any(f.distance.estimate for f in r.rows) else []) + stale_notes(s)
+    galaxy = origin.address.galaxy_name
+    data = {"save": save_ref(s), "from": place_json(origin), "filters": filter_json(flt),
+            "limit": {"nearest": nearest, "within_ly": args.within}, "matched": r.matched,
+            "other_galaxy": r.other_galaxy, "planets": [{
+                "name": f.place.name, "label": atlas.label(f.place), "system_name": f.place.system.name,
+                "biome": f.place.planet.biome, "infested": f.place.planet.infested,
+                "discoverer": f.place.planet.discoverer, "is_mine": f.place.planet.is_mine,
+                "address": f.place.address.to_json(), "distance_ly": round(f.distance.ly),
+                "estimate": f.distance.estimate} for f in r.rows]}
+    limit = f"within {args.within:,.0f} ly" if args.within is not None else f"nearest {nearest}"
+    text = [f"Find      {filter_words(flt)} · {limit} from {place_text(origin)} · {galaxy}"]
+    for f in r.rows:
+        p = f.place.planet
+        flags = " · ".join(x for x in [p.biome or "?", "infested" if p.infested else "",
+                                       "mine" if p.is_mine else ""] if x)
+        text.append(f"  {dist(f.distance):>13}  {atlas.label(f.place)[:40]:<40} {flags:<30} "
+                    f"{f.place.address.glyphs}")
+    if not r.rows:
+        text.append("  (no discovered planet matches)")
+    text.append(f"Matched   {r.matched} in {galaxy}"
+                + (f" · {r.other_galaxy} left out in other Galaxies" if r.other_galaxy else ""))
+    emit(args, data, text, "find", notes)
+    return 0
+
+
 def cmd_atlas(args) -> int:
     raise Fail(f"'{args.command}' is not implemented yet: it ships with the Discovery Atlas "
                "(copotron-engine-r1#14)")
@@ -662,7 +768,27 @@ def parser() -> argparse.ArgumentParser:
 
     sub.add_parser("bench", parents=[common, pick], help="(dev) decode timings for the 250 ms budget")         .set_defaults(fn=cmd_bench)
 
-    for name in ("find", "route", "system"):
+    places = argparse.ArgumentParser(add_help=False)
+    places.add_argument("--all", action="store_true", help="Visited Bases (other players') may be named too")
+    origin = argparse.ArgumentParser(add_help=False)
+    origin.add_argument("--from", dest="origin", default="here", metavar="PLACE",
+                        help="a Base, Star System, named planet or 12 glyphs (default: here)")
+    planets = argparse.ArgumentParser(add_help=False)
+    planets.add_argument("--biome", help="Lush, Toxic, Scorched, Radioactive, Frozen, Barren, Dead, ...")
+    inf = planets.add_mutually_exclusive_group()
+    inf.add_argument("--infested", action="store_const", const=True, default=None)
+    inf.add_argument("--not-infested", dest="infested", action="store_const", const=False)
+    planets.add_argument("--named", action="store_true", help="only planets with an uploaded name")
+    planets.add_argument("--discoverer", choices=["mine", "others"])
+
+    f = sub.add_parser("find", parents=[common, pick, places, origin, planets],
+                       help="discovered planets near a place, nearest first")
+    lim = f.add_mutually_exclusive_group()
+    lim.add_argument("--nearest", type=positive_int, metavar="N", help=f"the nearest N (default {FIND_NEAREST})")
+    lim.add_argument("--within", type=positive_float, metavar="LY", help="every match within LY light-years")
+    f.set_defaults(fn=cmd_find)
+
+    for name in ("route", "system"):
         a = sub.add_parser(name, parents=[common, pick], help="(Discovery Atlas, not yet)")
         a.add_argument("rest", nargs=argparse.REMAINDER)
         a.set_defaults(fn=cmd_atlas)
