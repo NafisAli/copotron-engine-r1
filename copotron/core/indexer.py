@@ -3,11 +3,13 @@ import sys
 import json
 import time
 import heapq
+import sqlite3
 import hashlib
+import contextlib
 from pathlib import Path
 from copotron.core.schema import parse_frontmatter_and_body, _read_frontmatter_stream
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, init_db
+from copotron.core.db import StaleIndexError, get_db_path, get_readonly_db, init_db
 from copotron.core.implants import attached_implants, is_implant_instructions
 
 def compute_frontmatter_hash(frontmatter_text: str) -> str:
@@ -348,6 +350,22 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         print(f"Indexed {len(graph)} memories ({len(dirty_nodes)} updated/added, {len(deleted_ids)} deleted) in {elapsed_ms:.1f}ms to {db_path}")
     return graph
+
+def open_index(vault_dir: Path) -> sqlite3.Connection:
+    """
+    Open the vault's index for reading. An index built for another
+    INDEX_SCHEMA_VERSION may lack columns this engine reads, so it is rebuilt
+    first, as `copotron index` would, with the rebuild's messages on stderr
+    to keep them out of retrieval output. Raises FileNotFoundError when there
+    is no index.
+    """
+    db_path = get_db_path(vault_dir)
+    try:
+        return get_readonly_db(db_path)
+    except StaleIndexError:
+        with contextlib.redirect_stdout(sys.stderr):
+            load_vault(vault_dir, silent=True)
+        return get_readonly_db(db_path)
 
 if __name__ == "__main__":
     load_vault()

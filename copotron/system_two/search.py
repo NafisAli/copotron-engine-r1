@@ -4,7 +4,8 @@ import json
 import argparse
 from pathlib import Path
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.db import get_db_path
+from copotron.core.indexer import open_index
 from copotron.core.personas import attach_inherited_persona_titles
 from copotron.system_one.judgments.rerank import rerank_candidates
 from copotron.system_one.judgments.intent import parse_search_intent
@@ -49,7 +50,7 @@ def search_graph(
         if not effective_status and intent.get("status_filter"):
             effective_status = intent["status_filter"]
 
-    conn = get_readonly_db(db_path)
+    conn = open_index(vault_dir)
     sql_limit = (limit * 2) if rerank and limit > 0 else (limit if limit > 0 else -1)
 
     tokens = re.findall(r'[\w]+', effective_query) if effective_query else []

@@ -106,8 +106,9 @@ def get_readonly_db(db_path: Path) -> sqlite3.Connection:
     """
     Open a read connection to the existing database in WAL mode.
     Raises FileNotFoundError if the database file does not exist, and
-    StaleIndexError if it was built for another index schema version: only
-    indexing rebuilds the index, so reads never write.
+    StaleIndexError if it was built for another index schema version.
+    Retrieval opens the index through indexer.open_index, which rebuilds a
+    stale one.
     """
     db_path = Path(db_path)
     if not db_path.is_file():

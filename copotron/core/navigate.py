@@ -3,7 +3,8 @@ import json
 import argparse
 from pathlib import Path
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.db import get_db_path
+from copotron.core.indexer import open_index
 from copotron.core.personas import attach_inherited_persona_titles
 
 def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, status: str | None = None, print_output: bool = True):
@@ -13,7 +14,7 @@ def navigate(node_id: str, direction: str, limit: int = 20, offset: int = 0, sta
         print(f"Error: {db_path} not found. Run 'copotron index' first.", file=sys.stderr)
         sys.exit(1)
 
-    conn = get_readonly_db(db_path)
+    conn = open_index(vault_dir)
 
     # Check if target node exists
     cur = conn.execute("SELECT id FROM memories WHERE id = ?;", (node_id,))
