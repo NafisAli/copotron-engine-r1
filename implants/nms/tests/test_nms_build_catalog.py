@@ -113,6 +113,69 @@ def test_a_missing_table_refuses_the_write(mxml):
         bc.parse(mxml)
 
 
+# ---- base-part group map ------------------------------------------------------------
+def write_base_building_table(root: Path, rows: list[tuple[str, list[tuple[str, str]]]]) -> None:
+    """MXML shaped like MBINCompiler 7.10's GcBaseBuildingTable: Objects is not the first Property."""
+    def entry(part_id, groups):
+        gs = "".join(
+            f'\t\t\t\t<Property name="Groups" value="GcBaseBuildingEntryGroup" _index="{n}">\n'
+            f'\t\t\t\t\t<Property name="Group" value="{g}" />\n'
+            f'\t\t\t\t\t<Property name="SubGroupName" value="{s}" />\n'
+            f'\t\t\t\t\t<Property name="SubGroup" value="0" />\n\t\t\t\t</Property>\n'
+            for n, (g, s) in enumerate(groups))
+        return (f'\t\t<Property name="Objects" value="GcBaseBuildingEntry" _id="{part_id}">\n'
+                f'\t\t\t<Property name="ID" value="{part_id}" />\n'
+                f'\t\t\t<Property name="Style" value="GcBaseBuildingPartStyle">\n'
+                f'\t\t\t\t<Property name="Style" value="None" />\n\t\t\t</Property>\n'
+                + (f'\t\t\t<Property name="Groups">\n{gs}\t\t\t</Property>\n' if groups
+                   else '\t\t\t<Property name="Groups" />\n')
+                + '\t\t\t<Property name="StorageContainerIndex" value="-1" />\n\t\t</Property>\n')
+    path = root / "metadata" / "reality" / "tables" / f"{bc.BASE_PART_TABLE}.MXML"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text('<?xml version="1.0" encoding="utf-8"?>\n<Data template="cGcBaseBuildingTable">\n'
+                    '\t<Property name="LegModel" value="TkModelResource">\n'
+                    '\t\t<Property name="Filename" value="FOUNDATIONLEG.SCENE.MBIN" />\n\t</Property>\n'
+                    '\t<Property name="Objects">\n' + "".join(entry(i, g) for i, g in rows)
+                    + "\t</Property>\n</Data>\n", encoding="utf-8")
+
+
+def test_the_base_part_group_map_holds_each_parts_build_menu_groups(tmp_path):
+    write_base_building_table(tmp_path, [
+        ("U_SOLAR_S", [("POWER", "POWERPOWER")]),
+        ("BUILD_REFINER1", [("PLANET_TECH", "PLANETPORTABLE"), ("FREIGHTER_TECH", "FRE_TECH_OTHER")]),
+        ("WALL", []),  # a part with no build-menu group is still listed
+    ])
+    assert bc.parse_base_parts(tmp_path) == {
+        "U_SOLAR_S": [["POWER", "POWERPOWER"]],
+        "BUILD_REFINER1": [["PLANET_TECH", "PLANETPORTABLE"], ["FREIGHTER_TECH", "FRE_TECH_OTHER"]],
+        "WALL": [],
+    }
+
+
+def test_a_missing_or_empty_base_building_table_refuses_the_write(tmp_path):
+    with pytest.raises(bc.BuildRefused, match="basebuildingobjectstable"):
+        bc.parse_base_parts(tmp_path)
+    write_base_building_table(tmp_path, [])
+    with pytest.raises(bc.BuildRefused, match="basebuildingobjectstable"):
+        bc.parse_base_parts(tmp_path)
+
+
+def test_a_fresh_group_map_wins_keeps_dropped_parts_and_refuses_a_shrunken_build():
+    old = {"A": [["POWER", "POWERPOWER"]], "GONE": [["ROOMS", "ROOMSMAIN"]],
+           **{f"N{i}": [] for i in range(8)}}
+    fresh = {"A": [["BASE_TECH", "TECHTECH"]], **{f"N{i}": [] for i in range(8)}}
+    merged = bc.merge_base_parts(old, fresh)
+    assert merged["A"] == [["BASE_TECH", "TECHTECH"]]
+    assert merged["GONE"] == [["ROOMS", "ROOMSMAIN"]]  # old saves still place it
+    with pytest.raises(bc.BuildRefused, match="7"):
+        bc.merge_base_parts(old, {f"N{i}": [] for i in range(7)})
+
+
+def test_the_base_building_table_is_extracted_and_converted_with_the_item_tables():
+    assert any(bc.BASE_PART_TABLE in f for f in bc.extraction_filters())
+    assert all(any(t in f for f in bc.extraction_filters()) for t in bc.TABLES)
+
+
 # ---- merge and provenance -----------------------------------------------------------
 def test_ids_missing_from_a_new_build_are_kept_as_stale():
     old = {"A": {"name": "Alpha"}, "GONE": {"name": "Gone"}, "BACK": {"name": "Back", "stale": True}}
