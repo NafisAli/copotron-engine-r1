@@ -776,3 +776,35 @@ def test_indexing_accepts_dangling_persona_name(tmp_path):
     with get_readonly_db(get_db_path(vault)) as conn:
         row = conn.execute("SELECT persona FROM memories WHERE id = '0000000a';").fetchone()
     assert row["persona"] == "aegis-null"
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["search", "Note", "--json"],
+        ["navigate", "00000000", "--direction", "down", "--json"],
+        ["domains", "--json"],
+    ],
+)
+def test_retrieval_refuses_an_index_built_for_another_schema_version(tmp_path, monkeypatch, capsys, argv):
+    """An index left by an older engine lacks columns this one reads: say to rebuild it rather than crash."""
+    from copotron.cli import main
+
+    vault = tmp_path / "stale_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "0000000a", "Note A", parents=["00000000"])
+    load_vault(vault, silent=True)
+    conn = init_db(get_db_path(vault))
+    conn.execute(f"PRAGMA user_version = {INDEX_SCHEMA_VERSION - 1};")
+    conn.commit()
+    conn.close()
+
+    assert main(argv) == 1
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "Run 'copotron index'" in captured.err
+
+    assert main(["index", "--json"]) == 0
+    capsys.readouterr()
+    assert main(argv) == 0

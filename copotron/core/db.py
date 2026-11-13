@@ -4,6 +4,11 @@ from pathlib import Path
 INDEX_SCHEMA_VERSION = 2
 DB_FILENAME = ".index.sqlite3"
 
+
+class StaleIndexError(RuntimeError):
+    """The index was built for another INDEX_SCHEMA_VERSION, so its columns may not be the ones this engine reads."""
+
+
 def get_db_path(vault_dir: Path) -> Path:
     """Return the absolute path to the SQLite index file inside vault_dir."""
     return Path(vault_dir) / DB_FILENAME
@@ -100,7 +105,9 @@ def init_db(db_path: Path) -> sqlite3.Connection:
 def get_readonly_db(db_path: Path) -> sqlite3.Connection:
     """
     Open a read connection to the existing database in WAL mode.
-    Raises FileNotFoundError if the database file does not exist.
+    Raises FileNotFoundError if the database file does not exist, and
+    StaleIndexError if it was built for another index schema version: only
+    indexing rebuilds the index, so reads never write.
     """
     db_path = Path(db_path)
     if not db_path.is_file():
@@ -109,4 +116,11 @@ def get_readonly_db(db_path: Path) -> sqlite3.Connection:
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode = WAL;")
+    found_version = conn.execute("PRAGMA user_version;").fetchone()[0]
+    if found_version != INDEX_SCHEMA_VERSION:
+        conn.close()
+        raise StaleIndexError(
+            f"The index at {db_path} uses index schema {found_version}, but this engine reads "
+            f"schema {INDEX_SCHEMA_VERSION}. Run 'copotron index' to rebuild it."
+        )
     return conn

@@ -8,6 +8,7 @@ from copotron.core.navigate import navigate
 from copotron.system_two.domains import get_domain_hubs, resolve_auto_parent
 from copotron.core.validate import validate_file, validate_vault
 from copotron.core.indexer import load_vault
+from copotron.core.db import StaleIndexError
 from copotron.system_two.crystallize import (
     create_or_update_memory_node,
     crystallize_manifest,
@@ -376,7 +377,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    ret = args.func(args)
+    try:
+        ret = args.func(args)
+    except StaleIndexError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
     return ret if ret is not None else 0
 
 
