@@ -421,7 +421,7 @@ def cmd_bases(args) -> int:
             f"Glyphs    {a.glyphs}  {a.glyph_emoji}",
             f"Booster   {a.signal_booster} · voxel {a.x},{a.y},{a.z}",
             f"Distance  {ly(d)} from you",
-            f"Objects   {b.object_count} · last update {local(b.last_update) if b.last_update else '-'}",
+            f"Parts     {b.part_count} · last update {local(b.last_update) if b.last_update else '-'}",
         ]
         emit(args, data, text, "bases", stale_notes(s))
         return 0

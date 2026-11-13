@@ -434,7 +434,8 @@ def test_bases_schema(save_path, capsys):
     assert set(d) == {"schema", "save", "scope", "bases", "notes"} and d["notes"] == []
     assert d["scope"] == "mine" and [b["name"] for b in d["bases"]] == ["Home"]
     assert set(d["bases"][0]) == {"name", "kind", "address", "owner_uid", "owner_name", "is_mine",
-                                  "last_update", "object_count", "distance_ly"}
+                                  "last_update", "part_count", "distance_ly"}
+    assert d["bases"][0]["part_count"] == 2
     assert d["bases"][0]["distance_ly"] is None  # base in Euclid, player in Eissentam
     _, d, _ = run(capsys, "bases", "--all")
     assert len(d["bases"]) == 2

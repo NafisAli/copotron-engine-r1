@@ -352,7 +352,7 @@ def _bases(raw: list, warnings: list[str]) -> list[Base]:
             owner_name=owner.get("USN") or "",
             is_mine=_is_my_base(b),
             last_update=int(b.get("LastUpdateTimestamp") or 0),
-            object_count=len(b.get("Objects") or []),
+            parts=[(o.get("ObjectID") or "").lstrip("^") for o in b.get("Objects") or []],
         ))
     return out
 

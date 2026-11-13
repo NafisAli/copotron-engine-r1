@@ -125,7 +125,11 @@ class Base:
     owner_name: str
     is_mine: bool
     last_update: int  # unix seconds
-    object_count: int
+    parts: list[str]  # placed Base Part ids, caret stripped, one per placed part (no positions)
+
+    @property
+    def part_count(self) -> int:
+        return len(self.parts)
 
     def to_json(self) -> dict:
         return {
@@ -136,7 +140,7 @@ class Base:
             "owner_name": self.owner_name,
             "is_mine": self.is_mine,
             "last_update": iso(self.last_update),
-            "object_count": self.object_count,
+            "part_count": self.part_count,
         }
 
 
