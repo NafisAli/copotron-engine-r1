@@ -416,6 +416,8 @@ def parts_text(parts: dict) -> list[str]:
 
 
 def cmd_bases(args) -> int:
+    if args.name and args.has is not None:
+        raise Fail("--has searches across bases; drop the base name, or drop --has for one base's parts")
     s = load(args)
     here = s.player.location
     pool = s.bases if args.all else s.my_bases
@@ -451,13 +453,25 @@ def cmd_bases(args) -> int:
         return 0
 
     rows = sorted(pool, key=lambda b: (here.distance_ly(b.address) is None, here.distance_ly(b.address) or 0))
+    found = {}  # --has: the matching name groups of each base that holds one
+    if args.has is not None:
+        found = {id(b): m for b in rows if (m := baseparts.matches(b.parts, args.has))}
+        rows = [b for b in rows if id(b) in found]
     data = {"save": save_ref(s), "scope": "all" if args.all else "mine",
             "bases": [{**b.to_json(), "distance_ly": None if here.distance_ly(b.address) is None
-                       else round(here.distance_ly(b.address))} for b in rows]}
-    text = [f"{(b.name or '(unnamed)')[:30]:<30} {b.kind:<18} {b.address.galaxy_name[:12]:<12} "
-            f"{b.address.glyphs}  {ly(here.distance_ly(b.address)):>12}"
-            + ("" if b.is_mine else f"  · {b.owner_name or '?'}") for b in rows]
-    if not args.all:
+                       else round(here.distance_ly(b.address)),
+                       **({"matches": found[id(b)]} if found else {})} for b in rows]}
+    text = []
+    for b in rows:
+        text.append(f"{(b.name or '(unnamed)')[:30]:<30} {b.kind:<18} {b.address.galaxy_name[:12]:<12} "
+                    f"{b.address.glyphs}  {ly(here.distance_ly(b.address)):>12}"
+                    + ("" if b.is_mine else f"  · {b.owner_name or '?'}"))
+        if found:
+            text.append("  " + ", ".join(fmt_part(m) for m in found[id(b)]))
+    if args.has is not None:
+        text = text or [f"no {'' if args.all else 'own '}base has {args.has!r}"
+                        + ("" if args.all else " (try --all for visited bases)")]
+    elif not args.all:
         others = len(s.bases) - len(s.my_bases)
         if others:
             text.append(f"(+{others} visited bases from other players: --all)")
@@ -628,9 +642,11 @@ def parser() -> argparse.ArgumentParser:
     inv.add_argument("--near-cap", action="store_true", help="stacks at >= 90%% of max")
     inv.set_defaults(fn=cmd_inventory)
 
-    b = sub.add_parser("bases", parents=[common, pick], help="your bases, or one in detail")
+    b = sub.add_parser("bases", parents=[common, pick], help="your bases, one with its parts, or those holding a part")
     b.add_argument("name", nargs="?")
     b.add_argument("--all", action="store_true", help="include other players' bases cached in the save")
+    b.add_argument("--has", metavar="TEXT",
+                   help="bases holding a part: name text (every match), exact id, or category key")
     b.set_defaults(fn=cmd_bases)
 
     c = sub.add_parser("convert", parents=[common], help="glyphs / booster / address / voxel")

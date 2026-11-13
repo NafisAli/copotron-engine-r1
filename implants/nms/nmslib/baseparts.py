@@ -120,3 +120,24 @@ def listing(parts: Iterable[str]) -> dict:
             entry["chests"] = chests
         out.append(entry)
     return {"structural": structural, "groups": out}
+
+
+def matches(parts: list[str], query: str) -> list[dict]:
+    """The listing's groups that `query` names, as [{category, name, ids, count}]; [] when none.
+
+    A category key matches its whole category. An exact id (case-sensitive, as
+    ids are upper-case) matches only that id. Otherwise the text matches every
+    name group that contains it: a filter, so `refiner` finds every refiner
+    without an ambiguity refusal. Collapsed parts (structural, decor, wires,
+    unnamed) are never matched, as the listing never names them.
+    """
+    q = query.strip().lstrip("^")
+    groups = listing(parts)["groups"]
+    if q.lower() in CATEGORIES:
+        hits = [g for g in groups if g["category"] == q.lower()]
+    elif q in _groups() or q in catalog.items():
+        n = sum(1 for p in parts if p.lstrip("^") == q)
+        hits = [{**g, "ids": [q], "count": n} for g in groups if q in g["ids"]]
+    else:
+        hits = [g for g in groups if q.lower() in g["name"].lower()]
+    return [{k: g[k] for k in ("category", "name", "ids", "count")} for g in hits]

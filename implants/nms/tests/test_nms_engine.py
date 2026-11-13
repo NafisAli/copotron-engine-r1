@@ -503,6 +503,67 @@ def test_the_all_bases_list_shows_no_listing(parts_save, capsys):
     assert [b["part_count"] for b in d["bases"]] == [4, 21, 2]
 
 
+LIST_BASE_KEYS = {"name", "kind", "address", "owner_uid", "owner_name", "is_mine", "last_update", "part_count",
+                  "distance_ly"}
+
+
+def has(capsys, *argv):
+    code, d, err = run(capsys, "bases", "--has", *argv)
+    return code, d, err, [(b["name"], [(m["name"], m["count"]) for m in b["matches"]]) for b in (d or {}).get("bases", [])]
+
+
+def test_has_matches_every_name_group_containing_the_text_on_own_bases_nearest_first(parts_save, capsys):
+    code, d, _, found = has(capsys, "refiner")
+    assert code == 0 and d["schema"] == "nms.bases/1" and d["notes"] == []
+    assert set(d) == {"schema", "save", "scope", "bases", "notes"} and d["scope"] == "mine"  # the list shape
+    assert found == [("Freighter", [("Portable Refiner", 1), ("Refiner Room", 1)]),  # same system: nearest
+                     ("Home", [("Medium Refiner", 2), ("Portable Refiner", 1)])]  # no ambiguity refusal
+    home = d["bases"][1]
+    assert set(home) == LIST_BASE_KEYS | {"matches"}
+    assert home["matches"][0] == {"category": "refining", "name": "Medium Refiner", "ids": ["BUILD_REFINER2"],
+                                  "count": 2}
+
+
+def test_has_all_adds_visited_bases(parts_save, capsys):
+    _, d, _, found = has(capsys, "refiner", "--all")
+    assert d["scope"] == "all"
+    assert found[-1] == ("Visited", [("Large Refiner", 1)])  # another galaxy: last
+
+
+def test_has_an_exact_id_matches_only_that_id(parts_save, capsys):
+    _, _, _, found = has(capsys, "BUILD_REFINER2")
+    assert found == [("Home", [("Medium Refiner", 2)])]
+
+
+def test_has_a_category_key_matches_the_whole_category(parts_save, capsys):
+    _, d, _, found = has(capsys, "power", "--all")
+    assert found == [("Home", [("Solar Panel", 3), ("Battery", 1)]), ("Visited", [("Solar Panel", 1)])]
+    _, d, _, found = has(capsys, "storage")
+    assert found == [("Freighter", [("Storage Room", 1)]), ("Home", [("Storage Container", 2)])]
+    assert "chests" not in d["bases"][0]["matches"][0]
+
+
+def test_has_never_matches_collapsed_parts(parts_save, capsys):
+    code, d, _, found = has(capsys, "wall")  # Alloy Wall is structural
+    assert code == 0 and found == []
+    assert has(capsys, "Electrical Wiring")[3] == []
+
+
+def test_has_text_shows_each_base_then_its_matching_names(parts_save, capsys):
+    assert nms.main(["bases", "--has", "refiner", "--save", str(parts_save)]) == 0
+    out = capsys.readouterr().out.splitlines()
+    assert out[0].startswith("Freighter ") and out[1] == "  Portable Refiner, Refiner Room"
+    assert out[2].startswith("Home ") and out[3] == "  Medium Refiner ×2, Portable Refiner"
+    assert len(out) == 4  # no listing, no visited-bases hint
+    assert nms.main(["bases", "--has", "fishing", "--save", str(parts_save)]) == 0
+    assert capsys.readouterr().out.splitlines() == ["no own base has 'fishing' (try --all for visited bases)"]
+
+
+def test_has_and_a_base_name_are_exclusive(parts_save, capsys):
+    code, d, err = run(capsys, "bases", "home", "--has", "refiner")
+    assert code == 2 and d is None and "--has" in err
+
+
 def test_convert_schema(capsys):
     code, d, _ = run(capsys, "convert", "0EA4:007D:05BD:005F", "--galaxy", "Eissentam", "--planet", "1")
     assert code == 0
