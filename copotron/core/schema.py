@@ -94,11 +94,14 @@ class MemorySchema(BaseModel):
             v = [v]
         if not isinstance(v, list):
             raise ValueError("implants must be a list of memory ids.")
+        # Entries coerce like parents and never fail the memory (ADR 0003): one
+        # that is not an id still indexes, and the audit reports it.
         coerced = []
         for item in v:
-            if isinstance(item, bool) or not isinstance(item, (str, int)):
-                raise ValueError(f"implants entry {item!r} is not a memory id.")
-            coerced.append(f"{item:08d}" if isinstance(item, int) else item.strip())
+            if isinstance(item, int) and not isinstance(item, bool):
+                coerced.append(f"{item:08d}")
+            else:
+                coerced.append(str(item).strip())
         return coerced
 
 def _read_frontmatter_stream(f, file_path: str | Path) -> list[str]:

@@ -30,7 +30,7 @@ The brain is modeled as a Directed Acyclic Graph (DAG) of "Memories". The schema
 * **`parents`** (List[str]): List of parent 8-character node IDs.
 * **`tags`** (List[str]): Semantic tags for taxonomy and filtering.
 * **`persona`** (Optional[str]): 8-character id of a Persona Definition, attached to roots or branch overrides. Write paths reject any other value; indexing accepts any string, so a Dangling Persona still indexes.
-* **`implants`** (List[str]): Ids of the Implant Instructions this memory attaches (see §7). Omitted from frontmatter when empty. The schema requires a list of scalar ids. Indexing accepts any string, so a dangling implant link still indexes and the audit reports it.
+* **`implants`** (List[str]): Ids of the Implant Instructions this memory attaches (see §7). Omitted from frontmatter when empty. The schema requires a list and coerces its entries like `parents`, so an entry that is not an id never fails the memory: it indexes as a dangling implant link, which the audit reports.
 
 ### Open Tail:
 Additional arbitrary metadata keys may be included for semantic flexibility and must be preserved during migrations and re-indexing.

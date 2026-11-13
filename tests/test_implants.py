@@ -13,11 +13,14 @@ from copotron.core.indexer import load_vault
 from copotron.core.navigate import navigate
 from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter
 from copotron.core.validate import validate_file
+from copotron.system_two.audit import audit_vault_health
 from copotron.system_two.crystallize import update_memory_node
 from copotron.system_two.search import search_graph
 
 
-def _write_raw(vault_dir: Path, memory_id: str, frontmatter_tail: str, title: str = "Memory") -> Path:
+def _write_raw(
+    vault_dir: Path, memory_id: str, frontmatter_tail: str, title: str = "Memory", parents: str = "['00000000']"
+) -> Path:
     content = (
         "---\n"
         f"id: '{memory_id}'\n"
@@ -26,7 +29,7 @@ def _write_raw(vault_dir: Path, memory_id: str, frontmatter_tail: str, title: st
         "summary: Test memory.\n"
         "type: declarative\n"
         "status: active\n"
-        "parents: ['00000000']\n"
+        f"parents: {parents}\n"
         f"{frontmatter_tail}"
         "---\n\n"
         f"# {title}\n"
@@ -78,16 +81,8 @@ def test_implants_keeps_references_that_are_not_ids(tmp_path):
     assert validate_file(path, silent=True) is True
 
 
-@pytest.mark.parametrize(
-    "yaml_value",
-    [
-        "{nms: 4f2a9c1e}",  # a mapping, not a list
-        "[[4f2a9c1e]]",  # a nested list
-        "[{id: 4f2a9c1e}]",  # a mapping entry
-        "[true]",
-    ],
-)
-def test_validator_rejects_implants_that_are_not_a_list_of_ids(tmp_path, yaml_value):
+@pytest.mark.parametrize("yaml_value", ["{nms: 4f2a9c1e}", "true"])
+def test_validator_rejects_implants_that_are_not_a_list(tmp_path, yaml_value):
     path = _write_raw(tmp_path, "11111111", f"implants: {yaml_value}\n")
 
     assert validate_file(path, silent=True) is False
@@ -334,3 +329,26 @@ def test_text_output_omits_implants_when_none_are_inherited(implant_vault, capsy
     assert main(["search", "00000000"]) == 0
 
     assert "implants:" not in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    "yaml_value, entry",
+    [
+        ("[null]", "None"),  # a hand edit that left an empty list item
+        ("[1.5]", "1.5"),
+        ("[true]", "True"),
+        ("[[4f2a9c1e]]", "['4f2a9c1e']"),
+    ],
+)
+def test_malformed_implants_entry_is_a_dangling_link_not_a_parse_failure(implant_vault, yaml_value, entry):
+    """ADR 0003: a bad attachment is never fatal, so the memory and its subtree still index."""
+    _write_raw(implant_vault, "0000000c", f"implants: {yaml_value}\n", title="Campaign", parents="['0000000a']")
+
+    graph = load_vault(implant_vault, silent=True)
+    report = audit_vault_health(vault_dir=implant_vault, check_semantic=False)
+
+    assert graph["0000000c"]["inherited_implants"] == [NMS]
+    assert graph["0000000e"]["inherited_implants"] == sorted([NMS, HUE])
+    assert report["dangling_implant_links"] == [
+        {"id": "0000000c", "title": "Campaign", "implant": entry, "problem": "not_an_id"}
+    ]
