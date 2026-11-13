@@ -30,6 +30,7 @@ from pathlib import Path  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from nmslib import atlas, baseparts, catalog, decode, extract, locate  # noqa: E402
+from nmslib.inventory import aggregate, by_name  # noqa: E402
 from nmslib.coords import SAME_REGION_LY, Address, parse_galaxy  # noqa: E402
 from nmslib.decode import SaveDecodeError  # noqa: E402
 from nmslib.model import BIOMES, Container, Save, Slot  # noqa: E402
@@ -287,34 +288,6 @@ def inventory_list(args, cs, keep, base, notes) -> int:
     emit(args, {**base, "mode": "category", "category": args.category, "containers": out},
          text or [f"(no {args.category} containers)"], "inventory", notes)
     return 0
-
-
-def aggregate(cs, keep) -> dict[str, dict]:
-    totals: dict[str, dict] = {}
-    for c in cs:
-        for x in c.slots:
-            if not keep(x):
-                continue
-            t = totals.setdefault(x.id, {"id": x.id, "name": x.name, "type": x.item_type,
-                                         "total": 0, "locations": collections.Counter()})
-            t["total"] += x.amount
-            t["locations"][c.label] += x.amount
-    return totals
-
-
-def by_name(totals: dict[str, dict]) -> list[dict]:
-    """Per-id totals -> one row per name group (an unnamed id stays its own row)."""
-    rows: dict[str, dict] = {}
-    for t in totals.values():
-        r = rows.setdefault(t["name"] or t["id"], {"ids": [], "name": t["name"], "types": set(), "total": 0,
-                                                   "locations": collections.Counter()})
-        r["ids"].append(t["id"])
-        r["types"].add(t["type"])
-        r["total"] += t["total"]
-        r["locations"].update(t["locations"])
-    return [{"ids": sorted(r["ids"]), "name": r["name"],
-             "type": r["types"].pop() if len(r["types"]) == 1 else "Mixed",
-             "total": r["total"], "locations": r["locations"]} for r in rows.values()]
 
 
 def fmt_item(t: dict) -> str:
