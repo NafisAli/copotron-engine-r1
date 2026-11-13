@@ -23,7 +23,7 @@ The nine commands are `status`, `inventory`, `bases`, `find`, `route`, `system`,
 ## Read the Output
 
 - **stdout** holds the result: text by default, one JSON document with `--json` (`watch --json`: one JSON object per line). Parse `--json` whenever you reason over the data.
-- **stderr** holds errors, each an `nms: …` line.
+- **stderr** holds errors: an `nms: …` line, followed by indented candidates when a name is ambiguous, or argparse's `usage:` lines for bad usage.
 - **Exit codes**: `0` ok; `1` a Requisition Check (`inventory --have`) is short, which is an answer, not a failure; `2` an error or bad usage. On `2`, read the stderr line: an ambiguous name lists its candidates, so re-run with a fuller name or the Portal Glyphs.
 - **`schema`**: every `--json` document names its shape as `nms.<command>/1` (`nms.status/1`, `nms.inventory/1`, … `nms.watch/1`). Check it before reading fields. The dev-only `bench` command has neither `schema` nor `notes`.
 - **`notes`**: every `--json` document carries a `notes` array, `[]` when there is nothing to say. In text, each note is a final `Note      …` line (in `watch` text, a final `| Note: …` segment). Notes are advice about the Implant; faults in the Save are `warnings` (`status`). Relay a note's content where it bears on the answer: the Personal Refiner note, or the `≈` same-Region estimate.
