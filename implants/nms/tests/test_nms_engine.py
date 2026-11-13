@@ -596,6 +596,18 @@ def test_errors_go_to_stderr_with_exit_2(nms_root, capsys):
     assert code == 2 and d is None and err.startswith("nms: ")
 
 
+@pytest.mark.parametrize("doc", [
+    {"Version": "abc"},
+    {"Version": 4746, "BaseContext": {"PlayerStateData": {"UniverseAddress": {
+        "GalacticAddress": {"VoxelX": 99999}}}}},
+])
+def test_a_save_that_cannot_be_read_exits_2_never_1(nms_root, capsys, doc):
+    # 1 means a requisition check is short; a broken save must never read as that
+    path = write_save(nms_root / "save.hg", doc, 1000)
+    code, d, err = run(capsys, "inventory", "--have", "Carbon:1", "--save", str(path))
+    assert code == 2 and d is None and "nms: " in err
+
+
 # ---- Game Data Snapshot staleness (#26) ----------------------------------------
 def stale_doc(ahead=2):
     """A Save whose base version (Version % 512) is `ahead` of the snapshot's."""

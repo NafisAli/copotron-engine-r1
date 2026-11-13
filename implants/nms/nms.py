@@ -976,6 +976,9 @@ def main(argv: list[str] | None = None) -> int:
     except (Fail, locate.LocateError, SaveDecodeError) as e:
         print(f"nms: {e}", file=sys.stderr)
         return 2
+    except Exception as e:  # anything else is an error too: exit 1 means only "requisition short"
+        print(f"nms: unexpected error: {type(e).__name__}: {e}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
