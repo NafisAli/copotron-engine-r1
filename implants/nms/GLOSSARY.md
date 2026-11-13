@@ -12,6 +12,14 @@ _Avoid_: Game file, Profile, World
 One of the numbered save positions the game offers, holding a manual save and an autosave; the newer of the two is the slot's current Save.
 _Avoid_: Slot (alone), Save file number
 
+**Save Update**:
+The game writing a Save, which is what one watch event reports.
+_Avoid_: Tick, Save Event, Autosave (as a general term)
+
+**Save Delta**:
+What changed in one Save Slot between two Save Updates.
+_Avoid_: Diff, Telemetry, Snapshot
+
 **Account**:
 The platform identity a Save belongs to (a Steam user or a GOG install); one machine may hold several.
 _Avoid_: Profile, User, Player
