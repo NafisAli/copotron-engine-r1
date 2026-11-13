@@ -4,10 +4,12 @@ Implant Instructions in `implants` (ADR 0003 in the control plane).
 """
 
 from pathlib import Path
+from typing import Optional
 
 import pytest
 
-from copotron.core.schema import dump_frontmatter, parse_frontmatter
+from copotron.core.indexer import load_vault
+from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter
 from copotron.core.validate import validate_file
 from copotron.system_two.crystallize import update_memory_node
 
@@ -110,3 +112,126 @@ def test_update_keeps_existing_implants(tmp_path):
     result = update_memory_node(vault, path, summary="A new summary.")
 
     assert parse_frontmatter(result["file_path"]).implants == ["4f2a9c1e"]
+
+
+# ---------------------------------------------------------
+# Inherited Implants
+# ---------------------------------------------------------
+
+NMS = "4f2a9c1e"  # Implant Instructions ids
+HUE = "b7d3e8a0"
+
+
+def _write_memory(
+    vault_dir: Path,
+    memory_id: str,
+    title: str,
+    parents: list[str],
+    implants: Optional[list[str]] = None,
+    memory_type: str = "declarative",
+    implant_id: Optional[str] = None,
+) -> Path:
+    extra = {"implant_id": implant_id} if implant_id is not None else {}
+    memory = MemorySchema(
+        id=memory_id,
+        title=title,
+        date="2026-09-01",
+        summary=f"Summary for {title}",
+        type=memory_type,
+        status="active",
+        parents=parents,
+        implants=implants or [],
+        **extra,
+    )
+    path = vault_dir / f"{memory_id}-{title.lower().replace(' ', '-')}.md"
+    path.write_text(dump_frontmatter(memory, f"# {title}\n"), encoding="utf-8")
+    return path
+
+
+def _write_instructions(vault_dir: Path, memory_id: str, title: str, parent: str, implant_id: str) -> Path:
+    return _write_memory(vault_dir, memory_id, title, [parent], memory_type="procedural", implant_id=implant_id)
+
+
+@pytest.fixture
+def implant_vault(tmp_path, monkeypatch):
+    """
+    Root
+    ├── Gaming (implants NMS) ── NMS Instructions
+    │   └── Campaign ──┐
+    └── Home (implants HUE) ── HUE Instructions
+        └── Lights ────┴── Shared Session (child of Campaign and Lights)
+    """
+    vault = tmp_path / "vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+    _write_memory(vault, "00000000", "Root", [])
+    _write_memory(vault, "0000000a", "Gaming", ["00000000"], implants=[NMS])
+    _write_memory(vault, "0000000b", "Home", ["00000000"], implants=[HUE])
+    _write_instructions(vault, NMS, "NMS Instructions", "0000000a", implant_id="9c0d1e2f")
+    _write_instructions(vault, HUE, "HUE Instructions", "0000000b", implant_id="3a4b5c6d")
+    _write_memory(vault, "0000000c", "Campaign", ["0000000a"])
+    _write_memory(vault, "0000000d", "Lights", ["0000000b"])
+    _write_memory(vault, "0000000e", "Shared Session", ["0000000c", "0000000d"])
+    return vault
+
+
+def test_memory_inherits_implants_attached_to_an_ancestor(implant_vault):
+    graph = load_vault(implant_vault, silent=True)
+
+    assert graph["0000000a"]["inherited_implants"] == [NMS]
+    assert graph["0000000c"]["inherited_implants"] == [NMS]
+
+
+def test_inherited_implants_are_the_union_over_every_ancestor(implant_vault):
+    graph = load_vault(implant_vault, silent=True)
+
+    assert graph["0000000e"]["inherited_implants"] == sorted([NMS, HUE])
+
+
+def test_own_implants_add_to_inherited_ones_rather_than_override(implant_vault):
+    _write_memory(implant_vault, "0000000c", "Campaign", ["0000000a"], implants=[HUE])
+
+    graph = load_vault(implant_vault, silent=True)
+
+    assert graph["0000000c"]["inherited_implants"] == sorted([NMS, HUE])
+
+
+def test_memory_with_no_attached_ancestor_inherits_no_implants(implant_vault):
+    graph = load_vault(implant_vault, silent=True)
+
+    assert graph["00000000"]["inherited_implants"] == []
+    assert graph["00000000"]["implants"] == []
+
+
+def test_inherited_implants_survive_an_unchanged_reindex(implant_vault):
+    load_vault(implant_vault, silent=True)
+
+    graph = load_vault(implant_vault, silent=True)  # every memory is a cache hit
+
+    assert graph["0000000a"]["implants"] == [NMS]
+    assert graph["0000000e"]["inherited_implants"] == sorted([NMS, HUE])
+
+
+def test_implants_are_not_kept_in_the_open_tail(implant_vault):
+    graph = load_vault(implant_vault, silent=True)
+
+    assert "implants" not in graph["0000000a"]["open_tail"]
+
+
+def test_memories_in_and_below_a_cycle_inherit_the_union_of_their_ancestors(tmp_path, capsys):
+    vault = tmp_path / "cycle_vault"
+    vault.mkdir()
+    _write_memory(vault, "00000000", "Root", [], implants=[NMS])
+    _write_instructions(vault, NMS, "NMS Instructions", "00000000", implant_id="9c0d1e2f")
+    _write_instructions(vault, HUE, "HUE Instructions", "00000000", implant_id="3a4b5c6d")
+    # F and G form a cycle below Root; G attaches HUE; H hangs below the cycle.
+    _write_memory(vault, "0000000f", "Cycle F", ["00000000", "00000010"])
+    _write_memory(vault, "00000010", "Cycle G", ["0000000f"], implants=[HUE])
+    _write_memory(vault, "00000011", "Below Cycle", ["0000000f"])
+
+    graph = load_vault(vault, silent=True)
+
+    assert "Cycle detected" in capsys.readouterr().err
+    assert graph["0000000f"]["inherited_implants"] == sorted([NMS, HUE])
+    assert graph["00000010"]["inherited_implants"] == sorted([NMS, HUE])
+    assert graph["00000011"]["inherited_implants"] == sorted([NMS, HUE])

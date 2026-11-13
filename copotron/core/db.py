@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-INDEX_SCHEMA_VERSION = 1
+INDEX_SCHEMA_VERSION = 2
 DB_FILENAME = ".index.sqlite3"
 
 def get_db_path(vault_dir: Path) -> Path:
@@ -21,6 +21,8 @@ def create_tables(conn: sqlite3.Connection):
         status TEXT NOT NULL,
         persona TEXT,
         inherited_persona TEXT,
+        implants TEXT NOT NULL DEFAULT '[]',
+        inherited_implants TEXT NOT NULL DEFAULT '[]',
         tags_json TEXT NOT NULL,
         open_tail_json TEXT NOT NULL,
         parents_json TEXT NOT NULL DEFAULT '[]',

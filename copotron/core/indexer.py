@@ -46,6 +46,33 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
     _scan(vault_dir)
     return files
 
+def _json_list(text: str | None) -> list:
+    """Decode a JSON array column, treating anything else as empty."""
+    try:
+        value = json.loads(text) if text else []
+    except Exception:
+        return []
+    return value if isinstance(value, list) else []
+
+def _node_from_cached_row(cached: dict) -> dict:
+    """Rebuild a graph node from its index row, for a memory whose frontmatter is unchanged."""
+    return {
+        "id": cached["id"],
+        "file_path": cached["file_path"],
+        "title": cached["title"],
+        "date": cached["date"],
+        "summary": cached["summary"],
+        "type": cached["type"],
+        "status": cached["status"],
+        "parents": _json_list(cached.get("parents_json")),
+        "tags": _json_list(cached.get("tags_json")),
+        "persona": cached["persona"],
+        "implants": _json_list(cached.get("implants")),
+        "children": [],
+        "inherited_persona": cached["inherited_persona"],
+        "inherited_implants": _json_list(cached.get("inherited_implants")),
+    }
+
 def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
     """
     Resolve a node's Inherited Persona: its own persona wins, otherwise the
@@ -57,6 +84,35 @@ def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
         if parent_id in graph and graph[parent_id].get("inherited_persona"):
             return graph[parent_id]["inherited_persona"]
     return None
+
+def _resolve_inherited_implants(node: dict, graph: dict) -> list[str]:
+    """
+    Resolve a node's Inherited Implants once its parents are resolved: the
+    union of its own implants and every parent's (present in graph) Inherited
+    Implants. Unlike persona there is no override, so every ancestor counts.
+    """
+    inherited = set(node.get("implants", []))
+    for parent_id in node.get("parents", []):
+        if parent_id in graph:
+            inherited.update(graph[parent_id].get("inherited_implants", []))
+    return sorted(inherited)
+
+def _union_implants_over_ancestors(node_id: str, graph: dict) -> list[str]:
+    """
+    Inherited Implants for a node in or below a cycle, whose parents never all
+    resolve first: the union over every ancestor reachable through parents in graph.
+    """
+    inherited = set()
+    seen = {node_id}
+    stack = [node_id]
+    while stack:
+        current = graph[stack.pop()]
+        inherited.update(current.get("implants", []))
+        for parent_id in current.get("parents", []):
+            if parent_id in graph and parent_id not in seen:
+                seen.add(parent_id)
+                stack.append(parent_id)
+    return sorted(inherited)
 
 def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     """
@@ -75,7 +131,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     # -------------------------------------------------------------------------
     cur = conn.execute("""
     SELECT id, file_path, title, date, summary, type, status, persona, inherited_persona,
-           tags_json, open_tail_json, parents_json, mtime, hash
+           implants, inherited_implants, tags_json, open_tail_json, parents_json, mtime, hash
     FROM memories;
     """)
     cached_rows = cur.fetchall()
@@ -87,35 +143,13 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     graph = {}
     dirty_nodes = {}
     mtime_updates = []
-    core_keys = {"id", "title", "date", "summary", "type", "status", "parents", "tags", "persona"}
+    core_keys = {"id", "title", "date", "summary", "type", "status", "parents", "tags", "persona", "implants"}
 
     for rel_path, (abs_path, stat_mtime) in disk_files.items():
         if rel_path in db_by_path:
             cached = db_by_path[rel_path]
             if abs(stat_mtime - cached["mtime"]) < 1e-4:
-                try:
-                    parents = json.loads(cached.get("parents_json", "[]"))
-                except Exception:
-                    parents = []
-                try:
-                    tags = json.loads(cached.get("tags_json", "[]"))
-                except Exception:
-                    tags = []
-
-                graph[cached["id"]] = {
-                    "id": cached["id"],
-                    "file_path": cached["file_path"],
-                    "title": cached["title"],
-                    "date": cached["date"],
-                    "summary": cached["summary"],
-                    "type": cached["type"],
-                    "status": cached["status"],
-                    "parents": parents,
-                    "tags": tags,
-                    "persona": cached["persona"],
-                    "children": [],
-                    "inherited_persona": cached["inherited_persona"]
-                }
+                graph[cached["id"]] = _node_from_cached_row(cached)
                 continue
 
             try:
@@ -127,29 +161,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
 
             if fm_hash == cached["hash"]:
                 mtime_updates.append((stat_mtime, cached["id"]))
-                try:
-                    parents = json.loads(cached.get("parents_json", "[]"))
-                except Exception:
-                    parents = []
-                try:
-                    tags = json.loads(cached.get("tags_json", "[]"))
-                except Exception:
-                    tags = []
-
-                graph[cached["id"]] = {
-                    "id": cached["id"],
-                    "file_path": cached["file_path"],
-                    "title": cached["title"],
-                    "date": cached["date"],
-                    "summary": cached["summary"],
-                    "type": cached["type"],
-                    "status": cached["status"],
-                    "parents": parents,
-                    "tags": tags,
-                    "persona": cached["persona"],
-                    "children": [],
-                    "inherited_persona": cached["inherited_persona"]
-                }
+                graph[cached["id"]] = _node_from_cached_row(cached)
                 continue
 
         try:
@@ -174,8 +186,10 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
             "parents": memory.parents,
             "tags": memory.tags,
             "persona": memory.persona,
+            "implants": memory.implants,
             "children": [],
             "inherited_persona": memory.persona,
+            "inherited_implants": [],
             "open_tail": open_tail,
             "mtime": stat_mtime,
             "hash": fm_hash,
@@ -217,6 +231,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         processed_count += 1
         node = graph[u]
         node["inherited_persona"] = _resolve_inherited_persona(node, graph)
+        node["inherited_implants"] = _resolve_inherited_implants(node, graph)
 
         for child_id in node.get("children", []):
             if child_id in in_degree:
@@ -230,19 +245,22 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         for node_id in cyclic_nodes:
             node = graph[node_id]
             node["inherited_persona"] = _resolve_inherited_persona(node, graph)
+            node["inherited_implants"] = _union_implants_over_ancestors(node_id, graph)
 
     # -------------------------------------------------------------------------
     # Phase 3: Atomic Batch Commit (Single SQLite Transaction)
     # -------------------------------------------------------------------------
-    persona_updates = []
+    inheritance_updates = []
     for node_id, node_data in graph.items():
         if node_id not in dirty_nodes and node_id in db_by_id:
-            old_inherited = db_by_id[node_id].get("inherited_persona")
-            new_inherited = node_data.get("inherited_persona")
-            if old_inherited != new_inherited:
-                persona_updates.append((new_inherited, node_id))
+            cached = db_by_id[node_id]
+            new_persona = node_data.get("inherited_persona")
+            new_implants = node_data.get("inherited_implants", [])
+            if (cached.get("inherited_persona") != new_persona
+                    or _json_list(cached.get("inherited_implants")) != new_implants):
+                inheritance_updates.append((new_persona, json.dumps(new_implants), node_id))
 
-    needs_commit = bool(dirty_nodes or deleted_ids or mtime_updates or persona_updates)
+    needs_commit = bool(dirty_nodes or deleted_ids or mtime_updates or inheritance_updates)
 
     if needs_commit:
         with conn:
@@ -259,15 +277,19 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
             for new_mtime, n_id in mtime_updates:
                 conn.execute("UPDATE memories SET mtime = ? WHERE id = ?;", (new_mtime, n_id))
 
-            for new_inherited, n_id in persona_updates:
-                conn.execute("UPDATE memories SET inherited_persona = ? WHERE id = ?;", (new_inherited, n_id))
+            for new_persona, new_implants_json, n_id in inheritance_updates:
+                conn.execute(
+                    "UPDATE memories SET inherited_persona = ?, inherited_implants = ? WHERE id = ?;",
+                    (new_persona, new_implants_json, n_id)
+                )
 
             for node_id, data in dirty_nodes.items():
                 conn.execute("""
                 INSERT INTO memories (
                     id, file_path, title, date, summary, type, status, persona,
-                    inherited_persona, tags_json, open_tail_json, parents_json, mtime, hash
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    inherited_persona, implants, inherited_implants,
+                    tags_json, open_tail_json, parents_json, mtime, hash
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     file_path=excluded.file_path,
                     title=excluded.title,
@@ -277,6 +299,8 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
                     status=excluded.status,
                     persona=excluded.persona,
                     inherited_persona=excluded.inherited_persona,
+                    implants=excluded.implants,
+                    inherited_implants=excluded.inherited_implants,
                     tags_json=excluded.tags_json,
                     open_tail_json=excluded.open_tail_json,
                     parents_json=excluded.parents_json,
@@ -285,6 +309,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
                 """, (
                     data["id"], data["file_path"], data["title"], data["date"], data["summary"],
                     data["type"], data["status"], data["persona"], graph[node_id]["inherited_persona"],
+                    json.dumps(data["implants"]), json.dumps(graph[node_id]["inherited_implants"]),
                     json.dumps(data["tags"]), json.dumps(data["open_tail"]), json.dumps(data["parents"]),
                     data["mtime"], data["hash"]
                 ))
