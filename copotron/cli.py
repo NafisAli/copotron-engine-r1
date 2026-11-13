@@ -8,6 +8,7 @@ from copotron.core.navigate import navigate
 from copotron.system_two.domains import get_domain_hubs, resolve_auto_parent
 from copotron.core.validate import validate_file, validate_vault
 from copotron.core.indexer import load_vault
+from copotron.core.db import StaleIndexError
 from copotron.system_two.crystallize import (
     create_or_update_memory_node,
     crystallize_manifest,
@@ -33,13 +34,21 @@ def _persona_label(record: dict) -> str:
     return f"  · persona: {title} [{reference}]"
 
 
+def _implants_label(record: dict) -> str:
+    """Text-output suffix listing a record's Inherited Implants by id, or nothing when it has none."""
+    implants = record.get("inherited_implants")
+    if not implants:
+        return ""
+    return f"  · implants: {', '.join(implants)}"
+
+
 def _print_memory_list(records: list[dict], empty_message: str) -> None:
     """Print retrieval results as text: one line per memory, summary indented below."""
     if not records:
         print(empty_message)
         return
     for r in records:
-        print(f"  [{r['id']}] ({r['type']}, {r['status']}) {r['title']}{_persona_label(r)}")
+        print(f"  [{r['id']}] ({r['type']}, {r['status']}) {r['title']}{_persona_label(r)}{_implants_label(r)}")
         if r.get("summary"):
             print(f"      {r['summary']}")
 
@@ -122,7 +131,7 @@ def cmd_validate(args) -> int:
 
 
 def cmd_audit(args) -> int:
-    """Audit vault graph health, orphan nodes, Dangling Personas, and task completion drift."""
+    """Audit vault graph health, orphan nodes, Dangling Personas, dangling implant links, and task completion drift."""
     is_json = getattr(args, "json", False)
     report = audit_vault_health(check_semantic=not getattr(args, "syntax_only", False))
     if is_json:
@@ -149,6 +158,13 @@ def cmd_audit(args) -> int:
                 print(f"      [{d['id']}] {d['title']} -> persona {d['persona']!r} ({d['problem']})")
         else:
             print("  ✅ Dangling Personas: None")
+
+        if report['dangling_implant_links']:
+            print(f"  ❌ Dangling Implant Links: {len(report['dangling_implant_links'])}")
+            for d in report['dangling_implant_links']:
+                print(f"      [{d['id']}] {d['title']} -> implant {d['implant']!r} ({d['problem']})")
+        else:
+            print("  ✅ Dangling Implant Links: None")
 
         if report['completion_drift']:
             print(f"  📌 Task Completion Drift: {len(report['completion_drift'])}")
@@ -369,7 +385,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    ret = args.func(args)
+    try:
+        ret = args.func(args)
+    except StaleIndexError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
     return ret if ret is not None else 0
 
 

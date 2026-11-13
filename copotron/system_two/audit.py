@@ -5,6 +5,7 @@ from copotron.core.vault import get_vault_path
 from copotron.core.schema import parse_frontmatter_and_body
 from copotron.core.indexer import scan_vault_files
 from copotron.core.personas import diagnose_persona_reference
+from copotron.core.implants import diagnose_implant_reference, is_implant_instructions
 from copotron.system_one.judgments.classification import infer_task_completed
 
 def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = True) -> Dict[str, Any]:
@@ -15,6 +16,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     3. Prospective completion drift (tasks marked active that appear done)
     4. Truncated slugs
     5. Dangling Personas (persona does not identify a Persona Definition)
+    6. Dangling implant links (an implants entry does not identify Implant Instructions)
     """
     if vault_dir is None:
         vault_dir = get_vault_path(require_root=True)
@@ -22,12 +24,15 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     disk_files = scan_vault_files(vault_dir)
 
     all_ids = set()
+    instructions_ids = set()
     node_records = []
 
     for rel_path, (abs_path, _) in disk_files.items():
         try:
             mem, body = parse_frontmatter_and_body(abs_path)
             all_ids.add(mem.id)
+            if is_implant_instructions(mem.type, mem.model_extra or {}):
+                instructions_ids.add(mem.id)
             node_records.append({
                 "id": mem.id,
                 "file_path": rel_path,
@@ -36,6 +41,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                 "status": mem.status,
                 "parents": mem.parents,
                 "persona": mem.persona,
+                "implants": mem.implants,
                 "body": body,
             })
         except Exception:
@@ -46,6 +52,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     completion_drift = []
     truncated_slugs = []
     dangling_personas = []
+    dangling_implant_links = []
 
     for rec in node_records:
         n_id = rec["id"]
@@ -76,6 +83,17 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                     "problem": problem,
                 })
 
+        # 6. Dangling implant link check (an implants entry does not identify Implant Instructions)
+        for reference in rec["implants"]:
+            problem = diagnose_implant_reference(reference, all_ids, instructions_ids)
+            if problem is not None:
+                dangling_implant_links.append({
+                    "id": n_id,
+                    "title": rec["title"],
+                    "implant": reference,
+                    "problem": problem,
+                })
+
         # 3. Truncated slug check (trailing hyphen or short chop)
         fname = Path(rec["file_path"]).stem
         slug_part = fname[9:] if len(fname) > 9 else ""
@@ -102,5 +120,8 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
         "truncated_slugs": truncated_slugs,
         "completion_drift": completion_drift,
         "dangling_personas": dangling_personas,
-        "healthy": not (broken_parents or orphan_nodes or completion_drift or dangling_personas)
+        "dangling_implant_links": dangling_implant_links,
+        "healthy": not (
+            broken_parents or orphan_nodes or completion_drift or dangling_personas or dangling_implant_links
+        )
     }

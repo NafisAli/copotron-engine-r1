@@ -776,3 +776,39 @@ def test_indexing_accepts_dangling_persona_name(tmp_path):
     with get_readonly_db(get_db_path(vault)) as conn:
         row = conn.execute("SELECT persona FROM memories WHERE id = '0000000a';").fetchone()
     assert row["persona"] == "aegis-null"
+
+@pytest.mark.parametrize(
+    "argv",
+    [
+        ["search", "Note", "--json"],
+        ["navigate", "00000000", "--direction", "down", "--json"],
+        ["domains", "--json"],
+    ],
+)
+def test_retrieval_rebuilds_an_index_built_for_another_schema_version(tmp_path, monkeypatch, capsys, argv):
+    """
+    An index another engine version left behind may lack columns this one
+    reads. Retrieval rebuilds it, as copotron index would, and keeps the
+    rebuild's messages off stdout.
+    """
+    from copotron.cli import main
+
+    vault = tmp_path / "stale_vault"
+    vault.mkdir()
+    monkeypatch.setenv("VAULT_PATH", str(vault))
+    _create_test_note(vault, "00000000", "Root", parents=[])
+    _create_test_note(vault, "0000000a", "Note A", parents=["00000000"])
+    _create_test_note(vault, "0000000b", "Note B", parents=["deadbeef"])  # the indexer warns about it
+    load_vault(vault, silent=True)
+    conn = init_db(get_db_path(vault))
+    conn.execute(f"PRAGMA user_version = {INDEX_SCHEMA_VERSION - 1};")
+    conn.commit()
+    conn.close()
+    capsys.readouterr()
+
+    assert main(argv) == 0
+
+    captured = capsys.readouterr()
+    json.loads(captured.out)  # stdout holds only the result
+    assert "Parent 'deadbeef' not found" in captured.err
+    get_readonly_db(get_db_path(vault)).close()  # the index is current again

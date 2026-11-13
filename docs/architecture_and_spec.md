@@ -30,6 +30,7 @@ The brain is modeled as a Directed Acyclic Graph (DAG) of "Memories". The schema
 * **`parents`** (List[str]): List of parent 8-character node IDs.
 * **`tags`** (List[str]): Semantic tags for taxonomy and filtering.
 * **`persona`** (Optional[str]): 8-character id of a Persona Definition, attached to roots or branch overrides. Write paths reject any other value; indexing accepts any string, so a Dangling Persona still indexes.
+* **`implants`** (List[str]): Ids of the Implant Instructions this memory attaches (see §7). Omitted from frontmatter when empty. The schema requires a list and coerces its entries like `parents`, so an entry that is not an id never fails the memory: it indexes as a dangling implant link, which the audit reports.
 
 ### Open Tail:
 Additional arbitrary metadata keys may be included for semantic flexibility and must be preserved during migrations and re-indexing.
@@ -49,15 +50,26 @@ Personas dictate AI tone, domain instructions, and behavior:
 
 ## 6. Progressive Disclosure Search & Navigation
 To protect LLM context windows and prevent lost-in-the-middle degradation:
-* **`search.py` (FTS5 & Metadata Search):** Returns matching nodes, BM25 ranking, and `inherited_persona` via SQLite FTS5 without surrounding tree bloat.
-* **`navigate.py` (Indexed DAG Traversal):** Sub-millisecond indexed edge lookup stepping `up` (to parents) or `down` (to children) on demand when contextual depth is needed.
+* **`search.py` (FTS5 & Metadata Search):** Returns matching nodes, BM25 ranking, `inherited_persona` and `inherited_implants` via SQLite FTS5 without surrounding tree bloat.
+* **`navigate.py` (Indexed DAG Traversal):** Sub-millisecond indexed edge lookup stepping `up` (to parents) or `down` (to children) on demand when contextual depth is needed. Its results also carry `inherited_persona` and `inherited_implants`.
 
-## 7. Modular Agent Skills (`.agents/skills/`)
-Agent capabilities are organized into focused skills within the engine:
-* **`vault-query`**: Governs index searching (`search.py`) and hierarchy traversal (`navigate.py`), with directives to adopt inherited personas.
-* **`vault-editor`**: Governs direct markdown authoring and editing in the vault, enforced by validation (`validate.py`).
-* **`vault-admin`**: Governs graph re-indexing (`indexer.py`).
-* **`vault-setup`**: Handles initialization of new vaults and root node bootstrapping (`setup.py`).
+## 7. Implants (`implants/<name>/`)
+An **Implant** couples the brain to an external world: it senses that world, acts on it, or both, and carries its own operating instructions. Implants are maintained alongside the engine, never inside a vault (see ADR 0003 in the control plane).
+* **Source:** Each Implant lives in the engine repo under a top-level `implants/<name>/`, outside the `copotron/` package, and is covered by the same `pytest` run. The layout is a convention with no manifest file:
+  * `<name>.py` is the entry point, with its dependencies declared inline (PEP 723). It runs as a separate process through `uv run`. Arguments pass straight through and output goes to stdout.
+  * `instructions.md` is the template for the Implant Instructions. Its frontmatter supplies `title`, `summary` and `tags`, plus the Implant's permanent `implant_id` (8 lower-case hex characters, generated once and never changed).
+* **Insertion:** A vault gets an Implant by Insertion. `instructions.md` is copied into the vault as a new `procedural` memory, the **Implant Instructions**, with a fresh memory id and the `implant_id` in its Open Tail. It is parented under a memory the user chooses, and that memory's `implants` field gains the new memory id. A vault holds one Implant Instructions memory per Implant. Implant code is never copied into a vault.
+* **Attachment:** A memory attaches Implants through its `implants` Core Field: a list of Implant Instructions memory ids, never names, so renaming an Implant never breaks a link. The `implant_id` names the Implant itself and never goes in an `implants` field. Attaching the Implant somewhere else later only adds the id to that memory's `implants`. It creates no parent edge and no second copy.
+* **Inherited Implants:** `indexer.py` resolves Inherited Implants as the union of every Implant attached to a memory or to any of its ancestors. Unlike persona there is no nearest override and no opt-out. A memory in or below a cycle takes the union over every ancestor it can reach. The index stores `implants` and `inherited_implants` beside `persona` and `inherited_persona`.
+* **Dangling implant links:** `copotron.core.implants` decides what counts as Implant Instructions: a `procedural` memory with an `implant_id` in its Open Tail. An `implants` entry that identifies none is a dangling implant link. The indexer leaves it out of Inherited Implants and keeps the field as written. `copotron audit` reports it under `dangling_implant_links` with a problem code (`not_an_id`, `unknown_id` or `not_implant_instructions`). Reads stay lenient, so a dangling link is never fatal.
+* **Agent use:** `navigate` and `search` return `inherited_implants` next to `inherited_persona`. For each Implant, its Implant Instructions memory is the only instruction surface an agent gets: there is no SKILL.md and no MCP tool manifest.
+* **Lifecycle (planned `copotron implant` commands):**
+  * `insert <name> --attach <memory-id>` performs Insertion. Re-insertion updates the existing memory through the Section Splicer, so sections the user added survive.
+  * `run <name> …` starts the entry point. It refuses unless some memory in the vault carries a matching `implant_id`.
+  * `detach` performs **Detachment**: it removes the id from one memory. If that memory was the Implant Instructions' parent, they move under the oldest remaining attachment, so they never become an Orphan. Detaching the last attachment is an Implant Removal.
+  * `remove` performs **Implant Removal**: it deletes the Implant Instructions and strips their id from every memory.
+
+The skills under `.agents/skills/` (`vault-query`, `vault-editor`, `vault-crystallize`, `vault-admin`, `vault-setup`) are not Implants. They are the engine's own agent guidance for driving `copotron` against the vault, and they couple the brain to no external world.
 
 ## 8. Dual-Process Cognitive Architecture (`copotron.system_one` & `copotron.system_two`)
 The engine is structured into three cognitive tiers mirroring human dual-process theory:

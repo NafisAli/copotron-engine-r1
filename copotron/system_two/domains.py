@@ -3,7 +3,8 @@ from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.db import get_db_path
+from copotron.core.indexer import open_index
 from copotron.core.personas import attach_inherited_persona_titles
 
 
@@ -19,7 +20,7 @@ def get_domain_hubs(vault_dir: Optional[Path] = None) -> List[Dict[str, Any]]:
     if not db_path.exists():
         return []
 
-    conn = get_readonly_db(db_path)
+    conn = open_index(vault_dir)
     sql = """
     SELECT m.id, m.file_path, m.title, m.summary, m.type, m.status, m.tags_json, m.inherited_persona
     FROM memories m

@@ -3,11 +3,14 @@ import sys
 import json
 import time
 import heapq
+import sqlite3
 import hashlib
+import contextlib
 from pathlib import Path
 from copotron.core.schema import parse_frontmatter_and_body, _read_frontmatter_stream
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, init_db
+from copotron.core.db import StaleIndexError, get_db_path, get_readonly_db, init_db
+from copotron.core.implants import attached_implants, is_implant_instructions
 
 def compute_frontmatter_hash(frontmatter_text: str) -> str:
     """Normalize line endings to LF and return SHA-256 hex digest."""
@@ -46,6 +49,42 @@ def scan_vault_files(vault_dir: Path) -> dict[str, tuple[Path, float]]:
     _scan(vault_dir)
     return files
 
+def _json_list(text: str | None) -> list:
+    """Decode a JSON array column, treating anything else as empty."""
+    try:
+        value = json.loads(text) if text else []
+    except Exception:
+        return []
+    return value if isinstance(value, list) else []
+
+def _json_dict(text: str | None) -> dict:
+    """Decode a JSON object column, treating anything else as empty."""
+    try:
+        value = json.loads(text) if text else {}
+    except Exception:
+        return {}
+    return value if isinstance(value, dict) else {}
+
+def _node_from_cached_row(cached: dict) -> dict:
+    """Rebuild a graph node from its index row, for a memory whose frontmatter is unchanged."""
+    return {
+        "id": cached["id"],
+        "file_path": cached["file_path"],
+        "title": cached["title"],
+        "date": cached["date"],
+        "summary": cached["summary"],
+        "type": cached["type"],
+        "status": cached["status"],
+        "parents": _json_list(cached.get("parents_json")),
+        "tags": _json_list(cached.get("tags_json")),
+        "persona": cached["persona"],
+        "implants": _json_list(cached.get("implants")),
+        "children": [],
+        "inherited_persona": cached["inherited_persona"],
+        "inherited_implants": _json_list(cached.get("inherited_implants")),
+        "open_tail": _json_dict(cached.get("open_tail_json")),
+    }
+
 def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
     """
     Resolve a node's Inherited Persona: its own persona wins, otherwise the
@@ -57,6 +96,36 @@ def _resolve_inherited_persona(node: dict, graph: dict) -> str | None:
         if parent_id in graph and graph[parent_id].get("inherited_persona"):
             return graph[parent_id]["inherited_persona"]
     return None
+
+def _resolve_inherited_implants(node: dict, graph: dict, instructions_ids: set[str]) -> list[str]:
+    """
+    Resolve a node's Inherited Implants once its parents are resolved: the
+    union of its own attached implants and every parent's (present in graph)
+    Inherited Implants. Unlike persona there is no override, so every ancestor
+    counts. Dangling implant links (not in instructions_ids) are left out.
+    """
+    inherited = set(attached_implants(node.get("implants", []), instructions_ids))
+    for parent_id in node.get("parents", []):
+        if parent_id in graph:
+            inherited.update(graph[parent_id].get("inherited_implants", []))
+    return sorted(inherited)
+
+def _union_implants_over_ancestors(node_id: str, graph: dict, instructions_ids: set[str]) -> list[str]:
+    """
+    Inherited Implants for a node in or below a cycle, whose parents never all
+    resolve first: the union over every ancestor reachable through parents in graph.
+    """
+    inherited = set()
+    seen = {node_id}
+    stack = [node_id]
+    while stack:
+        current = graph[stack.pop()]
+        inherited.update(attached_implants(current.get("implants", []), instructions_ids))
+        for parent_id in current.get("parents", []):
+            if parent_id in graph and parent_id not in seen:
+                seen.add(parent_id)
+                stack.append(parent_id)
+    return sorted(inherited)
 
 def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     """
@@ -75,7 +144,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     # -------------------------------------------------------------------------
     cur = conn.execute("""
     SELECT id, file_path, title, date, summary, type, status, persona, inherited_persona,
-           tags_json, open_tail_json, parents_json, mtime, hash
+           implants, inherited_implants, tags_json, open_tail_json, parents_json, mtime, hash
     FROM memories;
     """)
     cached_rows = cur.fetchall()
@@ -87,35 +156,13 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
     graph = {}
     dirty_nodes = {}
     mtime_updates = []
-    core_keys = {"id", "title", "date", "summary", "type", "status", "parents", "tags", "persona"}
+    core_keys = {"id", "title", "date", "summary", "type", "status", "parents", "tags", "persona", "implants"}
 
     for rel_path, (abs_path, stat_mtime) in disk_files.items():
         if rel_path in db_by_path:
             cached = db_by_path[rel_path]
             if abs(stat_mtime - cached["mtime"]) < 1e-4:
-                try:
-                    parents = json.loads(cached.get("parents_json", "[]"))
-                except Exception:
-                    parents = []
-                try:
-                    tags = json.loads(cached.get("tags_json", "[]"))
-                except Exception:
-                    tags = []
-
-                graph[cached["id"]] = {
-                    "id": cached["id"],
-                    "file_path": cached["file_path"],
-                    "title": cached["title"],
-                    "date": cached["date"],
-                    "summary": cached["summary"],
-                    "type": cached["type"],
-                    "status": cached["status"],
-                    "parents": parents,
-                    "tags": tags,
-                    "persona": cached["persona"],
-                    "children": [],
-                    "inherited_persona": cached["inherited_persona"]
-                }
+                graph[cached["id"]] = _node_from_cached_row(cached)
                 continue
 
             try:
@@ -127,29 +174,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
 
             if fm_hash == cached["hash"]:
                 mtime_updates.append((stat_mtime, cached["id"]))
-                try:
-                    parents = json.loads(cached.get("parents_json", "[]"))
-                except Exception:
-                    parents = []
-                try:
-                    tags = json.loads(cached.get("tags_json", "[]"))
-                except Exception:
-                    tags = []
-
-                graph[cached["id"]] = {
-                    "id": cached["id"],
-                    "file_path": cached["file_path"],
-                    "title": cached["title"],
-                    "date": cached["date"],
-                    "summary": cached["summary"],
-                    "type": cached["type"],
-                    "status": cached["status"],
-                    "parents": parents,
-                    "tags": tags,
-                    "persona": cached["persona"],
-                    "children": [],
-                    "inherited_persona": cached["inherited_persona"]
-                }
+                graph[cached["id"]] = _node_from_cached_row(cached)
                 continue
 
         try:
@@ -174,8 +199,10 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
             "parents": memory.parents,
             "tags": memory.tags,
             "persona": memory.persona,
+            "implants": memory.implants,
             "children": [],
             "inherited_persona": memory.persona,
+            "inherited_implants": [],
             "open_tail": open_tail,
             "mtime": stat_mtime,
             "hash": fm_hash,
@@ -208,6 +235,11 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         for node_id, node_data in graph.items()
     }
 
+    instructions_ids = {
+        node_id for node_id, node_data in graph.items()
+        if is_implant_instructions(node_data["type"], node_data["open_tail"])
+    }
+
     queue = [node_id for node_id, deg in in_degree.items() if deg == 0]
     heapq.heapify(queue)
     processed_count = 0
@@ -217,6 +249,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         processed_count += 1
         node = graph[u]
         node["inherited_persona"] = _resolve_inherited_persona(node, graph)
+        node["inherited_implants"] = _resolve_inherited_implants(node, graph, instructions_ids)
 
         for child_id in node.get("children", []):
             if child_id in in_degree:
@@ -230,19 +263,22 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         for node_id in cyclic_nodes:
             node = graph[node_id]
             node["inherited_persona"] = _resolve_inherited_persona(node, graph)
+            node["inherited_implants"] = _union_implants_over_ancestors(node_id, graph, instructions_ids)
 
     # -------------------------------------------------------------------------
     # Phase 3: Atomic Batch Commit (Single SQLite Transaction)
     # -------------------------------------------------------------------------
-    persona_updates = []
+    inheritance_updates = []
     for node_id, node_data in graph.items():
         if node_id not in dirty_nodes and node_id in db_by_id:
-            old_inherited = db_by_id[node_id].get("inherited_persona")
-            new_inherited = node_data.get("inherited_persona")
-            if old_inherited != new_inherited:
-                persona_updates.append((new_inherited, node_id))
+            cached = db_by_id[node_id]
+            new_persona = node_data.get("inherited_persona")
+            new_implants = node_data.get("inherited_implants", [])
+            if (cached.get("inherited_persona") != new_persona
+                    or _json_list(cached.get("inherited_implants")) != new_implants):
+                inheritance_updates.append((new_persona, json.dumps(new_implants), node_id))
 
-    needs_commit = bool(dirty_nodes or deleted_ids or mtime_updates or persona_updates)
+    needs_commit = bool(dirty_nodes or deleted_ids or mtime_updates or inheritance_updates)
 
     if needs_commit:
         with conn:
@@ -259,15 +295,19 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
             for new_mtime, n_id in mtime_updates:
                 conn.execute("UPDATE memories SET mtime = ? WHERE id = ?;", (new_mtime, n_id))
 
-            for new_inherited, n_id in persona_updates:
-                conn.execute("UPDATE memories SET inherited_persona = ? WHERE id = ?;", (new_inherited, n_id))
+            for new_persona, new_implants_json, n_id in inheritance_updates:
+                conn.execute(
+                    "UPDATE memories SET inherited_persona = ?, inherited_implants = ? WHERE id = ?;",
+                    (new_persona, new_implants_json, n_id)
+                )
 
             for node_id, data in dirty_nodes.items():
                 conn.execute("""
                 INSERT INTO memories (
                     id, file_path, title, date, summary, type, status, persona,
-                    inherited_persona, tags_json, open_tail_json, parents_json, mtime, hash
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    inherited_persona, implants, inherited_implants,
+                    tags_json, open_tail_json, parents_json, mtime, hash
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(id) DO UPDATE SET
                     file_path=excluded.file_path,
                     title=excluded.title,
@@ -277,6 +317,8 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
                     status=excluded.status,
                     persona=excluded.persona,
                     inherited_persona=excluded.inherited_persona,
+                    implants=excluded.implants,
+                    inherited_implants=excluded.inherited_implants,
                     tags_json=excluded.tags_json,
                     open_tail_json=excluded.open_tail_json,
                     parents_json=excluded.parents_json,
@@ -285,6 +327,7 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
                 """, (
                     data["id"], data["file_path"], data["title"], data["date"], data["summary"],
                     data["type"], data["status"], data["persona"], graph[node_id]["inherited_persona"],
+                    json.dumps(data["implants"]), json.dumps(graph[node_id]["inherited_implants"]),
                     json.dumps(data["tags"]), json.dumps(data["open_tail"]), json.dumps(data["parents"]),
                     data["mtime"], data["hash"]
                 ))
@@ -307,6 +350,22 @@ def load_vault(vault_dir: Path | None = None, silent: bool = False) -> dict:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         print(f"Indexed {len(graph)} memories ({len(dirty_nodes)} updated/added, {len(deleted_ids)} deleted) in {elapsed_ms:.1f}ms to {db_path}")
     return graph
+
+def open_index(vault_dir: Path) -> sqlite3.Connection:
+    """
+    Open the vault's index for reading. An index built for another
+    INDEX_SCHEMA_VERSION may lack columns this engine reads, so it is rebuilt
+    first, as `copotron index` would, with the rebuild's messages on stderr
+    to keep them out of retrieval output. Raises FileNotFoundError when there
+    is no index.
+    """
+    db_path = get_db_path(vault_dir)
+    try:
+        return get_readonly_db(db_path)
+    except StaleIndexError:
+        with contextlib.redirect_stdout(sys.stderr):
+            load_vault(vault_dir, silent=True)
+        return get_readonly_db(db_path)
 
 if __name__ == "__main__":
     load_vault()

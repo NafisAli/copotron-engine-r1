@@ -28,6 +28,10 @@ class MemorySchema(BaseModel):
     parents: List[str] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
     persona: Optional[str] = None
+    # Ids of the Implant Instructions this memory attaches (ADR 0003). Reads
+    # stay lenient: the audit reports a reference that identifies no Implant
+    # Instructions, and the indexer leaves it out of Inherited Implants.
+    implants: List[str] = Field(default_factory=list)
 
     @field_validator("id", mode="before")
     @classmethod
@@ -80,6 +84,25 @@ class MemorySchema(BaseModel):
             return None
         s = str(v).strip()
         return s if s else None
+
+    @field_validator("implants", mode="before")
+    @classmethod
+    def coerce_implants(cls, v: Any) -> List[str]:
+        if v is None:
+            return []
+        if isinstance(v, (str, int)) and not isinstance(v, bool):
+            v = [v]
+        if not isinstance(v, list):
+            raise ValueError("implants must be a list of memory ids.")
+        # Entries coerce like parents and never fail the memory (ADR 0003): one
+        # that is not an id still indexes, and the audit reports it.
+        coerced = []
+        for item in v:
+            if isinstance(item, int) and not isinstance(item, bool):
+                coerced.append(f"{item:08d}")
+            else:
+                coerced.append(str(item).strip())
+        return coerced
 
 def _read_frontmatter_stream(f, file_path: str | Path) -> list[str]:
     found_start = False
@@ -136,7 +159,11 @@ def parse_frontmatter_and_body(file_path: str | Path) -> tuple[MemorySchema, str
     return MemorySchema(**data), body
 
 def dump_frontmatter(memory: MemorySchema, body: str) -> str:
-    yaml_content = yaml.dump(memory.model_dump(exclude_none=True), sort_keys=False)
+    data = memory.model_dump(exclude_none=True)
+    # A memory with no attachments carries no implants key.
+    if not data.get("implants"):
+        data.pop("implants", None)
+    yaml_content = yaml.dump(data, sort_keys=False)
     clean_body = body.lstrip("\r\n")
     if clean_body:
         return f"---\n{yaml_content}---\n\n{clean_body}"

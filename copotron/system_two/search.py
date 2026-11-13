@@ -4,7 +4,8 @@ import json
 import argparse
 from pathlib import Path
 from copotron.core.vault import get_vault_path
-from copotron.core.db import get_db_path, get_readonly_db
+from copotron.core.db import get_db_path
+from copotron.core.indexer import open_index
 from copotron.core.personas import attach_inherited_persona_titles
 from copotron.system_one.judgments.rerank import rerank_candidates
 from copotron.system_one.judgments.intent import parse_search_intent
@@ -49,7 +50,7 @@ def search_graph(
         if not effective_status and intent.get("status_filter"):
             effective_status = intent["status_filter"]
 
-    conn = get_readonly_db(db_path)
+    conn = open_index(vault_dir)
     sql_limit = (limit * 2) if rerank and limit > 0 else (limit if limit > 0 else -1)
 
     tokens = re.findall(r'[\w]+', effective_query) if effective_query else []
@@ -59,7 +60,7 @@ def search_graph(
     if id_tokens:
         placeholders = ",".join("?" for _ in id_tokens)
         sql_id = f"""
-        SELECT id, file_path, title, type, status, summary, inherited_persona
+        SELECT id, file_path, title, type, status, summary, inherited_persona, inherited_implants
         FROM memories
         WHERE lower(id) IN ({placeholders})
           AND (? IS NULL OR lower(type) = lower(?))
@@ -76,7 +77,7 @@ def search_graph(
 
     if fts_match:
         sql = """
-        SELECT m.id, m.file_path, m.title, m.type, m.status, m.summary, m.inherited_persona
+        SELECT m.id, m.file_path, m.title, m.type, m.status, m.summary, m.inherited_persona, m.inherited_implants
         FROM memories_fts f
         JOIN memories m ON f.id = m.id
         WHERE memories_fts MATCH ?
@@ -97,7 +98,7 @@ def search_graph(
             fts_rows = cur.fetchall()
     elif not id_tokens:
         sql = """
-        SELECT id, file_path, title, type, status, summary, inherited_persona
+        SELECT id, file_path, title, type, status, summary, inherited_persona, inherited_implants
         FROM memories
         WHERE (? IS NULL OR lower(type) = lower(?))
           AND (? IS NULL OR lower(status) = lower(?))
@@ -129,7 +130,8 @@ def search_graph(
             "type": row["type"],
             "status": row["status"],
             "summary": row["summary"],
-            "inherited_persona": row["inherited_persona"]
+            "inherited_persona": row["inherited_persona"],
+            "inherited_implants": json.loads(row["inherited_implants"]),
         })
 
     conn.close()
