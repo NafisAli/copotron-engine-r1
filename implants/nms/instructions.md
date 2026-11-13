@@ -26,7 +26,7 @@ The nine commands are `status`, `inventory`, `bases`, `find`, `route`, `system`,
 - **stderr** holds errors, each an `nms: …` line.
 - **Exit codes**: `0` ok; `1` a Requisition Check (`inventory --have`) is short, which is an answer, not a failure; `2` an error or bad usage. On `2`, read the stderr line: an ambiguous name lists its candidates, so re-run with a fuller name or the Portal Glyphs.
 - **`schema`**: every `--json` document names its shape as `nms.<command>/1` (`nms.status/1`, `nms.inventory/1`, … `nms.watch/1`). Check it before reading fields. The dev-only `bench` command has neither `schema` nor `notes`.
-- **`notes`**: every `--json` document carries a `notes` array, `[]` when there is nothing to say. In text, each note is a final `Note      …` line (in `watch` text, a final `| Note: …` segment). Notes are advice about the tool; faults in the Save are `warnings` (`status`). Relay a note's content where it bears on the answer: the Personal Refiner note, or the `≈` same-Region estimate.
+- **`notes`**: every `--json` document carries a `notes` array, `[]` when there is nothing to say. In text, each note is a final `Note      …` line (in `watch` text, a final `| Note: …` segment). Notes are advice about the Implant; faults in the Save are `warnings` (`status`). Relay a note's content where it bears on the answer: the Personal Refiner note, or the `≈` same-Region estimate.
 - **Stale Game Data Snapshot**: a note starting `Game data built for save version …` means the Save is newer than the bundled Item Catalog and key mapping. Then:
   1. Answer the question normally.
   2. Tell the player once per session that the game data is older than the Save, so some items may show raw ids and some fields may be missing.
