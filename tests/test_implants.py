@@ -14,7 +14,8 @@ from copotron.core.navigate import navigate
 from copotron.core.schema import MemorySchema, dump_frontmatter, parse_frontmatter
 from copotron.core.validate import validate_file
 from copotron.system_two.audit import audit_vault_health
-from copotron.system_two.crystallize import update_memory_node
+from copotron.core.vault import find_memory_file
+from copotron.system_two.crystallize import create_memory_node, crystallize_manifest, update_memory_node
 from copotron.system_two.search import search_graph
 
 
@@ -352,3 +353,64 @@ def test_malformed_implants_entry_is_a_dangling_link_not_a_parse_failure(implant
     assert report["dangling_implant_links"] == [
         {"id": "0000000c", "title": "Campaign", "implant": entry, "problem": "not_an_id"}
     ]
+
+
+# ---------------------------------------------------------
+# Implant Instructions have no children
+# ---------------------------------------------------------
+
+def test_write_refuses_implant_instructions_as_a_parent(implant_vault):
+    before = sorted(p.name for p in implant_vault.glob("*.md"))
+
+    with pytest.raises(ValueError, match=f"{NMS}.*Implant Instructions"):
+        create_memory_node(implant_vault, "Session Notes", "episodic", parents=["0000000a", NMS])
+
+    assert sorted(p.name for p in implant_vault.glob("*.md")) == before
+
+
+def test_update_refuses_to_move_a_memory_beneath_implant_instructions(implant_vault):
+    campaign = find_memory_file(implant_vault, "0000000c")
+
+    with pytest.raises(ValueError, match=NMS):
+        update_memory_node(implant_vault, campaign, parents=[NMS])
+
+    assert parse_frontmatter(campaign).parents == ["0000000a"]
+
+
+def test_manifest_refuses_implant_instructions_as_a_parent(implant_vault):
+    before = sorted(p.name for p in implant_vault.glob("*.md"))
+    manifest = [
+        {"temp_ref": "notes", "title": "Session Notes", "type": "episodic", "parents": ["0000000a"]},
+        {"title": "Loot Log", "type": "episodic", "parents": ["$notes", NMS]},
+    ]
+
+    with pytest.raises(ValueError, match=NMS):
+        crystallize_manifest(implant_vault, manifest, auto_index=False)
+
+    assert sorted(p.name for p in implant_vault.glob("*.md")) == before
+
+
+def test_audit_reports_children_of_implant_instructions(implant_vault):
+    _write_memory(implant_vault, "0000000f", "Loot Log", ["0000000c", NMS])  # a hand edit
+
+    report = audit_vault_health(vault_dir=implant_vault, check_semantic=False)
+
+    assert report["children_of_implant_instructions"] == [
+        {"id": "0000000f", "title": "Loot Log", "instructions": NMS}
+    ]
+    assert report["healthy"] is False
+
+
+def test_audit_finds_no_children_of_implant_instructions_in_a_sound_vault(implant_vault):
+    report = audit_vault_health(vault_dir=implant_vault, check_semantic=False)
+
+    assert report["children_of_implant_instructions"] == []
+    assert report["healthy"] is True
+
+
+def test_audit_text_output_names_children_of_implant_instructions(implant_vault, capsys):
+    _write_memory(implant_vault, "0000000f", "Loot Log", ["0000000c", NMS])
+
+    main(["audit", "--syntax-only"])
+
+    assert f"[0000000f] Loot Log -> beneath Implant Instructions {NMS}" in capsys.readouterr().out

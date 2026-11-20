@@ -17,6 +17,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     4. Truncated slugs
     5. Dangling Personas (persona does not identify a Persona Definition)
     6. Dangling implant links (an implants entry does not identify Implant Instructions)
+    7. Children of Implant Instructions (which never have children)
     """
     if vault_dir is None:
         vault_dir = get_vault_path(require_root=True)
@@ -53,6 +54,7 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
     truncated_slugs = []
     dangling_personas = []
     dangling_implant_links = []
+    children_of_implant_instructions = []
 
     for rec in node_records:
         n_id = rec["id"]
@@ -94,6 +96,15 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
                     "problem": problem,
                 })
 
+        # 7. Children of Implant Instructions (left by hand edits; write paths refuse them)
+        for p in rec["parents"]:
+            if p in instructions_ids:
+                children_of_implant_instructions.append({
+                    "id": n_id,
+                    "title": rec["title"],
+                    "instructions": p,
+                })
+
         # 3. Truncated slug check (trailing hyphen or short chop)
         fname = Path(rec["file_path"]).stem
         slug_part = fname[9:] if len(fname) > 9 else ""
@@ -121,7 +132,9 @@ def audit_vault_health(vault_dir: Optional[Path] = None, check_semantic: bool = 
         "completion_drift": completion_drift,
         "dangling_personas": dangling_personas,
         "dangling_implant_links": dangling_implant_links,
+        "children_of_implant_instructions": children_of_implant_instructions,
         "healthy": not (
             broken_parents or orphan_nodes or completion_drift or dangling_personas or dangling_implant_links
+            or children_of_implant_instructions
         )
     }
