@@ -16,6 +16,7 @@ from copotron.system_two.crystallize import (
 )
 from copotron.system_two.audit import audit_vault_health
 from copotron.core.setup import setup_vault
+from copotron.system_two.insertion import engine_implants_dir, insert_implant
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -187,6 +188,22 @@ def cmd_index(args) -> int:
     graph = load_vault(silent=is_json)
     if is_json:
         print(json.dumps({"indexed": True, "count": len(graph)}))
+    return 0
+
+
+def cmd_implant_insert(args) -> int:
+    """Insert an Implant: copy its instructions into the vault and attach them beneath a memory."""
+    from copotron.core.vault import get_vault_path
+    vault_dir = get_vault_path(require_root=True)
+    try:
+        result = insert_implant(vault_dir, engine_implants_dir(), args.name, attach=args.attach)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"✅ Inserted {args.name}: Implant Instructions [{result['id']}] attached beneath [{args.attach}]")
     return 0
 
 
@@ -378,6 +395,18 @@ def build_parser() -> argparse.ArgumentParser:
     p_setup.add_argument("--init", type=str, help="Initialize a brand new vault in the specified directory")
     p_setup.add_argument("--link", type=str, help="Link an existing vault directory in .env")
     p_setup.set_defaults(func=cmd_setup)
+
+    # 9. implant
+    p_implant = subparsers.add_parser("implant", help="Insert Implants into the vault")
+    implant_commands = p_implant.add_subparsers(dest="implant_command", required=True)
+    p_insert = implant_commands.add_parser(
+        "insert",
+        help="Copy an Implant's instructions into the vault as its Implant Instructions and attach them beneath a memory",
+    )
+    p_insert.add_argument("name", help="Implant name: a folder under the engine's implants/")
+    p_insert.add_argument("--attach", required=True, help="8-character id of the memory to attach the Implant beneath")
+    p_insert.add_argument("--json", action="store_true", help="Output the created Implant Instructions as JSON")
+    p_insert.set_defaults(func=cmd_implant_insert)
 
     return parser
 
