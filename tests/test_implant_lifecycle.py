@@ -1,7 +1,6 @@
 """
-The Implant lifecycle: `copotron implant insert <name> --attach <memory-id>` copies an
-Implant's instructions.md into the vault as its Implant Instructions and
-attaches them beneath a memory of the user's choosing (spec §7).
+The Implant lifecycle (spec §7): `copotron implant insert` (and re-insertion),
+`run`, `remove` and `detach`.
 """
 
 import json
@@ -131,14 +130,195 @@ def _snapshot(vault_dir: Path) -> dict[str, str]:
     return {p.name: p.read_text(encoding="utf-8") for p in sorted(vault_dir.glob("*.md"))}
 
 
-def test_insertion_refuses_an_implant_the_vault_already_holds(vault, implants_dir):
+# ---------------------------------------------------------
+# re-insertion
+# ---------------------------------------------------------
+
+def _hand_edit(vault_dir: Path, memory_id: str, old: str, new: str) -> None:
+    """A hand edit of memory_id's file: replace old with new."""
+    memory_file = find_memory_file(vault_dir, memory_id)
+    text = memory_file.read_text(encoding="utf-8")
+    assert old in text
+    memory_file.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def _update_template(implants_dir: Path, old: str, new: str) -> None:
+    template_file = implants_dir / "lantern" / "instructions.md"
+    text = template_file.read_text(encoding="utf-8")
+    assert old in text
+    template_file.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def _instructions_files(vault_dir: Path) -> list[str]:
+    return [p.name for p in sorted(vault_dir.glob("*.md")) if "implant_id:" in p.read_text(encoding="utf-8")]
+
+
+def test_reinsertion_refreshes_template_sections_in_the_existing_implant_instructions(vault, implants_dir):
     first = insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+    _hand_edit(vault, first["id"], "Run `lantern level`.", "Run `lantern level`, twice.")
+    _update_template(implants_dir, "Run `lantern level`.", "Run `lantern level --lux`.")
+
+    result = insert_implant(vault, implants_dir, "lantern")
+
+    assert result["id"] == first["id"]
+    assert len(_instructions_files(vault)) == 1
+    memory, body = parse_frontmatter_and_body(find_memory_file(vault, first["id"]))
+    assert memory.parents == ["0000000a"]
+    assert memory.date == first["date"]
+    assert "## Read the Light Level\n\nRun `lantern level --lux`.\n\n## Switch the Lantern" in body
+    assert "twice" not in body
+
+
+def test_reinsertion_keeps_sections_the_user_added_where_they_are(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _hand_edit(vault, instructions, "## Switch the Lantern", "## Lantern Care\n\nTrim the wick.\n\n## Switch the Lantern")
+    _hand_edit(vault, instructions, "`lantern off`.\n", "`lantern off`.\n\n### Night Mode\n\nDim it.\n")
+    _update_template(implants_dir, "Run `lantern level`.", "Run `lantern level --lux`.")
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    _, body = parse_frontmatter_and_body(find_memory_file(vault, instructions))
+    assert body.strip() == (
+        "## Read the Light Level\n\nRun `lantern level --lux`.\n\n"
+        "## Lantern Care\n\nTrim the wick.\n\n"
+        "## Switch the Lantern\n\nRun `lantern on` or `lantern off`.\n\n"
+        "### Night Mode\n\nDim it."
+    )
+
+
+def test_reinsertion_puts_a_section_new_to_the_template_after_its_template_predecessor(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _hand_edit(vault, instructions, "## Switch the Lantern", "## Lantern Care\n\nTrim the wick.\n\n## Switch the Lantern")
+    _update_template(implants_dir, "## Switch the Lantern", "## Refill the Lantern\n\nPour oil.\n\n## Switch the Lantern")
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    _, body = parse_frontmatter_and_body(find_memory_file(vault, instructions))
+    assert body.strip() == (
+        "## Read the Light Level\n\nRun `lantern level`.\n\n"
+        "## Refill the Lantern\n\nPour oil.\n\n"
+        "## Lantern Care\n\nTrim the wick.\n\n"
+        "## Switch the Lantern\n\nRun `lantern on` or `lantern off`."
+    )
+
+
+def test_reinsertion_refreshes_title_and_summary_and_unions_tags(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    memory_file = find_memory_file(vault, instructions)
+    memory, body = parse_frontmatter_and_body(memory_file)
+    memory_file.write_text(dump_frontmatter(memory.model_copy(update={"tags": [*memory.tags, "night"]}), body), encoding="utf-8")
+    _update_template(implants_dir, "title: Lantern Implant", "title: Lamp Implant")
+    _update_template(implants_dir, "summary: How to read", "summary: How to dim and read")
+    _update_template(implants_dir, "- implant\n", "- implant\n- light\n")
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    renamed = find_memory_file(vault, instructions)
+    assert renamed.name == f"{instructions}-lamp-implant.md"
+    assert not memory_file.exists()
+    memory = parse_frontmatter(renamed)
+    assert memory.title == "Lamp Implant"
+    assert memory.summary == "How to dim and read the Lantern's light level and switch it on or off."
+    assert memory.tags == ["implant", "lantern", "light", "night"]
+
+
+@pytest.mark.parametrize(
+    "attach, attached",
+    [(None, ["0000000a"]), ("0000000b", ["0000000a", "0000000b"]), ("0000000a", ["0000000a"])],
+    ids=["no --attach", "--attach a new memory", "--attach a memory already attached"],
+)
+def test_reinsertion_with_attach_only_adds_an_attachment(vault, implants_dir, attach, attached):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Garden", ["00000000"])
+
+    insert_implant(vault, implants_dir, "lantern", attach=attach)
+
+    implants = {m: parse_frontmatter(find_memory_file(vault, m)).implants for m in ("0000000a", "0000000b")}
+    assert implants == {m: [instructions] if m in attached else [] for m in ("0000000a", "0000000b")}
+    assert parse_frontmatter(find_memory_file(vault, instructions)).parents == ["0000000a"]
+    assert len(_instructions_files(vault)) == 1
+
+
+def _body_text(memory_file: Path) -> str:
+    """The raw text after a memory file's frontmatter."""
+    return memory_file.read_text(encoding="utf-8").split("\n---\n", 1)[1]
+
+
+def test_reinserting_an_unchanged_template_leaves_the_body_byte_identical(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    before = _body_text(find_memory_file(vault, instructions))
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    assert _body_text(find_memory_file(vault, instructions)) == before
+
+
+@pytest.mark.parametrize("indent", ["", "     "], ids=["fence", "fence nested in a list item"])
+def test_reinsertion_does_not_take_a_comment_in_a_fenced_block_for_a_heading(vault, implants_dir, indent):
+    def fence(command: str) -> str:
+        return f"- Run:\n{indent}```bash\n{indent}# run it\n{indent}{command}\n{indent}```\n"
+
+    _update_template(implants_dir, "Run `lantern level`.\n", fence("lantern level"))
+    _update_template(implants_dir, "Run `lantern on` or `lantern off`.\n", fence("lantern on"))
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _update_template(implants_dir, "lantern on\n", "lantern on --soft\n")
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    _, body = parse_frontmatter_and_body(find_memory_file(vault, instructions))
+    assert body.strip() == (
+        f"## Read the Light Level\n\n{fence('lantern level')}\n"
+        f"## Switch the Lantern\n\n{fence('lantern on --soft')}"
+    ).strip()
+
+
+def test_first_insertion_refuses_without_attach(vault, implants_dir):
     before = _snapshot(vault)
 
-    with pytest.raises(ValueError, match=first["id"]):
-        insert_implant(vault, implants_dir, "lantern", attach="00000000")
+    with pytest.raises(ValueError, match="--attach"):
+        insert_implant(vault, implants_dir, "lantern")
 
     assert _snapshot(vault) == before
+
+
+def test_reinsertion_refuses_to_attach_to_a_memory_that_does_not_exist(vault, implants_dir):
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+    _update_template(implants_dir, "Run `lantern level`.", "Run `lantern level --lux`.")
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match="attach.*0000000f"):
+        insert_implant(vault, implants_dir, "lantern", attach="0000000f")
+
+    assert _snapshot(vault) == before
+
+
+def test_reinsertion_refuses_when_a_hand_copy_duplicated_the_implant_instructions(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    original = find_memory_file(vault, instructions)
+    (vault / "0000000d-lantern-copy.md").write_text(
+        original.read_text(encoding="utf-8").replace(instructions, "0000000d"), encoding="utf-8"
+    )
+    _update_template(implants_dir, "Run `lantern level`.", "Run `lantern level --lux`.")
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match="0000000d") as refusal:
+        insert_implant(vault, implants_dir, "lantern")
+
+    assert instructions in str(refusal.value)
+    assert _snapshot(vault) == before
+
+
+def test_reinsertion_restores_a_deleted_first_template_section_at_the_top(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _hand_edit(vault, instructions, "## Read the Light Level\n\nRun `lantern level`.\n\n", "")
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    _, body = parse_frontmatter_and_body(find_memory_file(vault, instructions))
+    assert body.strip() == (
+        "## Read the Light Level\n\nRun `lantern level`.\n\n"
+        "## Switch the Lantern\n\nRun `lantern on` or `lantern off`."
+    )
 
 
 @pytest.mark.parametrize("name", ["beacon", "../implants", ""])
@@ -243,6 +423,26 @@ def test_cli_reports_a_refused_insertion_on_stderr(vault, capsys):
     captured = capsys.readouterr()
     assert captured.err.startswith("Error: 'beacon' is not an Implant.")
     assert "nms" in captured.err
+    assert captured.out == ""
+
+
+def test_cli_reinserts_an_implant_the_vault_holds_without_attach(vault, implants_dir, monkeypatch, capsys):
+    monkeypatch.setattr("copotron.cli.engine_implants_dir", lambda: implants_dir)
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+
+    ret = main(["implant", "insert", "lantern", "--json"])
+
+    assert ret == 0
+    result = json.loads(capsys.readouterr().out)
+    assert (result["action"], result["id"]) == ("updated", instructions)
+
+
+def test_cli_refuses_a_first_insertion_without_attach(vault, capsys):
+    ret = main(["implant", "insert", "nms"])
+
+    assert ret == 1
+    captured = capsys.readouterr()
+    assert captured.err.startswith("Error: this vault holds no Implant Instructions for 'nms' yet")
     assert captured.out == ""
 
 

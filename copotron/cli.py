@@ -205,7 +205,7 @@ def cmd_index(args) -> int:
 
 
 def cmd_implant_insert(args) -> int:
-    """Insert an Implant: copy its instructions into the vault and attach them beneath a memory."""
+    """Insert an Implant, or re-insert one the vault holds to refresh its Implant Instructions from the template."""
     from copotron.core.vault import get_vault_path
     vault_dir = get_vault_path(require_root=True)
     try:
@@ -215,6 +215,9 @@ def cmd_implant_insert(args) -> int:
         return 1
     if args.json:
         print(json.dumps(result, indent=2))
+    elif result["action"] == "updated":
+        attached = f", attached to [{args.attach}]" if args.attach else ""
+        print(f"✅ Re-inserted {args.name}: refreshed Implant Instructions [{result['id']}] from the template{attached}")
     else:
         print(f"✅ Inserted {args.name}: Implant Instructions [{result['id']}] attached beneath [{args.attach}]")
     return 0
@@ -476,11 +479,16 @@ def build_parser() -> argparse.ArgumentParser:
     implant_commands = p_implant.add_subparsers(dest="implant_command", required=True)
     p_insert = implant_commands.add_parser(
         "insert",
-        help="Copy an Implant's instructions into the vault as its Implant Instructions and attach them beneath a memory",
+        help="Copy an Implant's instructions into the vault as its Implant Instructions and attach them beneath a "
+        "memory; run again to refresh them from the template",
     )
     p_insert.add_argument("name", help="Implant name: a folder under the engine's implants/")
-    p_insert.add_argument("--attach", required=True, help="8-character id of the memory to attach the Implant beneath")
-    p_insert.add_argument("--json", action="store_true", help="Output the created Implant Instructions as JSON")
+    p_insert.add_argument(
+        "--attach",
+        help="8-character id of the memory to attach the Implant beneath; required on first Insertion, "
+        "and on re-insertion it only adds an attachment",
+    )
+    p_insert.add_argument("--json", action="store_true", help="Output the created or updated Implant Instructions as JSON")
     p_insert.set_defaults(func=cmd_implant_insert)
 
     p_run = implant_commands.add_parser(
