@@ -18,7 +18,7 @@ Run every command from the engine repo:
 uv run copotron implant run nms status
 ```
 
-The nine commands are `status`, `inventory`, `bases`, `find`, `route`, `system`, `convert`, `saves` and `watch`. Every command only reads; nothing writes to a Save. Flags are in `uv run copotron implant run nms <command> --help`. Vocabulary is in [implants/nms/GLOSSARY.md](GLOSSARY.md) in the engine repo, separate from Copotron's glossary; this memory uses its terms.
+The nine commands are `status`, `inventory`, `bases`, `find`, `route`, `system`, `convert`, `saves` and `watch`. Every command only reads; nothing writes to a Save. Flags are in `uv run copotron implant run nms <command> --help`. Vocabulary is in `implants/nms/GLOSSARY.md` in the engine repo, separate from Copotron's glossary; this memory uses its terms.
 
 ## Read the Output
 

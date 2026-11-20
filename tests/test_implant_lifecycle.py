@@ -4,6 +4,7 @@ The Implant lifecycle (spec §7): `copotron implant insert` (and re-insertion),
 """
 
 import json
+import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -14,7 +15,13 @@ from copotron.cli import main
 from copotron.core.navigate import navigate
 from copotron.core.schema import dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import find_memory_file
-from copotron.system_two.implant_lifecycle import detach_implant, insert_implant, remove_implant, run_implant
+from copotron.system_two.implant_lifecycle import (
+    detach_implant,
+    engine_implants_dir,
+    insert_implant,
+    remove_implant,
+    run_implant,
+)
 
 IMPLANT_ID = "61b7be77"
 
@@ -430,6 +437,17 @@ def test_run_refuses_an_implant_without_an_entry_point(vault, implants_dir):
 # ---------------------------------------------------------
 
 NMS_IMPLANT_ID = "61b7be77"  # implants/nms/instructions.md in this repo
+
+_MARKDOWN_LINK_RE = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)")
+
+
+@pytest.mark.parametrize("template", sorted(engine_implants_dir().glob("*/instructions.md")), ids=lambda p: p.parent.name)
+def test_shipped_templates_hold_no_relative_links(template):
+    # Insertion copies the template into the vault, where a link relative to
+    # the Implant's folder points at nothing.
+    targets = _MARKDOWN_LINK_RE.findall(template.read_text(encoding="utf-8"))
+
+    assert [t for t in targets if not re.match(r"[a-z][a-z0-9+.-]*:|#", t, re.IGNORECASE)] == []
 
 
 def test_cli_inserts_the_nms_implant(vault, capsys):
