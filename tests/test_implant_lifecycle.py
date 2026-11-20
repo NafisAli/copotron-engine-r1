@@ -5,6 +5,7 @@ attaches them beneath a memory of the user's choosing (spec §7).
 """
 
 import json
+import shutil
 from datetime import date
 from pathlib import Path
 
@@ -14,7 +15,7 @@ from copotron.cli import main
 from copotron.core.navigate import navigate
 from copotron.core.schema import parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import find_memory_file
-from copotron.system_two.implant_lifecycle import insert_implant, run_implant
+from copotron.system_two.implant_lifecycle import insert_implant, remove_implant, run_implant
 
 IMPLANT_ID = "61b7be77"
 
@@ -46,7 +47,9 @@ Run `lantern on` or `lantern off`.
 """
 
 
-def _write_memory(vault_dir: Path, memory_id: str, title: str, parents: list[str]) -> Path:
+def _write_memory(
+    vault_dir: Path, memory_id: str, title: str, parents: list[str], implants: list[str] = ()
+) -> Path:
     content = (
         "---\n"
         f"id: '{memory_id}'\n"
@@ -56,6 +59,7 @@ def _write_memory(vault_dir: Path, memory_id: str, title: str, parents: list[str
         "type: declarative\n"
         "status: active\n"
         f"parents: {parents}\n"
+        f"implants: {list(implants)}\n"
         "---\n\n"
         f"# {title}\n"
     )
@@ -258,3 +262,100 @@ def test_cli_run_hands_every_argument_to_the_implant(vault, implants_dir, monkey
 
     assert ret == 3
     assert json.loads(capfd.readouterr().out) == ["on", "--short", "--json", "--help"]
+
+
+# ---------------------------------------------------------
+# remove
+# ---------------------------------------------------------
+
+def test_removal_deletes_the_implant_instructions_and_every_attachment(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Garden", ["00000000"], implants=[instructions])
+
+    result = remove_implant(vault, implants_dir, "lantern")
+
+    assert result["id"] == instructions
+    assert sorted(result["detached_from"]) == ["0000000a", "0000000b"]
+    assert find_memory_file(vault, instructions) is None
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == []
+    assert parse_frontmatter(find_memory_file(vault, "0000000b")).implants == []
+    assert all(not r["inherited_implants"] for r in navigate("00000000", "down", print_output=False))
+
+
+def test_removal_by_instructions_id_works_when_the_implant_folder_is_gone(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    shutil.rmtree(implants_dir / "lantern")
+
+    result = remove_implant(vault, implants_dir, instructions)
+
+    assert result["id"] == instructions
+    assert find_memory_file(vault, instructions) is None
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == []
+
+
+@pytest.mark.parametrize(
+    "target",
+    ["beacon", "lantern", "0000000f", "0000000a"],
+    ids=["no such implant", "implant not in the vault", "unknown id", "id of a memory that is no implant instructions"],
+)
+def test_removal_refuses_a_target_that_matches_no_implant_instructions(vault, implants_dir, target):
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match=target):
+        remove_implant(vault, implants_dir, target)
+
+    assert _snapshot(vault) == before
+
+
+def test_removal_refuses_implant_instructions_a_hand_edit_gave_children(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Wick", [instructions])
+    _write_memory(vault, "0000000c", "Oil", ["0000000a", instructions])
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match="children") as refusal:
+        remove_implant(vault, implants_dir, "lantern")
+
+    assert "0000000b" in str(refusal.value) and "0000000c" in str(refusal.value)
+    assert _snapshot(vault) == before
+
+
+def test_removal_by_name_refuses_when_a_hand_copy_duplicated_the_implant_instructions(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    original = find_memory_file(vault, instructions)
+    (vault / "0000000d-lantern-copy.md").write_text(
+        original.read_text(encoding="utf-8").replace(instructions, "0000000d"), encoding="utf-8"
+    )
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match="0000000d") as refusal:
+        remove_implant(vault, implants_dir, "lantern")
+
+    assert instructions in str(refusal.value)
+    assert _snapshot(vault) == before
+
+
+# ---------------------------------------------------------
+# CLI: copotron implant remove
+# ---------------------------------------------------------
+
+def test_cli_removes_an_implant(vault, implants_dir, monkeypatch, capsys):
+    monkeypatch.setattr("copotron.cli.engine_implants_dir", lambda: implants_dir)
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+
+    ret = main(["implant", "remove", "lantern", "--json"])
+
+    assert ret == 0
+    assert json.loads(capsys.readouterr().out) == {
+        "id": instructions, "title": "Lantern Implant", "detached_from": ["0000000a"]
+    }
+    assert find_memory_file(vault, instructions) is None
+
+
+def test_cli_reports_a_refused_removal_on_stderr(vault, capsys):
+    ret = main(["implant", "remove", "nms"])
+
+    assert ret == 1
+    captured = capsys.readouterr()
+    assert captured.err.startswith("Error: this vault holds no Implant Instructions for 'nms'")
+    assert captured.out == ""
