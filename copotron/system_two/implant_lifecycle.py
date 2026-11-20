@@ -3,7 +3,8 @@ The Implant lifecycle in a vault (spec §7, ADR 0003 in the control plane).
 
 Insertion copies an Implant's instructions.md into the vault as the Implant
 Instructions, a procedural memory carrying the Implant's `implant_id` in its
-Open Tail, parented under a memory the user chooses. `run` starts an Implant's
+Open Tail, parented under a memory the user chooses. Re-insertion refreshes
+them from the template, keeping sections the user added. `run` starts an Implant's
 entry point only when the vault holds its Implant Instructions. Implant
 Removal deletes the Implant Instructions and every attachment to them.
 Detachment ends one attachment, moving the Implant Instructions beneath the
@@ -20,7 +21,7 @@ import yaml
 from copotron.core.implants import IMPLANT_ID_KEY, IMPLANT_INSTRUCTIONS_TYPE, is_implant_instructions
 from copotron.core.schema import dump_frontmatter, is_memory_id, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import atomic_write_text, find_memory_file
-from copotron.system_two.crystallize import create_memory_node, sync_index
+from copotron.system_two.crystallize import create_memory_node, sync_index, update_memory_node
 
 TEMPLATE_FILENAME = "instructions.md"
 _TEMPLATE_RE = re.compile(r"\A---\r?\n(.*?)^---[ \t]*\r?\n?(.*)\Z", re.DOTALL | re.MULTILINE)
@@ -57,27 +58,48 @@ def _read_template(template_path: Path) -> tuple[Dict[str, Any], str]:
     return frontmatter, match.group(2).lstrip("\r\n")
 
 
-def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str) -> Dict[str, Any]:
+def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str | None = None) -> Dict[str, Any]:
     """
     Insert the Implant `name` (a folder under implants_dir) into vault_dir,
-    parenting its Implant Instructions under the memory `attach`.
+    parenting its Implant Instructions under the memory `attach`. When the
+    vault already holds them, re-insert instead: refresh them from the template.
     """
     template, body = _load_implant(implants_dir, name)
-    attach_file = find_memory_file(vault_dir, attach) if is_memory_id(attach) else None
-    if attach_file is None:
-        raise ValueError(f"--attach {attach!r} does not identify an existing memory.")
-    try:
-        parse_frontmatter(attach_file)
-    except Exception as e:
-        raise ValueError(f"--attach {attach!r} identifies a memory that cannot be parsed ({e}).") from e
+    if attach is not None:
+        attach_file = find_memory_file(vault_dir, attach) if is_memory_id(attach) else None
+        if attach_file is None:
+            raise ValueError(f"--attach {attach!r} does not identify an existing memory.")
+        try:
+            parse_frontmatter(attach_file)
+        except Exception as e:
+            raise ValueError(f"--attach {attach!r} identifies a memory that cannot be parsed ({e}).") from e
     implant_id = str(template[IMPLANT_ID_KEY])
     existing = _find_implant_instructions(vault_dir, implant_id)
-    if existing:
+    if not existing and attach is None:
         raise ValueError(
-            f"implant {name!r} (implant_id {implant_id}) is already in this vault as Implant Instructions "
-            f"{', '.join(existing)}. Re-insertion is not supported yet; add that id to a memory's "
-            f"implants to attach it somewhere else."
+            f"this vault holds no Implant Instructions for {name!r} yet, so Insertion needs "
+            f"--attach <memory-id> to choose where they go."
         )
+    _refuse_duplicates(name, implant_id, existing)
+    if existing:
+        instructions_file = find_memory_file(vault_dir, existing[0])
+        _, existing_body = parse_frontmatter_and_body(instructions_file)
+        # update_memory_node refreshes the metadata and renames the file; the
+        # merged body is written as is, because it strips a body it is given.
+        updated = update_memory_node(
+            vault_dir,
+            instructions_file,
+            title=template["title"],
+            summary=str(template.get("summary") or ""),
+            tags=template.get("tags") or [],
+        )
+        updated_file = Path(updated["file_path"])
+        memory = parse_frontmatter(updated_file)
+        atomic_write_text(updated_file, dump_frontmatter(memory, _merge_sections(existing_body, body)))
+        if attach is not None:
+            _add_attachment(vault_dir, attach, updated["id"])
+        sync_index(vault_dir, quiet=True)
+        return updated
     created = create_memory_node(
         vault_dir=vault_dir,
         title=template["title"],
@@ -91,6 +113,59 @@ def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str) 
     _add_attachment(vault_dir, attach, created["id"])
     sync_index(vault_dir, quiet=True)
     return created
+
+
+_HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(.*?)[ \t]*$")
+_FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+
+
+def _split_sections(body: str) -> list[tuple[tuple[int, str] | None, str]]:
+    """
+    Split a markdown body into (key, text) sections. A section is a heading line
+    and everything up to the next heading; its key is the heading's level and
+    text. Text before the first heading is a section keyed None. A `#` line
+    inside a fenced code block is no heading.
+    """
+    sections: list[tuple[tuple[int, str] | None, str]] = []
+    key, lines = None, []
+    fence = None  # the opening fence while inside a fenced code block
+    for line in body.splitlines():
+        fence_match = _FENCE_RE.match(line)
+        if fence_match:
+            marker = fence_match.group(1)
+            if fence is None:
+                fence = marker
+            elif marker[0] == fence[0] and len(marker) >= len(fence) and not line.strip().strip(marker[0]):
+                fence = None
+        match = _HEADING_RE.match(line) if fence is None and not fence_match else None
+        if match:
+            if key is not None or "".join(lines).strip():
+                sections.append((key, "\n".join(lines).strip()))
+            key, lines = (len(match.group(1)), match.group(2)), [line]
+        else:
+            lines.append(line)
+    if key is not None or "".join(lines).strip():
+        sections.append((key, "\n".join(lines).strip()))
+    return sections
+
+
+def _merge_sections(existing_body: str, template_body: str) -> str:
+    """
+    Re-insertion's body: the existing sections in their order, each one whose
+    heading is in the template taking the template's text. A template section
+    the body lacks goes right after the nearest earlier template section, or
+    at the top when there is none.
+    """
+    template = _split_sections(template_body)
+    template_text = dict(template)
+    merged = [(key, template_text.get(key, text)) for key, text in _split_sections(existing_body)]
+    previous = None
+    for key, text in template:
+        keys = [k for k, _ in merged]
+        if key not in keys:
+            merged.insert(0 if previous is None else keys.index(previous) + 1, (key, text))
+        previous = key
+    return "\n\n".join(text for _, text in merged) + "\n"
 
 
 def run_implant(vault_dir: Path, implants_dir: Path, name: str, args: list[str]) -> int:
@@ -211,12 +286,17 @@ def _resolve_implant_instructions(vault_dir: Path, implants_dir: Path, target: s
     found = _find_implant_instructions(vault_dir, implant_id)
     if not found:
         raise ValueError(f"this vault holds no Implant Instructions for {target!r} (implant_id {implant_id}).")
+    _refuse_duplicates(target, implant_id, found)
+    return found[0]
+
+
+def _refuse_duplicates(name: str, implant_id: str, found: list[str]) -> None:
+    """Refuse when a hand copy left more than one Implant Instructions for one Implant."""
     if len(found) > 1:
         raise ValueError(
-            f"this vault holds {len(found)} Implant Instructions for {target!r} (implant_id {implant_id}): "
+            f"this vault holds {len(found)} Implant Instructions for {name!r} (implant_id {implant_id}): "
             f"{', '.join(found)}. Name the one to act on by its id."
         )
-    return found[0]
 
 
 def _is_implant_instructions_id(vault_dir: Path, memory_id: str) -> bool:
