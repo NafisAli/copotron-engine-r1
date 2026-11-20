@@ -13,9 +13,9 @@ import pytest
 
 from copotron.cli import main
 from copotron.core.navigate import navigate
-from copotron.core.schema import parse_frontmatter, parse_frontmatter_and_body
+from copotron.core.schema import dump_frontmatter, parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import find_memory_file
-from copotron.system_two.implant_lifecycle import insert_implant, remove_implant, run_implant
+from copotron.system_two.implant_lifecycle import detach_implant, insert_implant, remove_implant, run_implant
 
 IMPLANT_ID = "61b7be77"
 
@@ -48,13 +48,18 @@ Run `lantern on` or `lantern off`.
 
 
 def _write_memory(
-    vault_dir: Path, memory_id: str, title: str, parents: list[str], implants: list[str] = ()
+    vault_dir: Path,
+    memory_id: str,
+    title: str,
+    parents: list[str],
+    implants: list[str] = (),
+    memory_date: str = "2026-09-01",
 ) -> Path:
     content = (
         "---\n"
         f"id: '{memory_id}'\n"
         f"title: {title}\n"
-        "date: '2026-09-01'\n"
+        f"date: '{memory_date}'\n"
         "summary: Test memory.\n"
         "type: declarative\n"
         "status: active\n"
@@ -358,4 +363,116 @@ def test_cli_reports_a_refused_removal_on_stderr(vault, capsys):
     assert ret == 1
     captured = capsys.readouterr()
     assert captured.err.startswith("Error: this vault holds no Implant Instructions for 'nms'")
+    assert captured.out == ""
+
+
+# ---------------------------------------------------------
+# detach
+# ---------------------------------------------------------
+
+def test_detachment_from_a_memory_that_is_no_parent_only_ends_that_attachment(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Garden", ["00000000"], implants=[instructions])
+
+    result = detach_implant(vault, implants_dir, "lantern", from_memory="0000000b")
+
+    assert result["id"] == instructions
+    assert result["removed"] is False
+    assert parse_frontmatter(find_memory_file(vault, "0000000b")).implants == []
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == [instructions]
+    assert parse_frontmatter(find_memory_file(vault, instructions)).parents == ["0000000a"]
+
+
+def _set_parents(vault_dir: Path, memory_id: str, parents: list[str]) -> None:
+    """A hand edit of memory_id's parents."""
+    memory_file = find_memory_file(vault_dir, memory_id)
+    memory, body = parse_frontmatter_and_body(memory_file)
+    memory_file.write_text(dump_frontmatter(memory.model_copy(update={"parents": parents}), body), encoding="utf-8")
+
+
+def test_detachment_from_one_of_two_parents_drops_only_that_parent(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Garden", ["00000000"], implants=[instructions])
+    _set_parents(vault, instructions, ["0000000a", "0000000b"])
+
+    result = detach_implant(vault, implants_dir, instructions, from_memory="0000000a")
+
+    assert result["parents"] == ["0000000b"]
+    assert parse_frontmatter(find_memory_file(vault, instructions)).parents == ["0000000b"]
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == []
+
+
+@pytest.mark.parametrize(
+    "garden_date, shed_date, new_parent",
+    [("2026-09-05", "2026-08-01", "0000000c"), ("2026-08-01", "2026-08-01", "0000000b")],
+    ids=["earliest date wins", "tie broken by id"],
+)
+def test_detachment_from_the_only_parent_moves_the_instructions_beneath_the_oldest_remaining_attachment(
+    vault, implants_dir, garden_date, shed_date, new_parent
+):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000c", "Shed", ["00000000"], implants=[instructions], memory_date=shed_date)
+    _write_memory(vault, "0000000b", "Garden", ["00000000"], implants=[instructions], memory_date=garden_date)
+
+    result = detach_implant(vault, implants_dir, "lantern", from_memory="0000000a")
+
+    assert result["parents"] == [new_parent]
+    assert parse_frontmatter(find_memory_file(vault, instructions)).parents == [new_parent]
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == []
+
+
+def test_detaching_the_last_attachment_removes_the_implant(vault, implants_dir):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+
+    result = detach_implant(vault, implants_dir, "lantern", from_memory="0000000a")
+
+    assert result["removed"] is True
+    assert result["parents"] == []
+    assert find_memory_file(vault, instructions) is None
+    assert parse_frontmatter(find_memory_file(vault, "0000000a")).implants == []
+
+
+@pytest.mark.parametrize(
+    "from_memory", ["00000000", "0000000f"], ids=["memory that does not attach them", "unknown id"]
+)
+def test_detachment_refuses_a_memory_the_implant_instructions_are_not_attached_to(vault, implants_dir, from_memory):
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+    before = _snapshot(vault)
+
+    with pytest.raises(ValueError, match=f"{from_memory}.*not attached"):
+        detach_implant(vault, implants_dir, "lantern", from_memory=from_memory)
+
+    assert _snapshot(vault) == before
+
+
+# ---------------------------------------------------------
+# CLI: copotron implant detach
+# ---------------------------------------------------------
+
+def test_cli_detaches_an_implant(vault, implants_dir, monkeypatch, capsys):
+    monkeypatch.setattr("copotron.cli.engine_implants_dir", lambda: implants_dir)
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _write_memory(vault, "0000000b", "Garden", ["00000000"], implants=[instructions])
+
+    ret = main(["implant", "detach", "lantern", "--from", "0000000a", "--json"])
+
+    assert ret == 0
+    assert json.loads(capsys.readouterr().out) == {
+        "id": instructions,
+        "title": "Lantern Implant",
+        "detached_from": "0000000a",
+        "parents": ["0000000b"],
+        "removed": False,
+    }
+
+
+def test_cli_reports_a_refused_detachment_on_stderr(vault, implants_dir, monkeypatch, capsys):
+    monkeypatch.setattr("copotron.cli.engine_implants_dir", lambda: implants_dir)
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+
+    ret = main(["implant", "detach", "lantern", "--from", "00000000"])
+
+    assert ret == 1
+    captured = capsys.readouterr()
+    assert captured.err.startswith("Error: --from '00000000': Implant Instructions ")
     assert captured.out == ""
