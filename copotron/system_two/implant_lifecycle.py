@@ -6,6 +6,8 @@ Instructions, a procedural memory carrying the Implant's `implant_id` in its
 Open Tail, parented under a memory the user chooses. `run` starts an Implant's
 entry point only when the vault holds its Implant Instructions. Implant
 Removal deletes the Implant Instructions and every attachment to them.
+Detachment ends one attachment, moving the Implant Instructions beneath the
+oldest remaining attachment when it takes their last parent.
 """
 
 import re
@@ -138,6 +140,51 @@ def remove_implant(vault_dir: Path, implants_dir: Path, target: str) -> Dict[str
     return {"id": instructions_id, "title": title, "detached_from": detached_from}
 
 
+def detach_implant(vault_dir: Path, implants_dir: Path, target: str, from_memory: str) -> Dict[str, Any]:
+    """
+    Detachment: end from_memory's attachment to the Implant Instructions that
+    `target` identifies.
+    """
+    instructions_id = _resolve_implant_instructions(vault_dir, implants_dir, target)
+    attached = [m for _, m, _ in _parse_memories(vault_dir) if instructions_id in m.implants]
+    if from_memory not in {m.id for m in attached}:
+        raise ValueError(
+            f"--from {from_memory!r}: Implant Instructions {instructions_id} are not attached to that memory. "
+            f"Attached to: {', '.join(m.id for m in attached) or '(none)'}."
+        )
+    remaining = [m for m in attached if m.id not in (from_memory, instructions_id)]
+    if not remaining:
+        removed = remove_implant(vault_dir, implants_dir, instructions_id)
+        return {
+            "id": instructions_id,
+            "title": removed["title"],
+            "detached_from": from_memory,
+            "parents": [],
+            "removed": True,
+        }
+    instructions_file = find_memory_file(vault_dir, instructions_id)
+    instructions, instructions_body = parse_frontmatter_and_body(instructions_file)
+    from_file = find_memory_file(vault_dir, from_memory)
+    memory, body = parse_frontmatter_and_body(from_file)
+    implants = [i for i in memory.implants if i != instructions_id]
+    atomic_write_text(from_file, dump_frontmatter(memory.model_copy(update={"implants": implants}), body))
+    parents = [p for p in instructions.parents if p != from_memory]
+    if not parents:
+        # Attachments carry no timestamp, so the oldest is the attaching memory with the earliest date.
+        parents = [min(remaining, key=lambda m: (str(m.date), m.id)).id]
+    if parents != instructions.parents:
+        instructions = instructions.model_copy(update={"parents": parents})
+        atomic_write_text(instructions_file, dump_frontmatter(instructions, instructions_body))
+    sync_index(vault_dir, quiet=True)
+    return {
+        "id": instructions_id,
+        "title": instructions.title,
+        "detached_from": from_memory,
+        "parents": instructions.parents,
+        "removed": False,
+    }
+
+
 def _parse_memories(vault_dir: Path) -> list[tuple[Path, Any, str]]:
     """(file, frontmatter, body) of every memory in vault_dir that parses. Unparseable files are skipped."""
     memories = []
@@ -157,7 +204,7 @@ def _resolve_implant_instructions(vault_dir: Path, implants_dir: Path, target: s
     """
     if is_memory_id(target) and find_memory_file(vault_dir, target) is not None:
         if not _is_implant_instructions_id(vault_dir, target):
-            raise ValueError(f"memory {target!r} is not Implant Instructions; there is nothing to remove.")
+            raise ValueError(f"memory {target!r} is not Implant Instructions, so it names no Implant.")
         return target
     template, _ = _load_implant(implants_dir, target)
     implant_id = str(template[IMPLANT_ID_KEY])

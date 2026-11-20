@@ -16,7 +16,13 @@ from copotron.system_two.crystallize import (
 )
 from copotron.system_two.audit import audit_vault_health
 from copotron.core.setup import setup_vault
-from copotron.system_two.implant_lifecycle import engine_implants_dir, insert_implant, remove_implant, run_implant
+from copotron.system_two.implant_lifecycle import (
+    detach_implant,
+    engine_implants_dir,
+    insert_implant,
+    remove_implant,
+    run_implant,
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -231,6 +237,31 @@ def cmd_implant_remove(args) -> int:
     return 0
 
 
+def cmd_implant_detach(args) -> int:
+    """Detachment: end one memory's attachment to an Implant."""
+    from copotron.core.vault import get_vault_path
+    vault_dir = get_vault_path(require_root=True)
+    try:
+        result = detach_implant(vault_dir, engine_implants_dir(), args.target, from_memory=args.from_memory)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2))
+    elif result["removed"]:
+        print(
+            f"✅ Detached {result['title']} from [{result['detached_from']}], its last attachment, "
+            f"so removed Implant Instructions [{result['id']}]"
+        )
+    else:
+        parents = ", ".join(f"[{p}]" for p in result["parents"])
+        print(
+            f"✅ Detached {result['title']} from [{result['detached_from']}]; "
+            f"Implant Instructions [{result['id']}] sit beneath {parents}"
+        )
+    return 0
+
+
 # Exit code for a refused `implant run`. Not 1: Implants own their exit codes,
 # and nms uses 1 for a short requisition.
 IMPLANT_RUN_REFUSED = 2
@@ -441,7 +472,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_setup.set_defaults(func=cmd_setup)
 
     # 9. implant
-    p_implant = subparsers.add_parser("implant", help="Insert, run and remove Implants")
+    p_implant = subparsers.add_parser("implant", help="Insert, run, detach and remove Implants")
     implant_commands = p_implant.add_subparsers(dest="implant_command", required=True)
     p_insert = implant_commands.add_parser(
         "insert",
@@ -469,6 +500,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_remove.add_argument("--json", action="store_true", help="Output the removed Implant Instructions as JSON")
     p_remove.set_defaults(func=cmd_implant_remove)
+
+    p_detach = implant_commands.add_parser(
+        "detach",
+        help="Detachment: end one memory's attachment to an Implant; detaching the last attachment removes it",
+    )
+    p_detach.add_argument("target", help="Implant name, or the 8-character id of its Implant Instructions")
+    p_detach.add_argument(
+        "--from", dest="from_memory", required=True, help="8-character id of the memory to detach the Implant from"
+    )
+    p_detach.add_argument("--json", action="store_true", help="Output the Detachment as JSON")
+    p_detach.set_defaults(func=cmd_implant_detach)
 
     return parser
 
