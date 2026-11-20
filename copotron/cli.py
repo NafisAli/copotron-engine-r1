@@ -16,7 +16,7 @@ from copotron.system_two.crystallize import (
 )
 from copotron.system_two.audit import audit_vault_health
 from copotron.core.setup import setup_vault
-from copotron.system_two.insertion import engine_implants_dir, insert_implant
+from copotron.system_two.implant_lifecycle import engine_implants_dir, insert_implant, run_implant
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -205,6 +205,26 @@ def cmd_implant_insert(args) -> int:
     else:
         print(f"✅ Inserted {args.name}: Implant Instructions [{result['id']}] attached beneath [{args.attach}]")
     return 0
+
+
+# Exit code for a refused `implant run`. Not 1: Implants own their exit codes,
+# and nms uses 1 for a short requisition.
+IMPLANT_RUN_REFUSED = 2
+
+
+def cmd_implant_run(args) -> int:
+    """Run an Implant the vault holds; its stdout, stderr and exit code are its own."""
+    from copotron.core.vault import get_vault_path
+    vault_dir = get_vault_path(require_root=True)
+    try:
+        return run_implant(vault_dir, engine_implants_dir(), args.name, args.args)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return IMPLANT_RUN_REFUSED
+    except KeyboardInterrupt:
+        # Ctrl-C reaches the Implant too (e.g. stopping `nms watch`); exit as
+        # an interrupted process would rather than with a traceback.
+        return 130
 
 
 def cmd_setup(args) -> int:
@@ -397,7 +417,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_setup.set_defaults(func=cmd_setup)
 
     # 9. implant
-    p_implant = subparsers.add_parser("implant", help="Insert Implants into the vault")
+    p_implant = subparsers.add_parser("implant", help="Insert and run Implants")
     implant_commands = p_implant.add_subparsers(dest="implant_command", required=True)
     p_insert = implant_commands.add_parser(
         "insert",
@@ -407,6 +427,14 @@ def build_parser() -> argparse.ArgumentParser:
     p_insert.add_argument("--attach", required=True, help="8-character id of the memory to attach the Implant beneath")
     p_insert.add_argument("--json", action="store_true", help="Output the created Implant Instructions as JSON")
     p_insert.set_defaults(func=cmd_implant_insert)
+
+    p_run = implant_commands.add_parser(
+        "run",
+        help="Run an Implant the vault holds; every argument after the name goes to the Implant",
+    )
+    p_run.add_argument("name", help="Implant name: a folder under the engine's implants/")
+    p_run.add_argument("args", nargs=argparse.REMAINDER, help="Arguments for the Implant (try: <name> --help)")
+    p_run.set_defaults(func=cmd_implant_run)
 
     return parser
 

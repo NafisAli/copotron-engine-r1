@@ -1,11 +1,14 @@
 """
-Insertion: give a vault an Implant by copying the Implant's instructions.md
-into it as the Implant Instructions, a procedural memory carrying the
-Implant's `implant_id` in its Open Tail, parented under a memory the user
-chooses (spec §7, ADR 0003 in the control plane).
+The Implant lifecycle in a vault (spec §7, ADR 0003 in the control plane).
+
+Insertion copies an Implant's instructions.md into the vault as the Implant
+Instructions, a procedural memory carrying the Implant's `implant_id` in its
+Open Tail, parented under a memory the user chooses. `run` starts an Implant's
+entry point only when the vault holds its Implant Instructions.
 """
 
 import re
+import subprocess
 from pathlib import Path
 from typing import Any, Dict
 
@@ -56,12 +59,7 @@ def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str) 
     Insert the Implant `name` (a folder under implants_dir) into vault_dir,
     parenting its Implant Instructions under the memory `attach`.
     """
-    available = list_implants(implants_dir)
-    if name not in available:
-        raise ValueError(
-            f"{name!r} is not an Implant. Implants: {', '.join(available) or '(none)'}."
-        )
-    template, body = _read_template(implants_dir / name / TEMPLATE_FILENAME)
+    template, body = _load_implant(implants_dir, name)
     attach_file = find_memory_file(vault_dir, attach) if is_memory_id(attach) else None
     if attach_file is None:
         raise ValueError(f"--attach {attach!r} does not identify an existing memory.")
@@ -90,6 +88,36 @@ def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str) 
     _add_attachment(vault_dir, attach, created["id"])
     sync_index(vault_dir, quiet=True)
     return created
+
+
+def run_implant(vault_dir: Path, implants_dir: Path, name: str, args: list[str]) -> int:
+    """
+    Start the Implant `name`'s entry point with args, provided vault_dir holds
+    its Implant Instructions, and return the entry point's exit code.
+    """
+    template, _ = _load_implant(implants_dir, name)
+    implant_id = str(template[IMPLANT_ID_KEY])
+    if not _find_implant_instructions(vault_dir, implant_id):
+        raise ValueError(
+            f"this vault holds no Implant Instructions for {name!r} (implant_id {implant_id}). "
+            f"Insert it first: copotron implant insert {name} --attach <memory-id>"
+        )
+    entry_point = implants_dir / name / f"{name}.py"
+    if not entry_point.is_file():
+        raise ValueError(f"Implant {name!r} has no entry point: {entry_point} does not exist.")
+    # stdin, stdout and stderr are the Implant's own; uv resolves the entry
+    # point's inline script dependencies.
+    return subprocess.run(["uv", "run", str(entry_point), *args], cwd=implants_dir.parent).returncode
+
+
+def _load_implant(implants_dir: Path, name: str) -> tuple[Dict[str, Any], str]:
+    """The frontmatter and body of the Implant `name`'s template, refusing a name that is no Implant."""
+    available = list_implants(implants_dir)
+    if name not in available:
+        raise ValueError(
+            f"{name!r} is not an Implant. Implants: {', '.join(available) or '(none)'}."
+        )
+    return _read_template(implants_dir / name / TEMPLATE_FILENAME)
 
 
 def _find_implant_instructions(vault_dir: Path, implant_id: str) -> list[str]:

@@ -1,5 +1,5 @@
 """
-Insertion: `copotron implant insert <name> --attach <memory-id>` copies an
+The Implant lifecycle: `copotron implant insert <name> --attach <memory-id>` copies an
 Implant's instructions.md into the vault as its Implant Instructions and
 attaches them beneath a memory of the user's choosing (spec §7).
 """
@@ -14,9 +14,18 @@ from copotron.cli import main
 from copotron.core.navigate import navigate
 from copotron.core.schema import parse_frontmatter, parse_frontmatter_and_body
 from copotron.core.vault import find_memory_file
-from copotron.system_two.insertion import insert_implant
+from copotron.system_two.implant_lifecycle import insert_implant, run_implant
 
 IMPLANT_ID = "61b7be77"
+
+# The lantern Implant's entry point: prints its arguments as JSON, leaves a
+# marker that it ran, and exits 3 when given --short.
+ENTRY_POINT = """import json, sys
+from pathlib import Path
+(Path(__file__).parent / "ran").write_text("yes")
+print(json.dumps(sys.argv[1:]))
+sys.exit(3 if "--short" in sys.argv else 0)
+"""
 
 TEMPLATE = f"""---
 title: Lantern Implant
@@ -72,6 +81,7 @@ def implants_dir(tmp_path):
     root = tmp_path / "implants"
     (root / "lantern").mkdir(parents=True)
     (root / "lantern" / "instructions.md").write_text(TEMPLATE, encoding="utf-8")
+    (root / "lantern" / "lantern.py").write_text(ENTRY_POINT, encoding="utf-8")
     return root
 
 
@@ -173,6 +183,33 @@ def test_insertion_refuses_to_attach_beneath_a_memory_it_cannot_read(vault, impl
 
 
 # ---------------------------------------------------------
+# run
+# ---------------------------------------------------------
+
+def test_run_refuses_an_implant_the_vault_does_not_hold(vault, implants_dir):
+    with pytest.raises(ValueError, match="insert"):
+        run_implant(vault, implants_dir, "lantern", ["level"])
+
+    assert not (implants_dir / "lantern" / "ran").exists()
+
+
+@pytest.mark.parametrize("args, exit_code", [(["level", "--json"], 0), (["on", "--short"], 3)])
+def test_run_passes_arguments_to_the_entry_point_and_returns_its_exit_code(vault, implants_dir, capfd, args, exit_code):
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+
+    assert run_implant(vault, implants_dir, "lantern", args) == exit_code
+    assert json.loads(capfd.readouterr().out) == args
+
+
+def test_run_refuses_an_implant_without_an_entry_point(vault, implants_dir):
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+    (implants_dir / "lantern" / "lantern.py").unlink()
+
+    with pytest.raises(ValueError, match="lantern.py"):
+        run_implant(vault, implants_dir, "lantern", ["level"])
+
+
+# ---------------------------------------------------------
 # CLI: copotron implant insert
 # ---------------------------------------------------------
 
@@ -198,3 +235,26 @@ def test_cli_reports_a_refused_insertion_on_stderr(vault, capsys):
     assert captured.err.startswith("Error: 'beacon' is not an Implant.")
     assert "nms" in captured.err
     assert captured.out == ""
+
+
+# ---------------------------------------------------------
+# CLI: copotron implant run
+# ---------------------------------------------------------
+
+def test_cli_refuses_to_run_an_implant_the_vault_does_not_hold(vault, capfd):
+    ret = main(["implant", "run", "nms", "status"])
+
+    assert ret == 2  # not 1, which nms uses for a short requisition
+    captured = capfd.readouterr()
+    assert captured.err.startswith("Error: this vault holds no Implant Instructions for 'nms'")
+    assert captured.out == ""
+
+
+def test_cli_run_hands_every_argument_to_the_implant(vault, implants_dir, monkeypatch, capfd):
+    monkeypatch.setattr("copotron.cli.engine_implants_dir", lambda: implants_dir)
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+
+    ret = main(["implant", "run", "lantern", "on", "--short", "--json", "--help"])
+
+    assert ret == 3
+    assert json.loads(capfd.readouterr().out) == ["on", "--short", "--json", "--help"]
