@@ -132,7 +132,7 @@ def cmd_validate(args) -> int:
 
 
 def cmd_audit(args) -> int:
-    """Audit vault graph health, orphan nodes, Dangling Personas, dangling implant links, and task completion drift."""
+    """Audit vault graph health, orphan nodes, Dangling Personas, dangling implant links, children of Implant Instructions, and task completion drift."""
     is_json = getattr(args, "json", False)
     report = audit_vault_health(check_semantic=not getattr(args, "syntax_only", False))
     if is_json:
@@ -166,6 +166,13 @@ def cmd_audit(args) -> int:
                 print(f"      [{d['id']}] {d['title']} -> implant {d['implant']!r} ({d['problem']})")
         else:
             print("  ✅ Dangling Implant Links: None")
+
+        if report['children_of_implant_instructions']:
+            print(f"  ❌ Children of Implant Instructions: {len(report['children_of_implant_instructions'])}")
+            for d in report['children_of_implant_instructions']:
+                print(f"      [{d['id']}] {d['title']} -> beneath Implant Instructions {d['instructions']}")
+        else:
+            print("  ✅ Children of Implant Instructions: None")
 
         if report['completion_drift']:
             print(f"  📌 Task Completion Drift: {len(report['completion_drift'])}")
