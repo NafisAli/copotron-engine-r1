@@ -4,7 +4,8 @@ The Implant lifecycle in a vault (spec §7, ADR 0003 in the control plane).
 Insertion copies an Implant's instructions.md into the vault as the Implant
 Instructions, a procedural memory carrying the Implant's `implant_id` in its
 Open Tail, parented under a memory the user chooses. `run` starts an Implant's
-entry point only when the vault holds its Implant Instructions.
+entry point only when the vault holds its Implant Instructions. Implant
+Removal deletes the Implant Instructions and every attachment to them.
 """
 
 import re
@@ -108,6 +109,79 @@ def run_implant(vault_dir: Path, implants_dir: Path, name: str, args: list[str])
     # stdin, stdout and stderr are the Implant's own; uv resolves the entry
     # point's inline script dependencies.
     return subprocess.run(["uv", "run", str(entry_point), *args], cwd=implants_dir.parent).returncode
+
+
+def remove_implant(vault_dir: Path, implants_dir: Path, target: str) -> Dict[str, Any]:
+    """
+    Implant Removal: delete the Implant Instructions that `target` identifies
+    and remove their id from every memory's implants.
+    """
+    instructions_id = _resolve_implant_instructions(vault_dir, implants_dir, target)
+    instructions_file = find_memory_file(vault_dir, instructions_id)
+    title = parse_frontmatter(instructions_file).title
+    memories = _parse_memories(vault_dir)
+    children = [memory.id for _, memory, _ in memories if instructions_id in memory.parents]
+    if children:
+        raise ValueError(
+            f"Implant Instructions {instructions_id} have children ({', '.join(children)}), which a hand edit "
+            f"must have left: Implant Instructions never have children. Give each child another parent "
+            f"first; removal never orphans or moves a memory."
+        )
+    detached_from = []
+    for memory_file, memory, body in memories:
+        if instructions_id in memory.implants:
+            implants = [i for i in memory.implants if i != instructions_id]
+            atomic_write_text(memory_file, dump_frontmatter(memory.model_copy(update={"implants": implants}), body))
+            detached_from.append(memory.id)
+    instructions_file.unlink()
+    sync_index(vault_dir, quiet=True)
+    return {"id": instructions_id, "title": title, "detached_from": detached_from}
+
+
+def _parse_memories(vault_dir: Path) -> list[tuple[Path, Any, str]]:
+    """(file, frontmatter, body) of every memory in vault_dir that parses. Unparseable files are skipped."""
+    memories = []
+    for memory_file in sorted(vault_dir.glob("*.md")):
+        try:
+            memory, body = parse_frontmatter_and_body(memory_file)
+        except Exception:
+            continue
+        memories.append((memory_file, memory, body))
+    return memories
+
+
+def _resolve_implant_instructions(vault_dir: Path, implants_dir: Path, target: str) -> str:
+    """
+    The id of the Implant Instructions that target names: either their own
+    memory id, or the name of an Implant whose Implant Instructions the vault holds.
+    """
+    if is_memory_id(target) and find_memory_file(vault_dir, target) is not None:
+        if not _is_implant_instructions_id(vault_dir, target):
+            raise ValueError(f"memory {target!r} is not Implant Instructions; there is nothing to remove.")
+        return target
+    template, _ = _load_implant(implants_dir, target)
+    implant_id = str(template[IMPLANT_ID_KEY])
+    found = _find_implant_instructions(vault_dir, implant_id)
+    if not found:
+        raise ValueError(f"this vault holds no Implant Instructions for {target!r} (implant_id {implant_id}).")
+    if len(found) > 1:
+        raise ValueError(
+            f"this vault holds {len(found)} Implant Instructions for {target!r} (implant_id {implant_id}): "
+            f"{', '.join(found)}. Name the one to act on by its id."
+        )
+    return found[0]
+
+
+def _is_implant_instructions_id(vault_dir: Path, memory_id: str) -> bool:
+    """True when memory_id identifies a parseable Implant Instructions memory in vault_dir."""
+    memory_file = find_memory_file(vault_dir, memory_id)
+    if memory_file is None:
+        return False
+    try:
+        memory = parse_frontmatter(memory_file)
+    except Exception:
+        return False
+    return is_implant_instructions(memory.type, memory.model_extra or {})
 
 
 def _load_implant(implants_dir: Path, name: str) -> tuple[Dict[str, Any], str]:

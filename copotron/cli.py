@@ -16,7 +16,7 @@ from copotron.system_two.crystallize import (
 )
 from copotron.system_two.audit import audit_vault_health
 from copotron.core.setup import setup_vault
-from copotron.system_two.implant_lifecycle import engine_implants_dir, insert_implant, run_implant
+from copotron.system_two.implant_lifecycle import engine_implants_dir, insert_implant, remove_implant, run_implant
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -211,6 +211,23 @@ def cmd_implant_insert(args) -> int:
         print(json.dumps(result, indent=2))
     else:
         print(f"✅ Inserted {args.name}: Implant Instructions [{result['id']}] attached beneath [{args.attach}]")
+    return 0
+
+
+def cmd_implant_remove(args) -> int:
+    """Implant Removal: delete an Implant's Implant Instructions and every attachment to them."""
+    from copotron.core.vault import get_vault_path
+    vault_dir = get_vault_path(require_root=True)
+    try:
+        result = remove_implant(vault_dir, engine_implants_dir(), args.target)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        detached = ", ".join(f"[{m}]" for m in result["detached_from"]) or "no memory"
+        print(f"✅ Removed {result['title']}: deleted Implant Instructions [{result['id']}], detached from {detached}")
     return 0
 
 
@@ -424,7 +441,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_setup.set_defaults(func=cmd_setup)
 
     # 9. implant
-    p_implant = subparsers.add_parser("implant", help="Insert and run Implants")
+    p_implant = subparsers.add_parser("implant", help="Insert, run and remove Implants")
     implant_commands = p_implant.add_subparsers(dest="implant_command", required=True)
     p_insert = implant_commands.add_parser(
         "insert",
@@ -442,6 +459,16 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("name", help="Implant name: a folder under the engine's implants/")
     p_run.add_argument("args", nargs=argparse.REMAINDER, help="Arguments for the Implant (try: <name> --help)")
     p_run.set_defaults(func=cmd_implant_run)
+
+    p_remove = implant_commands.add_parser(
+        "remove",
+        help="Implant Removal: delete an Implant's Implant Instructions and remove their id from every memory",
+    )
+    p_remove.add_argument(
+        "target", help="Implant name, or the 8-character id of its Implant Instructions (works without the folder)"
+    )
+    p_remove.add_argument("--json", action="store_true", help="Output the removed Implant Instructions as JSON")
+    p_remove.set_defaults(func=cmd_implant_remove)
 
     return parser
 
