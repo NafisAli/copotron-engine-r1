@@ -219,7 +219,25 @@ def test_reinsertion_refreshes_title_and_summary_and_unions_tags(vault, implants
     memory = parse_frontmatter(renamed)
     assert memory.title == "Lamp Implant"
     assert memory.summary == "How to dim and read the Lantern's light level and switch it on or off."
-    assert memory.tags == ["implant", "lantern", "light", "night"]
+    assert memory.tags == ["lantern", "implant", "light", "night"]
+
+
+@pytest.mark.parametrize(
+    "old, new, tags",
+    [
+        ("- lantern\n", "- glow\n- lantern\n", ["glow", "lantern", "implant"]),
+        ("- implant\n", "- implant\n- light\n", ["lantern", "implant", "light"]),
+    ],
+    ids=["new first template tag goes at the top", "new tag goes after its template predecessor"],
+)
+def test_reinsertion_places_a_tag_new_to_the_template_like_a_new_section(vault, implants_dir, old, new, tags):
+    instructions = insert_implant(vault, implants_dir, "lantern", attach="0000000a")["id"]
+    _update_template(implants_dir, old, new)
+
+    result = insert_implant(vault, implants_dir, "lantern")
+
+    assert parse_frontmatter(find_memory_file(vault, instructions)).tags == tags
+    assert result["tags"] == tags
 
 
 @pytest.mark.parametrize(
@@ -251,6 +269,15 @@ def test_reinserting_an_unchanged_template_leaves_the_body_byte_identical(vault,
     insert_implant(vault, implants_dir, "lantern")
 
     assert _body_text(find_memory_file(vault, instructions)) == before
+
+
+def test_reinserting_an_unchanged_template_leaves_the_whole_file_byte_identical(vault, implants_dir):
+    insert_implant(vault, implants_dir, "lantern", attach="0000000a")
+    before = _snapshot(vault)
+
+    insert_implant(vault, implants_dir, "lantern")
+
+    assert _snapshot(vault) == before
 
 
 @pytest.mark.parametrize("indent", ["", "     "], ids=["fence", "fence nested in a list item"])

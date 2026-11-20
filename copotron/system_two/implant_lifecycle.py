@@ -83,18 +83,20 @@ def insert_implant(vault_dir: Path, implants_dir: Path, name: str, attach: str |
     _refuse_duplicates(name, implant_id, existing)
     if existing:
         instructions_file = find_memory_file(vault_dir, existing[0])
-        _, existing_body = parse_frontmatter_and_body(instructions_file)
-        # update_memory_node refreshes the metadata and renames the file; the
-        # merged body is written as is, because it strips a body it is given.
+        existing_memory, existing_body = parse_frontmatter_and_body(instructions_file)
+        tags = _merge_tags(existing_memory.tags, template.get("tags") or [])
+        # update_memory_node refreshes title and summary and renames the file.
+        # The merged body and tags are written here: it strips a body it is
+        # given, and it sorts the tags it unions.
         updated = update_memory_node(
             vault_dir,
             instructions_file,
             title=template["title"],
             summary=str(template.get("summary") or ""),
-            tags=template.get("tags") or [],
         )
+        updated["tags"] = tags
         updated_file = Path(updated["file_path"])
-        memory = parse_frontmatter(updated_file)
+        memory = parse_frontmatter(updated_file).model_copy(update={"tags": tags})
         atomic_write_text(updated_file, dump_frontmatter(memory, _merge_sections(existing_body, body)))
         if attach is not None:
             _add_attachment(vault_dir, attach, updated["id"])
@@ -147,6 +149,21 @@ def _split_sections(body: str) -> list[tuple[tuple[int, str] | None, str]]:
     if key is not None or "".join(lines).strip():
         sections.append((key, "\n".join(lines).strip()))
     return sections
+
+
+def _merge_tags(existing: list[str], template: list[str]) -> list[str]:
+    """
+    Re-insertion's tags, merged the way sections are: the existing tags in their
+    order, with a template tag they lack right after the nearest earlier
+    template tag, or at the top when there is none.
+    """
+    merged = list(existing)
+    previous = None
+    for tag in template:
+        if tag not in merged:
+            merged.insert(0 if previous is None else merged.index(previous) + 1, tag)
+        previous = tag
+    return merged
 
 
 def _merge_sections(existing_body: str, template_body: str) -> str:
