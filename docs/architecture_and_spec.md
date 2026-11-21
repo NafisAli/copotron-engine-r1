@@ -43,7 +43,7 @@ Instead of explicit separate "Project" and "Task" schemas, the system uses the `
 
 ## 5. Persona System & Cascading Inheritance
 Personas dictate AI tone, domain instructions, and behavior:
-* **Storage:** Each Persona lives in a Persona Definition: a `declarative` memory tagged `persona`. Other memories reference it by id (`persona: c19b60a6`), never by name. `copotron.core.personas` is the shared lookup: `find_persona_definition` resolves a reference, `require_persona_definition` guards write paths, and `diagnose_persona_reference` tells `copotron audit` which Dangling Persona case applies (see ADR 0002 in the control plane).
+* **Storage:** Each Persona lives in a Persona Definition: a `declarative` memory tagged `persona`. Other memories reference it by id (`persona: c19b60a6`), never by name. `copotron.core.personas` is the shared lookup: `find_persona_definition` resolves a reference, `require_persona_definition` guards write paths, and `diagnose_persona_reference` tells `copotron audit` which Dangling Persona case applies (see [ADR 0002](adr/0002-persona-as-id-reference.md)).
 * **Attachment:** Defined on root nodes or domain hubs.
 * **Inheritance:** `indexer.py` traverses the DAG. Child nodes inherit their parent's persona.
 * **Nearest Override:** If a child node explicitly declares a persona, it overrides ancestor personas for itself and its subtree.
@@ -54,7 +54,7 @@ To protect LLM context windows and prevent lost-in-the-middle degradation:
 * **`navigate.py` (Indexed DAG Traversal):** Sub-millisecond indexed edge lookup stepping `up` (to parents) or `down` (to children) on demand when contextual depth is needed. Its results also carry `inherited_persona` and `inherited_implants`.
 
 ## 7. Implants (`implants/<name>/`)
-An **Implant** couples the brain to an external world: it senses that world, acts on it, or both, and carries its own operating instructions. Implants are maintained alongside the engine, never inside a vault (see ADR 0003 in the control plane).
+An **Implant** couples the brain to an external world: it senses that world, acts on it, or both, and carries its own operating instructions. Implants are maintained alongside the engine, never inside a vault (see [ADR 0003](adr/0003-implants-core-field.md)).
 * **Source:** Each Implant lives in the engine repo under a top-level `implants/<name>/`, outside the `copotron/` package, and is covered by the same `pytest` run. The layout is a convention with no manifest file:
   * `<name>.py` is the entry point, with its dependencies declared inline (PEP 723). It runs as a separate process through `uv run`. Arguments pass straight through and output goes to stdout.
   * `instructions.md` is the template for the Implant Instructions. Its frontmatter supplies `title`, `summary` and `tags`, plus the Implant's permanent `implant_id` (8 lower-case hex characters, generated once and never changed). Its body is copied into the vault, so it names engine files as paths in code spans, never as relative links.

@@ -1,0 +1,5 @@
+# Persona is an identifier reference, not a name
+
+A memory's `persona` Core Field holds the 8-character identifier of a Persona Definition (a declarative memory tagged `persona`), not a free-text name such as `aegis-null`. Free-text names linked to their definition only by convention: a typo or a missing definition failed silently, and agents had to search by tags to find the profile. An identifier reference can be checked. Write paths reject a `persona` that is not an existing Persona Definition, the audit reports Dangling Personas left by hand edits or deletions, and retrieval returns the definition's identifier and title next to the Inherited Persona.
+
+We give up a readable frontmatter value (`persona: c19b60a6` instead of `persona: aegis-null`) in exchange for referential integrity, the same trade-off ADR 0001 made for parents. Indexing stays lenient, so older vaults that still hold names keep working. Their names appear as Dangling Personas for the vault doctor to repair, so no migration script is needed. Implants attach to their Implant Instructions the same way.

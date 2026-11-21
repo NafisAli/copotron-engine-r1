@@ -1,6 +1,6 @@
 # No Man's Sky Implant
 
-The vocabulary of the world the NMS Implant couples the brain to: a player's save, what they carry, and where things are in the universe. Copotron's own terms (Implant, Insertion, Implant Instructions) live in the control plane's glossary.
+The vocabulary of the world the NMS Implant couples the brain to: a player's save, what they carry, and where things are in the universe. Copotron's own terms (Implant, Insertion, Implant Instructions) live in the engine's root `GLOSSARY.md`.
 
 ## Saves
 
