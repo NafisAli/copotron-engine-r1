@@ -8,7 +8,7 @@ The deterministic logic, indexing engine, and black-box CLI for the AI-driven Se
 ## Setup & Configuration
 The vault path is governed strictly by the `.env` file with **no fallback default**:
 ```env
-VAULT_PATH='C:\Users\digit\Documents\Programming\copotron-r1\copotron-vault-r1'
+VAULT_PATH='/path/to/your/copotron-vault'
 ```
 
 ### Initializing or Linking a Vault
